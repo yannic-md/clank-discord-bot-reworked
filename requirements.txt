@@ -1,0 +1,10 @@
+discord.py @ git+https://github.com/Rapptz/discord.py
+python-dotenv==1.2.2
+ruff==0.15.20
+pytest==9.1.1
+pytest-asyncio==1.4.0
+pytest-cov==7.1.0
+mypy==2.1.0
+sqlalchemy[asyncio]==2.0.51
+asyncmy==0.2.11
+alembic==1.18.5
