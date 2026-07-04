@@ -35,6 +35,7 @@ strict = true
 python_version = "3.14"
 files = ["core", "features", "system", "misc", "utils", "main.py"]
 exclude = ["tests/", "venv/"]
+explicit_package_bases = true
 
 [[tool.mypy.overrides]]
 module = "tests.*"

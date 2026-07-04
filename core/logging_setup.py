@@ -25,7 +25,7 @@ def setup_logging() -> logging.Logger:
     handler: RotatingFileHandler = handlers.RotatingFileHandler(
         filename=log_dir / "discord.log",
         encoding="utf-8",
-        maxBytes=500 * 1024 * 1024, # 500 MB,
+        maxBytes=500 * 1024 * 1024,  # 500 MB,
         backupCount=3,
     )
 

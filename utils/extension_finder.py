@@ -7,8 +7,9 @@ PACKAGE_EXTENSION_DIRS = ["features"]
 # Folders whose individual .py files are loaded as modules (system.audit, misc.commands, ...)
 FLAT_EXTENSION_DIRS = ["system", "misc"]
 
+
 def discover_extensions() -> list[str]:
-    """ Discover available bot extensions.
+    """Discover available bot extensions.
 
     The function scans the directories listed in ``PACKAGE_EXTENSION_DIRS`` for
     package-based extensions and the directories listed in ``FLAT_EXTENSION_DIRS``
