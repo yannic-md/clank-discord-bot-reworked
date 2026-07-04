@@ -1,5 +1,5 @@
 import logging
-from logging import handlers, Formatter
+from logging import Formatter, handlers
 from logging.handlers import RotatingFileHandler
 from pathlib import Path
 

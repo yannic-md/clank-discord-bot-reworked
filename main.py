@@ -13,7 +13,7 @@ async def main() -> None:
     """Initialize logging, create bot client, and start the Discord bot."""
     setup_logging()
 
-    async with ClientSession() as web_client:
+    async with ClientSession() as web_client:  # noqa: SIM117
         async with ClankReworked(
             commands.when_mentioned, web_client=web_client, intents=discord.Intents.all()
         ) as bot:
