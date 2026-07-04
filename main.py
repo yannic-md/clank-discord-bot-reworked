@@ -25,8 +25,8 @@ async def main() -> None:
                 await bot.start(BOT_TOKEN, reconnect=True)
             except discord.PrivilegedIntentsRequired:
                 print(
-                    "Your bot is using privileged intents from discord, but they are not enabled in the "
-                    "Discord Developer Portal. Do it here: https://discord.com/developers/applications/"
+                    "Your bot is using privileged intents from discord, but they are not enabled in"
+                    " the Discord Developer Portal. Do it here: https://discord.com/developers/applications/"
                 )
                 return
 
