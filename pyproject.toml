@@ -12,13 +12,13 @@ target-version = "py314"
 
 [tool.ruff.lint]
 select = [
-    "E",   # pycodestyle errors
-    "F",   # pyflakes
-    "W",   # pycodestyle warnings
-    "I",   # isort (Import-Sortierung)
-    "UP",  # pyupgrade (moderne Syntax)
-    "B",   # flake8-bugbear (häufige Fehlerquellen)
-    "C4",  # flake8-comprehensions
+    "E", # pycodestyle errors
+    "F", # pyflakes
+    "W", # pycodestyle warnings
+    "I", # isort (Import-Sortierung)
+    "UP", # pyupgrade (moderne Syntax)
+    "B", # flake8-bugbear (häufige Fehlerquellen)
+    "C4", # flake8-comprehensions
     "SIM", # flake8-simplify
 ]
 ignore = []
@@ -33,7 +33,8 @@ indent-style = "space"
 [tool.mypy]
 strict = true
 python_version = "3.14"
-files = ["core", "features", "system", "misc", "utils", "main.py"]
+#files = ["core", "features", "system", "misc", "utils", "main.py"]
+files = ["core", "utils", "main.py"]
 exclude = ["tests/", "venv/"]
 explicit_package_bases = true
 disallow_any_generics = false

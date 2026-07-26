@@ -1,7 +1,5 @@
-from typing import Any
-
 from aiohttp import ClientSession
-from discord import ClientUser
+from discord import ClientUser, Intents
 from discord.app_commands import AppCommand
 from discord.ext import commands
 from discord.ext.commands import NoEntryPointError
@@ -16,8 +14,8 @@ class ClankReworked(commands.AutoShardedBot):
     and an optional testing guild ID used to sync application commands during startup.
     """
 
-    def __init__(self, *args: Any, web_client: ClientSession, **kwargs: Any) -> None:
-        super().__init__(*args, **kwargs)
+    def __init__(self, command_prefix: str, *, web_client: ClientSession, intents: Intents) -> None:
+        super().__init__(command_prefix, intents=intents)
         self.web_client: ClientSession = web_client
         self.loaded_cogs_count: int = 0
         self.synced_commands: list[AppCommand] = []
@@ -50,7 +48,6 @@ class ClankReworked(commands.AutoShardedBot):
         print("                                      ")
         print(f"Developed by Yannic | {user.name}")
         print(
-            f"Shard-Count: {self.shard_count} | Latency: {self.latency * 1000:.2f}ms | "
-            f"Loaded Cogs: {self.loaded_cogs_count}"
+            f"Shard-Count: {self.shard_count} | Latency: {self.latency * 1000:.2f}ms | Loaded Cogs: {self.loaded_cogs_count}"
         )
         print("────────────")

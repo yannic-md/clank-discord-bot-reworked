@@ -5,7 +5,7 @@ from discord.app_commands import AppCommand, CommandSyncFailure, TranslationErro
 from discord.ext import commands
 from discord.ext.commands import AutoShardedBot, Cog
 
-from core.discord.checks import is_owner
+from core.discord_api.checks import is_owner
 
 
 class OwnerCommands(Cog):
