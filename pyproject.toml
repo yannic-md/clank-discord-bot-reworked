@@ -7,6 +7,7 @@ requires-python = ">=3.14"
 #                       LINTING (RUFF & MYPY)
 
 [tool.ruff]
+required-version = "0.15.20"
 line-length = 125
 target-version = "py314"
 
