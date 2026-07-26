@@ -2,10 +2,9 @@ import asyncio
 
 import discord
 from aiohttp import ClientSession
-from discord.ext import commands
 
 from core.bot import ClankReworked
-from core.db.base import BOT_TOKEN
+from core.dotenv_setup import BOT_PREFIX, BOT_TOKEN
 from core.logging_setup import setup_logging
 
 
@@ -14,9 +13,7 @@ async def main() -> None:
     setup_logging()
 
     async with ClientSession() as web_client:  # noqa: SIM117
-        async with ClankReworked(
-            commands.when_mentioned, web_client=web_client, intents=discord.Intents.all()
-        ) as bot:
+        async with ClankReworked(command_prefix=BOT_PREFIX, web_client=web_client, intents=discord.Intents.all()) as bot:
             if BOT_TOKEN == "MISSING":
                 print("Bot Token was not set. Check .env!")
                 return

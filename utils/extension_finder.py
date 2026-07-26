@@ -5,7 +5,7 @@ from pathlib import Path
 PACKAGE_EXTENSION_DIRS = ["features"]
 
 # Folders whose individual .py files are loaded as modules (system.audit, misc.commands, ...)
-FLAT_EXTENSION_DIRS = ["system", "misc"]
+FLAT_EXTENSION_DIRS = ["system", "misc", "commands"]
 
 
 def discover_extensions() -> list[str]:
