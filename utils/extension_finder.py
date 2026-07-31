@@ -1,41 +1,50 @@
-import pkgutil
+import ast
 from pathlib import Path
 
-# Folders whose subfolders are loaded as packages (features.gift, features.security, ...)
-PACKAGE_EXTENSION_DIRS = ["features"]
+PACKAGE_EXTENSION_DIR = Path("features")
 
-# Folders whose individual .py files are loaded as modules (system.audit, misc.commands, ...)
-FLAT_EXTENSION_DIRS = ["system", "misc", "commands"]
+
+def _has_setup_function(file_path: Path) -> bool:
+    """Checks whether a Python file defines a top-level `setup` function.
+
+    Uses AST parsing instead of actual import so that files with broken
+    dependencies or side effects are not executed during scanning.
+
+    Args:
+        file_path (Path): Path to the .py file to check.
+
+    Returns:
+        bool: True if the file contains `def setup` or `async def setup`.
+    """
+    try:
+        source = file_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(file_path))
+    except SyntaxError, UnicodeDecodeError:
+        return False
+
+    return any(isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name == "setup" for node in tree.body)
 
 
 def discover_extensions() -> list[str]:
-    """Discover available bot extensions.
+    """Recursively scans 'PACKAGE_EXTENSION_DIR/' for loadable extensions.
 
-    The function scans the directories listed in ``PACKAGE_EXTENSION_DIRS`` for
-    package-based extensions and the directories listed in ``FLAT_EXTENSION_DIRS``
-    for standalone Python modules. It returns fully qualified extension names
-    that can be loaded by the bot.
+    Every .py file with a top-level `setup` function (discord.py
+    extension entry point) is returned as an import path.
 
     Returns:
-        list[str]: A list of import paths for discovered extensions.
+        list[str]: Dotted import paths of all found extensions,
+            e.g., ["features.misc.commands", "features.gift.commands"].
     """
     extensions: list[str] = []
 
-    for base_dir in PACKAGE_EXTENSION_DIRS:
-        base_path = Path(base_dir)
-        if not base_path.exists():
-            continue
-        for entry in base_path.iterdir():
-            if entry.is_dir() and (entry / "__init__.py").exists():
-                extensions.append(f"{base_dir}.{entry.name}")
+    if not PACKAGE_EXTENSION_DIR.exists():
+        return extensions
 
-    for base_dir in FLAT_EXTENSION_DIRS:
-        base_path = Path(base_dir)
-        if not base_path.exists():
+    for file_path in sorted(PACKAGE_EXTENSION_DIR.rglob("*.py")):
+        if not _has_setup_function(file_path):
             continue
 
-        for _, module_name, is_pkg in pkgutil.iter_modules([str(base_path)]):
-            if not is_pkg:
-                extensions.append(f"{base_dir}.{module_name}")
+        relative_path = file_path.relative_to(PACKAGE_EXTENSION_DIR.parent).with_suffix("")
+        extensions.append(".".join(relative_path.parts))
 
     return extensions

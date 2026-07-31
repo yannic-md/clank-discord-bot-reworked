@@ -37,7 +37,7 @@ indent-style = "space"
 [tool.mypy]
 strict = true
 python_version = "3.14"
-#files = ["core", "features", "system", "misc", "utils", "main.py"]
+#files = ["core", "features", "system", "misc", "utils", "misc.py"]
 files = ["core", "utils", "main.py"]
 exclude = ["tests/", "venv/"]
 explicit_package_bases = true
