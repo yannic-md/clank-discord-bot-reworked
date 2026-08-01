@@ -7,25 +7,7 @@ on:
     branches: [ "**" ]
 
 jobs:
-  ruff-check:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/ruff-action@v3
-        with:
-          version: "0.15.20"
-          args: "check --output-format=github"
-
-  ruff-format:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/ruff-action@v3
-        with:
-          version: "0.15.20"
-          args: "format --check"
-
-  mypy:
+  linting:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,5 +23,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Run Mypy (Typehinting)
+      - name: Ruff check
+        run: ruff check --output-format=github
+
+      - name: Ruff format
+        run: ruff format --check
+
+      - name: Mypy (Typehinting)
         run: mypy .
