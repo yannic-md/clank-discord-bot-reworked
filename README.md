@@ -1,3 +1,5 @@
+<h1 align="center">⚠️ THIS PROJECT IS STILL UNDER DEVELOPMENT AND DOESN'T REPRESENT THE PUBLIC VERSION OF THIS BOT YET. ⚠️</h1>
+
 <h1 align="center">
     🤖 Clank ~ Discord-Bot
 </h1>
