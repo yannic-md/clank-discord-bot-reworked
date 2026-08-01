@@ -1,8 +1,14 @@
 {
   "sync": {
     "success": {
-      "one": "› `✅` - I have synchronized `{count_var}` command with the **current** server! <a:check:730387138381873184>",
-      "other": "› `✅` - I have synchronized `{count_var}` commands with **all** servers! <a:check:730387138381873184>"
+      "single": {
+        "one": "› `✅` - I have synchronized `{count}` command with the **current** server! <a:check:730387138381873184>",
+        "other": "› `✅` - I have synchronized `{count}` commands with the **current** server! <a:check:730387138381873184>"
+      },
+      "all": {
+        "one": "› `✅` - I have synchronized `{count}` command with **all** servers! <a:check:730387138381873184>",
+        "other": "› `✅` - I have synchronized `{count}` commands with **all** servers! <a:check:730387138381873184>"
+      }
     },
     "error": {
       "invalid_data": "› `❌` - I could not synchronize the commands - at least one command contains invalid data! <a:deny:819942197192294440>",

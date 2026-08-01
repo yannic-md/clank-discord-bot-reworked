@@ -52,9 +52,9 @@ class OwnerCommands(Cog):
             synced = await ctx.bot.tree.fetch_commands(guild=ctx.guild if (guilds and guilds == "~") else None)
 
         if not guilds or guilds != "~":
-            await ctx.reply(translate(language, "admin.sync.success.other", count_var=len(synced)))
+            await ctx.reply(translate(language, "admin.sync.success.single", count=len(synced)))
         else:
-            await ctx.reply(translate(language, "admin.sync.success.one", count_var=len(synced)))
+            await ctx.reply(translate(language, "admin.sync.success.all", count=len(synced)))
 
 
 async def setup(client: AutoShardedBot) -> None:
