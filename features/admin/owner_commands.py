@@ -5,12 +5,16 @@ from discord.app_commands import AppCommand, CommandSyncFailure, TranslationErro
 from discord.ext import commands
 from discord.ext.commands import AutoShardedBot, Cog
 
+from core.db.repositories.language.guild_language_repository import get_guild_language
+from core.db.repositories.language.user_language_repository import get_user_language
 from core.discord_api.checks import is_owner
+from core.enums.language import SupportedLanguage
+from core.i18n.translator import translate
 
 
 class OwnerCommands(Cog):
     """
-    A cog for owner-only commands, specifically for synchronizing application commands with Discord servers.
+    A cog for bot-owner only commands, specifically for synchronizing application commands with Discord servers.
 
     This cog provides administrative commands that can only be executed by the bot owner.
     """
@@ -30,34 +34,27 @@ class OwnerCommands(Cog):
             guilds (Literal["~"] | None, optional): If "~", sync only for the current guild.
                                                    If None or other value, sync globally. Defaults to None.
         """
+        if ctx.guild is not None:
+            language: SupportedLanguage = await get_guild_language(ctx.guild.id)
+        else:
+            language = await get_user_language(ctx.author.id)
+
         try:
             synced: list[AppCommand] = await self.client.tree.sync(guild=ctx.guild if (guilds and guilds == "~") else None)
         except CommandSyncFailure, TranslationError:
-            await ctx.reply(
-                "› `❌` - Ich konnte die Befehle nicht synchronisieren - mindestens ein Befehl enthält "
-                "ungültige Daten! <a:deny:819942197192294440>"
-            )
+            await ctx.reply(translate(language, "admin.sync.error.invalid_data"))
             return
         except Forbidden:
-            await ctx.reply(
-                "› `❌` - Ich konnte die Befehle nicht synchronisieren - der Bot wurde nicht mit dem "
-                "`application.commands` Scope eingeladen! <a:deny:819942197192294440>"
-            )
+            await ctx.reply(translate(language, "admin.sync.error.forbidden"))
             return
         except HTTPException:
             # workaround to some weird discord API errors. Sometimes the sync "fail" but that's not the truth
             synced = await ctx.bot.tree.fetch_commands(guild=ctx.guild if (guilds and guilds == "~") else None)
 
         if not guilds or guilds != "~":
-            await ctx.reply(
-                f"› `✅` - Ich habe `{len(synced)}` Befehle mit **allen** Servern synchronisiert! "
-                f"<a:hack:772187514286506005>"
-            )
+            await ctx.reply(translate(language, "admin.sync.success.other", count_var=len(synced)))
         else:
-            await ctx.reply(
-                f"› `✅` - Ich habe `{len(synced)}` Befehle mit dem **aktuellen** Server "
-                f"synchronisiert! <a:hack:772187514286506005>"
-            )
+            await ctx.reply(translate(language, "admin.sync.success.one", count_var=len(synced)))
 
 
 async def setup(client: AutoShardedBot) -> None:

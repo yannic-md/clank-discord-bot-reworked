@@ -1,0 +1,18 @@
+{
+  "guild_language": {
+    "show": {
+      "current": "› `ℹ️` - The language currently configured for this server is **{language}**. <a:nerdge:1381965786687475826>"
+    },
+    "set": {
+      "success": "› `✅` - The language for this server has been changed to **{language}**. <a:check:730387138381873184>"
+    }
+  },
+  "user_language": {
+    "show": {
+      "current": "› `ℹ️` - The language currently configured for our private chat is **{language}**. <a:nerdge:1381965786687475826>"
+    },
+    "set": {
+      "success": "› `✅` - The language for our private chat has been changed to **{language}**. <a:check:730387138381873184>"
+    }
+  }
+}

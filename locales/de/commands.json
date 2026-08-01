@@ -1,0 +1,38 @@
+{
+  "guild_language": {
+    "group": {
+      "name": "server-sprache",
+      "description": "› Verwalte die Sprache des Bots auf diesem Server. 🌐"
+    },
+    "show": {
+      "name": "anzeigen",
+      "description": "› Schau dir die aktuelle Sprache des Bots auf diesem Server an. 🌐"
+    },
+    "set": {
+      "name": "festlegen",
+      "description": "› Lege die Sprache des Bots für diesen Server fest. 🤓",
+      "parameter": {
+        "name": "sprache",
+        "description": "Welche Sprache soll der Bot verwenden?"
+      }
+    }
+  },
+  "user_language": {
+    "group": {
+      "name": "bot-sprache",
+      "description": "› Verwalte die Sprache des Bots für deine Privatnachrichten. 🌎"
+    },
+    "show": {
+      "name": "anzeigen",
+      "description": "› Schau dir die Sprache des Bots für deine Privatnachrichten an. 🌎"
+    },
+    "set": {
+      "name": "festlegen",
+      "description": "› Lege die Sprache des Bots für deine Privatnachrichten fest. 🌎",
+      "parameter": {
+        "name": "sprache",
+        "description": "Welche Sprache soll der Bot verwenden?"
+      }
+    }
+  }
+}

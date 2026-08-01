@@ -11,6 +11,18 @@ required-version = "0.15.20"
 line-length = 125
 target-version = "py314"
 
+exclude = [
+    ".git",
+    ".mypy_cache",
+    ".pytest_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "build",
+    "dist",
+    "alembic"
+]
+
 [tool.ruff.lint]
 select = [
     "E", # pycodestyle errors
@@ -39,7 +51,7 @@ strict = true
 python_version = "3.14"
 #files = ["core", "features", "system", "misc", "utils", "misc.py"]
 files = ["core", "utils", "main.py"]
-exclude = ["tests/", "venv/"]
+exclude = ["tests/", "venv/", "alembic/"]
 explicit_package_bases = true
 disallow_any_generics = false
 

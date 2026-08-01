@@ -1,0 +1,12 @@
+{
+  "sync": {
+    "success": {
+      "one": "› `✅` - I have synchronized `{count_var}` command with the **current** server! <a:check:730387138381873184>",
+      "other": "› `✅` - I have synchronized `{count_var}` commands with **all** servers! <a:check:730387138381873184>"
+    },
+    "error": {
+      "invalid_data": "› `❌` - I could not synchronize the commands - at least one command contains invalid data! <a:deny:819942197192294440>",
+      "forbidden": "› `❌` - I could not synchronize the commands - the bot was not invited with the `application.commands` scope! <a:deny:819942197192294440>"
+    }
+  }
+}

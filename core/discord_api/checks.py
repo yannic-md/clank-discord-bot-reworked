@@ -1,7 +1,7 @@
 from discord import Interaction
 from discord.ext.commands import Context
 
-from core.dotenv_setup import OWNER_ID
+from core.setup.dotenv import OWNER_ID
 
 
 def is_owner(ctx: Context | Interaction) -> bool:

@@ -4,8 +4,8 @@ import discord
 from aiohttp import ClientSession
 
 from core.bot import ClankReworked
-from core.dotenv_setup import BOT_PREFIX, BOT_TOKEN
-from core.logging_setup import setup_logging
+from core.setup.dotenv import BOT_PREFIX, BOT_TOKEN
+from core.setup.logger import setup_logging
 
 
 async def main() -> None:

@@ -1,7 +1,7 @@
 from sqlalchemy.ext.asyncio import async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase
 
-from core.dotenv_setup import DB_NAME, DB_URL
+from core.setup.dotenv import DB_NAME, DB_URL
 
 
 class Base(DeclarativeBase):

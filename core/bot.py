@@ -4,6 +4,7 @@ from discord.app_commands import AppCommand
 from discord.ext import commands
 from discord.ext.commands import NoEntryPointError
 
+from core.i18n.discord_translator import CatalogTranslator
 from utils.extension_finder import discover_extensions
 
 
@@ -23,8 +24,10 @@ class ClankReworked(commands.AutoShardedBot):
 
     async def setup_hook(self) -> None:
         """
-        Load bot extensions and sync application commands for the test guild.
+        Register the command translator, then load bot extensions.
         """
+        await self.tree.set_translator(CatalogTranslator())
+
         for extension in discover_extensions():
             try:
                 await self.load_extension(extension)
