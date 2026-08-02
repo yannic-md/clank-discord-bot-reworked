@@ -99,3 +99,40 @@ you want to develop this project with us.
 7. Update the database for the language by using these commands:<br />-
    `alembic revision --autogenerate -m "Add <LANGUAGE HERE> to supported languages"`<br />- `alembic upgrade head`
 8. Push your branch and open a pull request.
+
+### Building the project
+
+1. Create a `.env` file in the project root following keys:
+   ```env
+   # Discord
+   BOT_TOKEN=your-bot-token-here
+   BOT_PREFIX=!
+   OWNER_ID=your-discord-user-id
+   TESTING_GUILD_ID=your-testing-guild-id
+
+   # Database
+   DB_NAME=db-name-here
+   DB_USER=db-user-here
+   DB_PASSWORD=choose-a-strong-password
+   ```
+
+2. Build and start everything: `docker compose up -d --build`
+
+#### Useful Docker commands
+
+| Command                          | Description                                                                      |
+|----------------------------------|----------------------------------------------------------------------------------|
+| `docker compose up -d --build`   | Build (or rebuild after changes) and start both containers in the background     |
+| `docker compose ps`              | Show container status                                                            |
+| `docker compose logs -f bot`     | Follow the bot's console output/logs                                             |
+| `docker compose logs -f db`      | Follow the database logs                                                         |
+| `docker compose restart bot`     | Restart just the bot (e.g. after editing `.env`) without touching the database   |
+| `docker compose down`            | Stop and remove the containers - **database data is preserved**                  |
+| `docker compose down -v`         | Stop and remove containers **and** the database volume - irreversible data reset |
+| `docker exec -it <container> sh` | Open an interactive shell inside a running container                             |
+| `docker compose top`             | Show the actual processes running inside each container                          |
+| `docker stats`                   | Live CPU/RAM usage per container                                                 |
+
+› The MariaDB data lives in a named Docker volume (`clank_database-data`), independent of the container's lifecycle.
+Restarting, rebuilding or recreating the `db` container will **not** reset your data - only `docker compose down -v`
+does that.
