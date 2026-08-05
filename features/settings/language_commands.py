@@ -66,7 +66,6 @@ class LanguageSettings(Cog):
     )
     @allowed_installs(guilds=True, users=False)
     @default_permissions(manage_guild=True)
-    @checks.has_permissions(manage_guild=True)
     @guild_only()
     async def set(self, interaction: Interaction, language: SupportedLanguage) -> None:
         """Persist a new language for the invoking guild and confirm the change.

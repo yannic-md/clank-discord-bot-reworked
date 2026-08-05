@@ -109,6 +109,8 @@ you want to develop this project with us.
    BOT_PREFIX=!
    OWNER_ID=your-discord-user-id
    TESTING_GUILD_ID=your-testing-guild-id
+   HOME_GUILD_ID=your-support-server-id
+   ERROR_LOG_ID=your-optional-bot-error-channel-id
 
    # Database
    DB_NAME=db-name-here

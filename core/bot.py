@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import NoEntryPointError
 
 from core.i18n.discord_translator import CatalogTranslator
+from core.setup.errors import command_error_handler, error_handler
 from utils.extension_finder import discover_extensions
 
 
@@ -21,12 +22,14 @@ class ClankReworked(commands.AutoShardedBot):
         self.loaded_cogs_count: int = 0
         self.synced_commands: list[AppCommand] = []
         self.sync_success: bool = True
+        self.remove_command("help")
 
     async def setup_hook(self) -> None:
         """
         Register the command translator, then load bot extensions.
         """
         await self.tree.set_translator(CatalogTranslator())
+        self.tree.error(error_handler)
 
         for extension in discover_extensions():
             try:
@@ -54,3 +57,6 @@ class ClankReworked(commands.AutoShardedBot):
             f"Shard-Count: {self.shard_count} | Latency: {self.latency * 1000:.2f}ms | Loaded Cogs: {self.loaded_cogs_count}"
         )
         print("────────────")
+
+    async def on_command_error(self, context: commands.Context, exception: commands.CommandError, /) -> None:
+        await command_error_handler(context, exception)

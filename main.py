@@ -5,12 +5,13 @@ from aiohttp import ClientSession
 
 from core.bot import ClankReworked
 from core.setup.dotenv import BOT_PREFIX, BOT_TOKEN
-from core.setup.logger import setup_logging
+from core.setup.logger import setup_db_logging, setup_logging
 
 
 async def main() -> None:
     """Initialize logging, create bot client, and start the Discord bot."""
     setup_logging()
+    setup_db_logging()
 
     async with ClientSession() as web_client:  # noqa: SIM117
         async with ClankReworked(command_prefix=BOT_PREFIX, web_client=web_client, intents=discord.Intents.all()) as bot:
