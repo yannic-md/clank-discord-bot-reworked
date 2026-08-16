@@ -34,5 +34,15 @@
         "description": "Which language should the bot use?"
       }
     }
+  },
+  "builder": {
+    "embed": {
+      "name": "embed-builder",
+      "description": "› Create an own custom discord-embed message. 🎨",
+      "parameter": {
+        "name": "message-id",
+        "description": "Which message do you want to edit?"
+      }
+    }
   }
 }
