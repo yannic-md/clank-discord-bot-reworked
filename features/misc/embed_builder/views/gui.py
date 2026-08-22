@@ -117,9 +117,10 @@ class EmbedBuilderGUI(BuilderScreenView):
             await show(interaction, EmbedListView(self.session))
             return
 
-        if not self.session.embeds:
+        if value != "embed_content" and not self.session.embeds:
             # Mirrors how e.g. the colour editor already conjures up a placeholder title:
             # picking any per-embed editor with nothing to edit yet creates a blank embed.
+            # `embed_content` is excluded since it edits `session.content`, not an embed.
             self.session.embeds.append(Embed())
             self.session.active_embed_index = 0
 

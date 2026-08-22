@@ -84,7 +84,7 @@
     "field_limit": "› `❌` - **Zu viele Felder:** Ein Embed kann maximal {limit} Felder enthalten. <:loveangry:784930958084276224>",
     "no_template_selected": "› `❌` - **Keine Vorlage ausgewählt:** Wähle eine Vorlage aus dem Dropdown aus, bevor du sie bearbeitest. <:loveangry:784930958084276224>",
     "not_own_message": "› `❌` - **Bearbeiten nicht möglich:** Diese Nachricht kann nicht bearbeitet werden, da sie nicht von mir selbst stammt. <:loveangry:784930958084276224>",
-    "nothing_to_send": "› `❌` - **Alles ist.. leer?** Die Nachricht hat weder einen Inhalt noch ein Embed - Der Fehler wurde behoben! Ha! <:loveangry:784930958084276224>",
+    "nothing_to_send": "› `❌` - **Alles ist.. leer?** Die Nachricht hat weder einen Inhalt noch ein Embed - netter Versuch! <:loveangry:784930958084276224>",
     "invalid_image": "› `❌` - **Ungültiges Bild:** Es wurde kein gültiges Bild erkannt. Die Formate `PNG`, `JPG`, `GIF`, `WEBP` oder `BMP` werden aktuell unterstützt. <:loveangry:784930958084276224>",
     "footer_icon_without_text": "› `❌` - **Footer-Text fehlt:** Ein Footer-Icon benötigt auch einen Text. Ergänze einen Text oder entferne das Icon! <:loveangry:784930958084276224>",
     "author_fields_without_name": "› `❌` - **Autor-Name fehlt:** Die URL und das Profilbild benötigen einen Autoren-Namen. Ergänze entweder einen Namen oder entferne die anderen Felder. <:loveangry:784930958084276224>",

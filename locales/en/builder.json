@@ -84,7 +84,7 @@
     "field_limit": "› `❌` - **Too Many Fields:** An embed can contain a maximum of {limit} fields. <:loveangry:784930958084276224>",
     "no_template_selected": "› `❌` - **No Template Selected:** Select a template from the dropdown before editing it. <:loveangry:784930958084276224>",
     "not_own_message": "› `❌` - **Cannot Edit:** This message cannot be edited because it was not sent by me. <:loveangry:784930958084276224>",
-    "nothing_to_send": "› `❌` - **Everything is.. empty?** The message has neither content nor an embed - The error has been fixed! Ha! <:loveangry:784930958084276224>",
+    "nothing_to_send": "› `❌` - **Everything is.. empty?** The message has neither content nor an embed - nice try! <:loveangry:784930958084276224>",
     "invalid_image": "› `❌` - **Invalid Image:** No valid image was recognized. The formats `PNG`, `JPG`, `GIF`, `WEBP`, or `BMP` are currently supported. <:loveangry:784930958084276224>",
     "footer_icon_without_text": "› `❌` - **Missing Footer Text:** A footer icon also requires text. Add some text or remove the icon! <:loveangry:784930958084276224>",
     "author_fields_without_name": "› `❌` - **Missing Author Name:** The URL and profile picture require an author name. Either add a name or remove the other fields. <:loveangry:784930958084276224>",
