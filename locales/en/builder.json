@@ -70,7 +70,7 @@
     "success": {
       "sent": "Your beautiful message was sent successfully! <a:check:730387138381873184>",
       "saved": "The changes were saved successfully! <a:check:730387138381873184>",
-      "jump_link": "`🔗` ~ **Jump to message:** Click here!"
+      "jump_link": "`🔗` ~ **Jump to message:** [Click here!]({jump_url})"
     }
   },
   "errors": {
