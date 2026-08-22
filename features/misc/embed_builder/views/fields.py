@@ -44,10 +44,10 @@ class EmbedFieldsView(BuilderScreenView):
         self.down_button.emoji = "⬇️"
 
         if session.active_field is None:
-            self.remove_item(self.edit_button)
-            self.remove_item(self.delete_button)
-            self.remove_item(self.up_button)
-            self.remove_item(self.down_button)
+            self.edit_button.disabled = True
+            self.delete_button.disabled = True
+            self.up_button.disabled = True
+            self.down_button.disabled = True
         else:
             self.up_button.disabled = session.active_field == 0
             self.down_button.disabled = session.active_field == len(fields) - 1
