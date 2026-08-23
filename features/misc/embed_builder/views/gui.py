@@ -110,7 +110,14 @@ class EmbedBuilderGUI(BuilderScreenView):
             self.remove_item(self.main_up_button)
             self.remove_item(self.main_down_button)
 
-    @select(cls=Select, placeholder="Was möchtest du bearbeiten?", min_values=1, max_values=1, row=1)
+    @select(
+        cls=Select,
+        placeholder="Was möchtest du bearbeiten?",
+        min_values=1,
+        max_values=1,
+        row=1,
+        custom_id="embed_builder:gui:edit_options",
+    )
     async def edit_options(self: EmbedBuilderGUI, interaction: Interaction, select_obj: Select) -> None:
         value: str = select_obj.values[0]
         if value == "embed_list":
@@ -130,23 +137,23 @@ class EmbedBuilderGUI(BuilderScreenView):
 
         await interaction.response.send_modal(self._MODALS[value](self.session))
 
-    @button(label="Senden", style=ButtonStyle.green, row=0)
+    @button(label="Senden", style=ButtonStyle.green, row=0, custom_id="embed_builder:gui:send")
     async def send_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         await show(interaction, SendConfirmView(self.session))
 
-    @button(label="Änderung speichern", style=ButtonStyle.green, row=0)
+    @button(label="Änderung speichern", style=ButtonStyle.green, row=0, custom_id="embed_builder:gui:save")
     async def save_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         await save_message_changes(interaction, self.session, self)
 
-    @button(label="Webhook", style=ButtonStyle.blurple, row=0)
+    @button(label="Webhook", style=ButtonStyle.blurple, row=0, custom_id="embed_builder:gui:webhook")
     async def webhook_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         await show(interaction, WebhookView(self.session))
 
-    @button(label="Kanal", style=ButtonStyle.gray, row=0)
+    @button(label="Kanal", style=ButtonStyle.gray, row=0, custom_id="embed_builder:gui:channel")
     async def channel_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         await interaction.response.send_modal(ChannelModal(self.session))
 
-    @button(label="Embed-Vorlagen", style=ButtonStyle.red, row=0)
+    @button(label="Embed-Vorlagen", style=ButtonStyle.red, row=0, custom_id="embed_builder:gui:manage_template")
     async def manage_template(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         await show(interaction, TemplatesView(self.session))
 
@@ -154,12 +161,12 @@ class EmbedBuilderGUI(BuilderScreenView):
     async def active_embed_label(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         pass
 
-    @button(label="Up", style=ButtonStyle.blurple, row=2)
+    @button(label="Up", style=ButtonStyle.blurple, row=2, custom_id="embed_builder:gui:main_up")
     async def main_up_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         move_active_embed(self.session, -1)
         await show(interaction, EmbedBuilderGUI(self.session))
 
-    @button(label="Down", style=ButtonStyle.blurple, row=2)
+    @button(label="Down", style=ButtonStyle.blurple, row=2, custom_id="embed_builder:gui:main_down")
     async def main_down_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         move_active_embed(self.session, 1)
         await show(interaction, EmbedBuilderGUI(self.session))

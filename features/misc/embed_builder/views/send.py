@@ -100,7 +100,7 @@ class SendConfirmView(BuilderScreenView):
         self.cancel_button.label = translate(session.language, "builder.buttons.confirm_no")
         self.cancel_button.emoji = "✏️"
 
-    @button(label="Confirm", style=ButtonStyle.green, row=0)
+    @button(label="Confirm", style=ButtonStyle.green, row=0, custom_id="embed_builder:send:confirm")
     async def confirm_button(self: SendConfirmView, interaction: Interaction, _button: Button) -> None:
         session: BuilderSession = self.session
         channel: GuildChannel | Thread = session.target_channel
@@ -136,7 +136,7 @@ class SendConfirmView(BuilderScreenView):
         success_embed: Embed = create_success_embed(session, "builder.info.success.sent", jump_url=jump_url)
         await interaction.response.edit_message(content=None, embeds=[success_embed], view=None)
 
-    @button(label="Cancel", style=ButtonStyle.gray, row=0)
+    @button(label="Cancel", style=ButtonStyle.gray, row=0, custom_id="embed_builder:send:cancel")
     async def cancel_button(self: SendConfirmView, interaction: Interaction, _button: Button) -> None:
         from features.misc.embed_builder.views.gui import EmbedBuilderGUI
 

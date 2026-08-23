@@ -41,17 +41,17 @@ class WebhookView(BuilderScreenView):
         self.remove_button.emoji = "🗑️"
         self.remove_button.disabled = not session.webhook.enabled
 
-    @button(label="Back", style=ButtonStyle.gray, row=0)
+    @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed_builder:webhook:back")
     async def back_button(self: WebhookView, interaction: Interaction, _button: Button) -> None:
         from features.misc.embed_builder.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
-    @button(label="Set", style=ButtonStyle.blurple, row=0)
+    @button(label="Set", style=ButtonStyle.blurple, row=0, custom_id="embed_builder:webhook:set")
     async def set_button(self: WebhookView, interaction: Interaction, _button: Button) -> None:
         await interaction.response.send_modal(WebhookModal(self.session))
 
-    @button(label="Remove", style=ButtonStyle.red, row=0)
+    @button(label="Remove", style=ButtonStyle.red, row=0, custom_id="embed_builder:webhook:remove")
     async def remove_button(self: WebhookView, interaction: Interaction, _button: Button) -> None:
         if self.session.webhook.webhook_url:
             with contextlib.suppress(NotFound, Forbidden, HTTPException):

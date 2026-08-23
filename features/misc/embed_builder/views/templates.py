@@ -50,17 +50,17 @@ class TemplatesView(BuilderScreenView):
             self.template_select.options = [SelectOption(label="—", value="__none__")]
             self.delete_template_button.disabled = True
 
-    @button(label="Back", style=ButtonStyle.gray, row=0)
+    @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed_builder:templates:back")
     async def back_button(self: TemplatesView, interaction: Interaction, _button: Button) -> None:
         from features.misc.embed_builder.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
-    @button(label="Save", style=ButtonStyle.green, row=0)
+    @button(label="Save", style=ButtonStyle.green, row=0, custom_id="embed_builder:templates:save")
     async def save_template_button(self: TemplatesView, interaction: Interaction, _button: Button) -> None:
         await interaction.response.send_modal(SaveTemplateModal(self.session))
 
-    @button(label="Delete", style=ButtonStyle.red, row=0)
+    @button(label="Delete", style=ButtonStyle.red, row=0, custom_id="embed_builder:templates:delete")
     async def delete_template_button(self: TemplatesView, interaction: Interaction, _button: Button) -> None:
         name: str | None = self.session.active_template_name
         if name is None:
@@ -73,7 +73,14 @@ class TemplatesView(BuilderScreenView):
         self.session.active_template_name = None
         await show(interaction, TemplatesView(self.session))
 
-    @select(cls=Select, placeholder="Select a template...", min_values=1, max_values=1, row=1)
+    @select(
+        cls=Select,
+        placeholder="Select a template..",
+        min_values=1,
+        max_values=1,
+        row=1,
+        custom_id="embed_builder:templates:select",
+    )
     async def template_select(self: TemplatesView, interaction: Interaction, select_obj: Select) -> None:
         name: str = select_obj.values[0]
         template = next((existing for existing in self.session.templates if existing.name == name), None)

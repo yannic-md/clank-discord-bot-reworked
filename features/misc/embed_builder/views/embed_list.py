@@ -58,13 +58,13 @@ class EmbedListView(BuilderScreenView):
             self.remove_item(self.up_button)
             self.remove_item(self.down_button)
 
-    @button(label="Back", style=ButtonStyle.gray, row=0)
+    @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed_builder:list:back")
     async def back_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         from features.misc.embed_builder.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
-    @button(label="Add", style=ButtonStyle.green, row=0)
+    @button(label="Add", style=ButtonStyle.green, row=0, custom_id="embed_builder:list:add")
     async def add_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         if len(self.session.embeds) >= MAX_EMBED_COUNT:
             message = translate(self.session.language, "builder.errors.embed_limit", limit=MAX_EMBED_COUNT)
@@ -80,7 +80,7 @@ class EmbedListView(BuilderScreenView):
         self.session.active_embed_index = len(self.session.embeds) - 1
         await show(interaction, EmbedListView(self.session))
 
-    @button(label="Remove", style=ButtonStyle.red, row=0)
+    @button(label="Remove", style=ButtonStyle.red, row=0, custom_id="embed_builder:list:remove")
     async def remove_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         if not self.session.embeds:
             await show(interaction, EmbedListView(self.session))
@@ -90,7 +90,14 @@ class EmbedListView(BuilderScreenView):
         self.session.active_embed_index = max(0, min(self.session.active_embed_index, len(self.session.embeds) - 1))
         await show(interaction, EmbedListView(self.session))
 
-    @select(cls=Select, placeholder="Select an embed...", min_values=1, max_values=1, row=1)
+    @select(
+        cls=Select,
+        placeholder="Select an embed..",
+        min_values=1,
+        max_values=1,
+        row=1,
+        custom_id="embed_builder:list:select",
+    )
     async def embed_select(self: EmbedListView, interaction: Interaction, select_obj: Select) -> None:
         self.session.active_embed_index = int(select_obj.values[0])
         await show(interaction, EmbedListView(self.session))
@@ -99,12 +106,12 @@ class EmbedListView(BuilderScreenView):
     async def active_label(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         pass
 
-    @button(label="Up", style=ButtonStyle.blurple, row=2)
+    @button(label="Up", style=ButtonStyle.blurple, row=2, custom_id="embed_builder:list:up")
     async def up_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         move_active_embed(self.session, -1)
         await show(interaction, EmbedListView(self.session))
 
-    @button(label="Down", style=ButtonStyle.blurple, row=2)
+    @button(label="Down", style=ButtonStyle.blurple, row=2, custom_id="embed_builder:list:down")
     async def down_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         move_active_embed(self.session, 1)
         await show(interaction, EmbedListView(self.session))

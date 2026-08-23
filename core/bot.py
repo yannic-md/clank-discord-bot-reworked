@@ -5,6 +5,7 @@ from discord.ext import commands
 from discord.ext.commands import NoEntryPointError
 
 from core.i18n.discord_translator import CatalogTranslator
+from core.setup.dead_interactions import handle_dead_interaction
 from core.setup.errors import command_error_handler, error_handler
 from utils.extension_finder import discover_extensions
 
@@ -30,6 +31,9 @@ class ClankReworked(commands.AutoShardedBot):
         """
         await self.tree.set_translator(CatalogTranslator())
         self.tree.error(error_handler)
+
+        # respond to "dead" interactions (if the bot got restarted, old ones)
+        self.add_listener(handle_dead_interaction, "on_interaction")
 
         for extension in discover_extensions():
             try:
