@@ -20,7 +20,7 @@ exclude = [
     "venv",
     "build",
     "dist",
-    "alembic"
+    "scripts/alembic"
 ]
 
 [tool.ruff.lint]
@@ -51,7 +51,7 @@ strict = true
 python_version = "3.14"
 #files = ["core", "features", "system", "misc", "utils", "misc.py"]
 files = ["core", "utils", "features", "main.py"]
-exclude = ["tests/", "venv/", "alembic/"]
+exclude = ["tests/", "venv/", "scripts/alembic/"]
 explicit_package_bases = true
 disallow_any_generics = false
 

@@ -134,7 +134,3 @@ you want to develop this project with us.
 | `docker exec -it <container> sh` | Open an interactive shell inside a running container                             |
 | `docker compose top`             | Show the actual processes running inside each container                          |
 | `docker stats`                   | Live CPU/RAM usage per container                                                 |
-
-› The MariaDB data lives in a named Docker volume (`clank_database-data`), independent of the container's lifecycle.
-Restarting, rebuilding or recreating the `db` container will **not** reset your data - only `docker compose down -v`
-does that.
