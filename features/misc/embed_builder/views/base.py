@@ -22,6 +22,7 @@ class BuilderScreenView(View):
     content: str | None = None
     embeds: list[Embed] = []
     message: Message | None = None
+    session: BuilderSession
 
     def __init__(self) -> None:
         super().__init__(timeout=BUILDER_VIEW_TIMEOUT)
@@ -47,8 +48,24 @@ class BuilderScreenView(View):
 
 async def show(interaction: Interaction, view: BuilderScreenView) -> None:
     """Re-render the builder onto `view`, replacing whatever screen is currently shown."""
-    view.message = interaction.message
+    track_active_view(view)
     await interaction.response.edit_message(content=view.content, embeds=view.embeds, view=view)
+    view.message = await interaction.original_response()
+
+
+def track_active_view(view: BuilderScreenView) -> None:
+    """Record `view` as the session's currently shown screen, stopping whatever was active before.
+
+    Every screen switch constructs a brand-new `BuilderScreenView`, so without this the
+    previous screen's own `on_timeout` would still fire independently on its own schedule
+    later and overwrite the message with its now-stale (and no longer displayed) buttons.
+    """
+    session: BuilderSession = view.session
+    if session.active_view is not None and session.active_view is not view:
+        assert isinstance(session.active_view, BuilderScreenView)
+        session.active_view.stop()
+
+    session.active_view = view
 
 
 def create_embed_label(session: BuilderSession, embed: Embed, number: int) -> str:

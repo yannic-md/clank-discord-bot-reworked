@@ -2,11 +2,12 @@ from dataclasses import dataclass, field
 
 from discord import Embed, Member, Message, Thread, User
 from discord.abc import GuildChannel
+from discord.ui import View
 
 from core.enums.language import SupportedLanguage
 from features.misc.embed_builder.util.templates import TemplatePlaceholder, get_guild_templates
 
-BUILDER_VIEW_TIMEOUT: float = 3600.0
+BUILDER_VIEW_TIMEOUT: float = 900.0
 
 
 @dataclass
@@ -51,6 +52,7 @@ class BuilderSession:
     target_message: Message | None = None
     active_field: int | None = None
     active_template_name: str | None = None
+    active_view: View | None = field(default=None, repr=False)
     """The currently shown screen's view - tracked so switching screens can `stop()` the
     previous one, whose own timeout would otherwise still fire independently later and
     overwrite the message with its now-stale (and no longer displayed) buttons."""

@@ -1,6 +1,6 @@
 {
   "unexpected": "› `❌` - **Unknown Error:** Unfortunately, something went wrong... The intern is being punished, and the bot developers have been notified! <a:deny:819942197192294440>",
-  "dead_interaction": "› `❌` - **Session Expired:** This message is no longer active due to a bot restart. Please run the command again. <a:deny:819942197192294440>",
+  "dead_interaction": "› `❌` - **Session Expired:** This message is no longer active. Please run the command again. <a:deny:819942197192294440>",
   "no_permission": {
     "user": "› `❌` - **Missing Permission:** You need the following permissions: `{permissions}` <a:deny:819942197192294440>",
     "bot": "› `❌` - **Bot-Permission Issue:** I need the following permissions: `{permissions}` <a:deny:819942197192294440>",

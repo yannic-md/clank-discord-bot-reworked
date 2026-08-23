@@ -22,6 +22,7 @@ from core.i18n.resolve import get_language
 from core.i18n.translator import translate
 from features.misc.embed_builder.session import BuilderSession
 from features.misc.embed_builder.views import EmbedBuilderGUI
+from features.misc.embed_builder.views.base import track_active_view
 
 
 class EmbedBuilder(Cog):
@@ -80,6 +81,7 @@ class EmbedBuilder(Cog):
         )
 
         view: EmbedBuilderGUI = EmbedBuilderGUI(session)
+        track_active_view(view)
         await interaction.response.send_message(content=view.content, embeds=view.embeds, view=view, ephemeral=True)
         view.message = await interaction.original_response()
 
