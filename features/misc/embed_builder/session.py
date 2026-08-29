@@ -5,7 +5,7 @@ from discord.abc import GuildChannel
 from discord.ui import View
 
 from core.enums.language import SupportedLanguage
-from features.misc.embed_builder.util.templates import TemplatePlaceholder, get_guild_templates
+from features.misc.embed_builder.util.templates import EmbedTemplate
 
 BUILDER_VIEW_TIMEOUT: float = 900.0
 
@@ -33,8 +33,9 @@ class BuilderSession:
     """In-memory, per-invocation state for one `/embed_builder` interaction.
 
     Lives only on the `EmbedBuilderGUI` view hierarchy for the duration of the
-    interaction (view timeout); nothing here is persisted, other than the
-    guild-wide template placeholders above.
+    interaction (view timeout); nothing here is persisted. Saved templates live
+    in the database - `templates` is just a per-interaction cache of them, which
+    the screens that touch templates refresh.
     """
 
     guild_id: int
@@ -52,6 +53,9 @@ class BuilderSession:
     target_message: Message | None = None
     active_field: int | None = None
     active_template_name: str | None = None
+    templates: list[EmbedTemplate] = field(default_factory=list)
+    """The invoking user's templates loaded from the database, refreshed by the
+    template screens whenever they open or change the set (see `views/templates.py`)."""
     active_view: View | None = field(default=None, repr=False)
     """The currently shown screen's view - tracked so switching screens can `stop()` the
     previous one, whose own timeout would otherwise still fire independently later and
@@ -69,11 +73,6 @@ class BuilderSession:
     def target_channel(self) -> GuildChannel | Thread:
         """The channel a message will be sent to: the explicit override, or the invocation channel."""
         return self.channel or self.slashcmd_channel
-
-    @property
-    def templates(self) -> list[TemplatePlaceholder]:
-        """Saved templates to restore created embed-messages."""
-        return get_guild_templates(self.guild_id)
 
 
 def is_own_message(message: Message, bot_user: Member | User | None) -> bool:

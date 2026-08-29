@@ -57,7 +57,19 @@
     },
     "templates": {
       "title": "📁 ~ Embed-Vorlagen",
-      "description": "› Speichere den aktuellen Entwurf deiner Embeds als Vorlage oder lade eine bestehende über das untere Dropdown-Menü."
+      "description": "› Speichere den aktuellen Entwurf deiner Embeds als Vorlage oder lade eine bestehende über das untere Dropdown-Menü.",
+      "broken_links": {
+        "one": "`⚠️` ~ **`1` Bild-Link nicht erreichbar:** Ein Bild dieser Vorlage ist nicht mehr abrufbar (z.B. abgelaufener Upload) und wird eventuell nicht angezeigt - Die Vorlage wurde trotzdem geladen.",
+        "other": "`⚠️` ~ **`{count}` Bild-Links nicht erreichbar:** Einige Bilder dieser Vorlage sind nicht mehr abrufbar (z.B. abgelaufene Uploads) und werden eventuell nicht angezeigt - Die Vorlage wurde trotzdem geladen."
+      },
+      "broken_embeds": {
+        "one": "`⚠️` ~ **`1` Embed beschädigt:** Dieses konnte aus der Vorlage nicht wiederhergestellt werden und wurde übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen.",
+        "other": "`⚠️` ~ **`{count}` Embeds beschädigt:** Diese konnten aus der Vorlage nicht wiederhergestellt werden und wurden übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen."
+      },
+      "loaded": {
+        "one": "`✅` ~ **Vorlage `{name}` geladen:** `1` Embed und der Nachrichten-Inhalt wurden erfolgreich übernommen.",
+        "other": "`✅` ~ **Vorlage `{name}` geladen:** `{count}` Embeds und der Nachrichten-Inhalt wurden erfolgreich übernommen."
+      }
     },
     "embed_list": {
       "title": "🗂️ ~ Embed-Liste verwalten",
@@ -79,7 +91,7 @@
     "invalid_icon": "› `❌` - **Ungültiges Emoji:** Verwende ein Standard-Emoji oder einen Emoji dieses Servers. <:loveangry:784930958084276224>",
     "invalid_timestamp": "› `❌` - **Ungültiger Zeitstempel:** Der eingegebene Wert ist ungültig. Nutze z.B. `04.10.2003 20:00` oder `in 2h`. <:loveangry:784930958084276224>",
     "invalid_url": "› `❌` - **Ungültige URL:** Es wurde keine gültige URL erkannt. Sie sollte mit `https://` beginnen. <:loveangry:784930958084276224>",
-    "template_limit": "› `❌` - **Zu viele Vorlagen:** Es können maximal 25 Vorlagen pro Server gespeichert werden. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Zu viele Vorlagen:** Du kannst maximal {limit} Vorlagen speichern. <:loveangry:784930958084276224>",
     "embed_limit": "› `❌` - **Zu viele Embeds:** Eine Nachricht kann maximal {limit} Embeds enthalten. <:loveangry:784930958084276224>",
     "field_limit": "› `❌` - **Zu viele Felder:** Ein Embed kann maximal {limit} Felder enthalten. <:loveangry:784930958084276224>",
     "no_template_selected": "› `❌` - **Keine Vorlage ausgewählt:** Wähle eine Vorlage aus dem Dropdown aus, bevor du sie bearbeitest. <:loveangry:784930958084276224>",

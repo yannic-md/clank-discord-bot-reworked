@@ -1,10 +1,11 @@
 from discord import Guild, Interaction
 from discord.ui import Modal, TextInput
 
-from core.discord_api.limits import MAX_SELECT_OPTION_LABEL
+from core.discord_api.limits import MAX_SELECT_ITEMS, MAX_SELECT_OPTION_LABEL
 from core.i18n.translator import translate
 from features.misc.embed_builder.session import BuilderSession
-from features.misc.embed_builder.util.templates import TemplatePlaceholder, save_guild_template
+from features.misc.embed_builder.util.embed_ops import non_empty_embeds
+from features.misc.embed_builder.util.templates import EmbedTemplate, load_user_templates, save_user_template
 from features.misc.embed_builder.validation import append_error, convert_to_emoji
 
 MAX_TEMPLATE_NAME_LENGTH: int = MAX_SELECT_OPTION_LABEL
@@ -17,11 +18,18 @@ class SaveTemplateModal(Modal):
         super().__init__(title=translate(session.language, "builder.modals.template.title"))
         self.session: BuilderSession = session
 
+        # Pre-fill with the template that is currently loaded, so submitting without
+        # changing the name overwrites that same template (upsert on `(user_id, name)`).
+        active: EmbedTemplate | None = next(
+            (template for template in session.templates if template.name == session.active_template_name), None
+        )
+
         self.name_input: TextInput = TextInput(
             label=translate(session.language, "builder.modals.template.name.question"),
             placeholder=translate(session.language, "builder.modals.template.name.placeholder"),
             min_length=1,
             max_length=MAX_TEMPLATE_NAME_LENGTH,
+            default=session.active_template_name or None,
         )
 
         self.icon_input: TextInput = TextInput(
@@ -29,6 +37,7 @@ class SaveTemplateModal(Modal):
             placeholder=translate(session.language, "builder.modals.template.icon.placeholder"),
             required=False,
             max_length=MAX_TEMPLATE_ICON_LENGTH,
+            default=active.icon if active else None,
         )
 
         self.add_item(self.name_input)
@@ -51,12 +60,28 @@ class SaveTemplateModal(Modal):
             )
             return
 
-        template: TemplatePlaceholder = TemplatePlaceholder(
-            name=self.name_input.value.strip(),
+        name: str = self.name_input.value.strip()
+        owner_id: int = self.session.slashcmd_author_id
+        existing: list[EmbedTemplate] = await load_user_templates(owner_id)
+        is_new: bool = not any(template.name.casefold() == name.casefold() for template in existing)
+        if is_new and len(existing) >= MAX_SELECT_ITEMS:
+            self.session.templates = existing
+            await append_error(
+                interaction,
+                [TemplatesView(self.session).info_embed],
+                TemplatesView(self.session),
+                translate(self.session.language, "builder.errors.template_limit", limit=MAX_SELECT_ITEMS),
+            )
+            return
+
+        template: EmbedTemplate = EmbedTemplate(
+            name=name,
             icon=icon,
             content=self.session.content,
-            embeds=[embed.copy() for embed in self.session.embeds],
+            embeds=[embed.copy() for embed in non_empty_embeds(self.session.embeds)],
         )
+        await save_user_template(owner_id, template)
 
-        save_guild_template(self.session.guild_id, template)
+        self.session.templates = await load_user_templates(owner_id)
+        self.session.active_template_name = name
         await show(interaction, TemplatesView(self.session))

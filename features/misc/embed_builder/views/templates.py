@@ -5,13 +5,19 @@ from core.discord_api.limits import MAX_SELECT_ITEMS
 from core.i18n.translator import translate
 from features.misc.embed_builder.modals import SaveTemplateModal
 from features.misc.embed_builder.session import BuilderSession
-from features.misc.embed_builder.util.templates import TemplatePlaceholder, delete_guild_template
+from features.misc.embed_builder.util.templates import (
+    EmbedTemplate,
+    delete_user_template,
+    embed_image_urls,
+    load_user_templates,
+    unreachable_image_urls,
+)
 from features.misc.embed_builder.validation import append_error
-from features.misc.embed_builder.views.base import BuilderScreenView, show
+from features.misc.embed_builder.views.base import BuilderScreenView, show, track_active_view
 
 
 class TemplatesView(BuilderScreenView):
-    def __init__(self, session: BuilderSession) -> None:
+    def __init__(self, session: BuilderSession, *, status_embed: Embed | None = None) -> None:
         super().__init__()
         self.session: BuilderSession = session
 
@@ -22,6 +28,8 @@ class TemplatesView(BuilderScreenView):
         )
         self.content: str | None = None
         self.embeds: list[Embed] = [self.info_embed]
+        if status_embed is not None:
+            self.embeds.append(status_embed)
 
         self.back_button.label = translate(session.language, "builder.buttons.back")
         self.back_button.emoji = "◀️"
@@ -30,7 +38,7 @@ class TemplatesView(BuilderScreenView):
         self.delete_template_button.label = translate(session.language, "builder.buttons.template_delete")
         self.delete_template_button.emoji = "🗑️"
 
-        templates: list[TemplatePlaceholder] = session.templates
+        templates: list[EmbedTemplate] = session.templates
         if templates:
             self.template_select.disabled = False
             self.template_select.placeholder = translate(session.language, "builder.placeholders.templates_select")
@@ -69,7 +77,8 @@ class TemplatesView(BuilderScreenView):
             )
             return
 
-        delete_guild_template(self.session.guild_id, name)
+        await delete_user_template(self.session.slashcmd_author_id, name)
+        self.session.templates = await load_user_templates(self.session.slashcmd_author_id)
         self.session.active_template_name = None
         await show(interaction, TemplatesView(self.session))
 
@@ -83,11 +92,46 @@ class TemplatesView(BuilderScreenView):
     )
     async def template_select(self: TemplatesView, interaction: Interaction, select_obj: Select) -> None:
         name: str = select_obj.values[0]
-        template = next((existing for existing in self.session.templates if existing.name == name), None)
-        if template is not None:
-            self.session.content = template.content
-            self.session.embeds = [embed.copy() for embed in template.embeds]
-            self.session.active_embed_index = 0
-            self.session.active_template_name = name
+        template: EmbedTemplate | None = next(
+            (existing for existing in self.session.templates if existing.name == name), None
+        )
+        if template is None:
+            await show(interaction, TemplatesView(self.session))
+            return
 
-        await show(interaction, TemplatesView(self.session))
+        self.session.content = template.content
+        self.session.embeds = [embed.copy() for embed in template.embeds]
+        self.session.active_embed_index = 0
+        self.session.active_template_name = name
+
+        warnings: list[str] = []
+        if template.dropped_embeds:
+            warnings.append(
+                translate(self.session.language, "builder.info.templates.broken_embeds", count=template.dropped_embeds)
+            )
+
+        # Probing the restored image URLs can take a few seconds, which is longer
+        # than the interaction's initial-response window - acknowledge first, then
+        # edit the message once the reachability check is done.
+        await interaction.response.defer()
+        broken: list[str] = await unreachable_image_urls(embed_image_urls(self.session.embeds))
+        if broken:
+            warnings.append(translate(self.session.language, "builder.info.templates.broken_links", count=len(broken)))
+
+        if warnings:
+            status_embed: Embed = Embed(description="\n".join(warnings), colour=Colour.orange())
+        else:
+            status_embed = Embed(
+                description=translate(
+                    self.session.language,
+                    "builder.info.templates.loaded",
+                    count=len(self.session.embeds),
+                    name=name,
+                ),
+                colour=Colour.green(),
+            )
+
+        view: TemplatesView = TemplatesView(self.session, status_embed=status_embed)
+        track_active_view(view)
+        await interaction.edit_original_response(content=view.content, embeds=view.embeds, view=view)
+        view.message = await interaction.original_response()

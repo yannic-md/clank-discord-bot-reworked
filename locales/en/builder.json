@@ -57,7 +57,19 @@
     },
     "templates": {
       "title": "📁 ~ Embed Templates",
-      "description": "› Save the current draft of your embeds as a template or load an existing one using the dropdown menu below."
+      "description": "› Save the current draft of your embeds as a template or load an existing one using the dropdown menu below.",
+      "broken_links": {
+        "one": "`⚠️` ~ **`1` image link unreachable:** One image in this template can no longer be fetched (e.g. an expired upload) and may not display - The template was loaded anyway.",
+        "other": "`⚠️` ~ **`{count}` image links unreachable:** Some images in this template can no longer be fetched (e.g. expired uploads) and may not display - The template was loaded anyway."
+      },
+      "broken_embeds": {
+        "one": "`⚠️` ~ **`1` embed corrupted:** It could not be restored from the template and was skipped - Save the template again to clean it up.",
+        "other": "`⚠️` ~ **`{count}` embeds corrupted:** These could not be restored from the template and were skipped - Save the template again to clean it up."
+      },
+      "loaded": {
+        "one": "`✅` ~ **Template `{name}` loaded:** `1` embed and the message content were successfully applied.",
+        "other": "`✅` ~ **Template `{name}` loaded:** `{count}` embeds and the message content were successfully applied."
+      }
     },
     "embed_list": {
       "title": "🗂️ ~ Manage Embed List",
@@ -79,7 +91,7 @@
     "invalid_icon": "› `❌` - **Invalid Emoji:** Use a standard emoji or an emoji from this server. <:loveangry:784930958084276224>",
     "invalid_timestamp": "› `❌` - **Invalid Timestamp:** The entered value is invalid. Use e.g. `10/04/2003 20:00` or `in 2h`. <:loveangry:784930958084276224>",
     "invalid_url": "› `❌` - **Invalid URL:** No valid URL was recognized. It should start with `https://`. <:loveangry:784930958084276224>",
-    "template_limit": "› `❌` - **Too Many Templates:** A maximum of 25 templates can be saved per server. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Too Many Templates:** You can save a maximum of {limit} templates. <:loveangry:784930958084276224>",
     "embed_limit": "› `❌` - **Too Many Embeds:** A message can contain a maximum of {limit} embeds. <:loveangry:784930958084276224>",
     "field_limit": "› `❌` - **Too Many Fields:** An embed can contain a maximum of {limit} fields. <:loveangry:784930958084276224>",
     "no_template_selected": "› `❌` - **No Template Selected:** Select a template from the dropdown before editing it. <:loveangry:784930958084276224>",

@@ -66,7 +66,7 @@ class SendConfirmView(BuilderScreenView):
         # pinged" right below it would contradict it - those mentions won't notify anyone.
         mention_lines: list[str] = []
         if has_permission:
-            guild: Guild | None = channel.guild if isinstance(channel, Guild) else None
+            guild: Guild | None = channel.guild if isinstance(channel, Messageable) else None
             if is_everyone_mentioned(session.content):
                 users: str = get_role_mention_count(session.language, session.content, guild)
                 mention_lines.append(translate(session.language, "builder.info.send_confirm.everyone_notice", users=users))
@@ -238,7 +238,7 @@ async def _has_bot_channel_send_perms(
 ) -> bool:
     """Pre-flight check of the bot's own permissions in `channel`, so a missing-permission
     failure names the exact permission instead of falling back to a generic error."""
-    guild: Guild | None = channel.guild if isinstance(channel, Guild) else None
+    guild: Guild | None = channel.guild if isinstance(channel, Messageable) else None
     bot_member: Member | None = guild.me if guild is not None else None
     if bot_member is None:
         return True

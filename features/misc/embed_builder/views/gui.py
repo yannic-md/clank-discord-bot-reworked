@@ -14,6 +14,7 @@ from features.misc.embed_builder.modals import (
 )
 from features.misc.embed_builder.session import BuilderSession
 from features.misc.embed_builder.util.embed_ops import move_active_embed, non_empty_embeds
+from features.misc.embed_builder.util.templates import load_user_templates
 from features.misc.embed_builder.views.base import (
     BuilderScreenView,
     create_embed_label,
@@ -155,6 +156,7 @@ class EmbedBuilderGUI(BuilderScreenView):
 
     @button(label="Embed-Vorlagen", style=ButtonStyle.red, row=0, custom_id="embed_builder:gui:manage_template")
     async def manage_template(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        self.session.templates = await load_user_templates(self.session.slashcmd_author_id)
         await show(interaction, TemplatesView(self.session))
 
     @button(label="Active embed", style=ButtonStyle.gray, row=2, disabled=True)
