@@ -1,3 +1,9 @@
+import asyncio
+import logging
+from collections.abc import Coroutine
+from logging import Logger
+from typing import Any
+
 from discord import ButtonStyle, Colour, Embed, Interaction, SelectOption
 from discord.ui import Button, Select, button, select
 
@@ -14,6 +20,18 @@ from features.misc.embed_builder.util.templates import (
 )
 from features.misc.embed_builder.validation import append_error
 from features.misc.embed_builder.views.base import BuilderScreenView, show, track_active_view
+
+logger: Logger = logging.getLogger("discord")
+_background_tasks: set[asyncio.Task[None]] = set()
+
+
+def _run_in_background(coro: Coroutine[Any, Any, None]) -> None:
+    """Fire-and-forget `coro`, holding a strong reference until it finishes so the
+    event loop does not garbage-collect the task mid-flight."""
+    task: asyncio.Task[None] = asyncio.create_task(coro)
+
+    _background_tasks.add(task)
+    task.add_done_callback(_background_tasks.discard)
 
 
 class TemplatesView(BuilderScreenView):
@@ -82,6 +100,31 @@ class TemplatesView(BuilderScreenView):
         self.session.active_template_name = None
         await show(interaction, TemplatesView(self.session))
 
+    def _load_status_embed(self, template: EmbedTemplate, *, broken_links: int) -> Embed:
+        """The embed shown after loading `template`: a green confirmation, or an orange
+        warning if some embeds could not be rebuilt or `broken_links` images are dead."""
+        warnings: list[str] = []
+        if template.dropped_embeds:
+            warnings.append(
+                translate(self.session.language, "builder.info.templates.broken_embeds", count=template.dropped_embeds)
+            )
+
+        if broken_links:
+            warnings.append(translate(self.session.language, "builder.info.templates.broken_links", count=broken_links))
+
+        if warnings:
+            return Embed(description="\n".join(warnings), colour=Colour.orange())
+
+        return Embed(
+            description=translate(
+                self.session.language,
+                "builder.info.templates.loaded",
+                count=len(self.session.embeds),
+                name=template.name,
+            ),
+            colour=Colour.green(),
+        )
+
     @select(
         cls=Select,
         placeholder="Select a template..",
@@ -104,34 +147,33 @@ class TemplatesView(BuilderScreenView):
         self.session.active_embed_index = 0
         self.session.active_template_name = name
 
-        warnings: list[str] = []
-        if template.dropped_embeds:
-            warnings.append(
-                translate(self.session.language, "builder.info.templates.broken_embeds", count=template.dropped_embeds)
-            )
-
-        # Probing the restored image URLs can take a few seconds, which is longer
-        # than the interaction's initial-response window - acknowledge first, then
-        # edit the message once the reachability check is done.
-        await interaction.response.defer()
-        broken: list[str] = await unreachable_image_urls(embed_image_urls(self.session.embeds))
-        if broken:
-            warnings.append(translate(self.session.language, "builder.info.templates.broken_links", count=len(broken)))
-
-        if warnings:
-            status_embed: Embed = Embed(description="\n".join(warnings), colour=Colour.orange())
-        else:
-            status_embed = Embed(
-                description=translate(
-                    self.session.language,
-                    "builder.info.templates.loaded",
-                    count=len(self.session.embeds),
-                    name=name,
-                ),
-                colour=Colour.green(),
-            )
-
-        view: TemplatesView = TemplatesView(self.session, status_embed=status_embed)
+        view: TemplatesView = TemplatesView(self.session, status_embed=self._load_status_embed(template, broken_links=0))
         track_active_view(view)
-        await interaction.edit_original_response(content=view.content, embeds=view.embeds, view=view)
+        await interaction.response.edit_message(content=view.content, embeds=view.embeds, view=view)
         view.message = await interaction.original_response()
+
+        # check if embed images are valid - if not, warn user
+        image_urls: list[str] = embed_image_urls(self.session.embeds)
+        if image_urls:
+            _run_in_background(self._flag_unreachable_images(interaction, view, template, image_urls))
+
+    async def _flag_unreachable_images(
+        self, interaction: Interaction, origin_view: TemplatesView, template: EmbedTemplate, image_urls: list[str]
+    ) -> None:
+        """Background follow-up to `template_select`: probe the restored image URLs and,
+        if any no longer resolve, swap the status embed for a warning - but only while
+        this exact screen is still the one on display (the user may have navigated on)."""
+        try:
+            broken: list[str] = await unreachable_image_urls(image_urls)
+            if not broken or self.session.active_view is not origin_view:
+                return
+
+            refreshed: TemplatesView = TemplatesView(
+                self.session, status_embed=self._load_status_embed(template, broken_links=len(broken))
+            )
+
+            track_active_view(refreshed)
+            await interaction.edit_original_response(content=refreshed.content, embeds=refreshed.embeds, view=refreshed)
+            refreshed.message = await interaction.original_response()
+        except Exception:
+            logger.warning("embed-builder: background image-link check failed", exc_info=True)
