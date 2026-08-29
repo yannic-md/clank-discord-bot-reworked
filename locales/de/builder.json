@@ -1,0 +1,251 @@
+{
+  "main": {
+    "default_content": "Das ist meine coole Embed-Nachricht!"
+  },
+  "buttons": {
+    "send": "Senden",
+    "edit_save": "Änderungen Speichern",
+    "webhook": "Webhook",
+    "channel": "Kanal",
+    "templates": "Vorlagen",
+    "back": "Zurück",
+    "confirm_yes": "Ja, senden!",
+    "confirm_no": "Nein, bearbeiten!",
+    "webhook_set": "Webhook festlegen",
+    "webhook_edit": "Webhook bearbeiten",
+    "webhook_remove": "Webhook entfernen",
+    "template_save": "Vorlage speichern",
+    "template_delete": "Vorlage löschen",
+    "embed_add": "Embed hinzufügen",
+    "embed_remove": "Embed entfernen",
+    "up": "Hoch",
+    "down": "Runter",
+    "field_add": "Feld hinzufügen",
+    "field_edit": "Feld bearbeiten",
+    "field_delete": "Feld löschen"
+  },
+  "placeholders": {
+    "templates_empty": "Keine Vorlagen vorhanden.. 😢",
+    "templates_select": "Wähle eine Vorlage aus.. 🖱️",
+    "embed_list_select": "Wähle ein Embed aus.. 🖱️",
+    "embed_option_snippet": "Embed {number}: {snippet}",
+    "embed_option_label_empty": "Embed {number}: (leer)",
+    "embed_list_empty": "Kein Embed erstellt.. 😢",
+    "embed_placeholder_title": "Neues Embed",
+    "fields_empty": "Keine Felder vorhanden.. 😢",
+    "fields_select": "Wähle ein Feld aus.. 🖱️",
+    "field_option_empty_name": "(Ohne Namen)",
+    "this_channel": "diesem Kanal",
+    "other_channel": "dem Kanal {channel}",
+    "many": "Viele"
+  },
+  "info": {
+    "send_confirm": {
+      "title": "📨 ~ Möchtest du wirklich die Nachricht senden?",
+      "description": "› Die Nachricht wird in dem Kanal {channel} gesendet. Diese Aktion kann nicht rückgängig gemacht werden und vielleicht freust du dich über dein erschaffenes Werk.\n",
+      "webhook_notice": "`📢` ~ **Webhook:** Gesendet als `{username}`.",
+      "mention_permission_warning": "`⚠️` ~ **Erwähnung nicht möglich:** Du verfügst nicht über die Berechtigung, Rollen zu erwähnen - daher wird die Rollen-Erwähnung ohne Benachrichtigung gesendet.",
+      "everyone_notice": "`🚨` ~ **{users} User werden erwähnt:** Deine Nachricht wird `@everyone` (oder `@here`) erwähnen. Bist du dir sicher, dass du das tun willst?",
+      "roles_notice": "`🔔` ~ **Rollen-Erwähnung:** Es werden Benachrichtigungen versendet. \n> - {roles}",
+      "mentions_notice": "`👤` ~ **User-Erwähnung:** Es werden werden **{amount}** Nutzer benachrichtigt."
+    },
+    "webhook": {
+      "title": "📢 ~ Absender der Nachricht bearbeiten",
+      "enabled": "`✅` ~ **Status:** `AKTIVIERT` - Die Nachricht wird als `{username}` gesendet.",
+      "disabled": "`❌` ~ **Status:** `DEAKTIVIERT` - Die Nachricht wird als `Clank` gesendet.",
+      "description": "› Lege einen benutzerdefinierten Namen für den Absender und ein optionalen Avatar fest, mit dem die Nachricht über einer Webhook dieses Kanals gesendet wird, statt über den Bot selbst."
+    },
+    "templates": {
+      "title": "📁 ~ Embed-Vorlagen",
+      "description": "› Speichere den aktuellen Entwurf deiner Embeds als Vorlage oder lade eine bestehende über das untere Dropdown-Menü.",
+      "broken_links": {
+        "one": "`⚠️` ~ **`1` Bild-Link nicht erreichbar:** Ein Bild dieser Vorlage ist nicht mehr abrufbar (z.B. abgelaufener Upload) und wird eventuell nicht angezeigt - Die Vorlage wurde trotzdem geladen.",
+        "other": "`⚠️` ~ **`{count}` Bild-Links nicht erreichbar:** Einige Bilder dieser Vorlage sind nicht mehr abrufbar (z.B. abgelaufene Uploads) und werden eventuell nicht angezeigt - Die Vorlage wurde trotzdem geladen."
+      },
+      "broken_embeds": {
+        "one": "`⚠️` ~ **`1` Embed beschädigt:** Dieses konnte aus der Vorlage nicht wiederhergestellt werden und wurde übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen.",
+        "other": "`⚠️` ~ **`{count}` Embeds beschädigt:** Diese konnten aus der Vorlage nicht wiederhergestellt werden und wurden übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen."
+      },
+      "loaded": {
+        "one": "`✅` ~ **Vorlage `{name}` geladen:** `1` Embed und der Nachrichten-Inhalt wurden erfolgreich übernommen.",
+        "other": "`✅` ~ **Vorlage `{name}` geladen:** `{count}` Embeds und der Nachrichten-Inhalt wurden erfolgreich übernommen."
+      }
+    },
+    "embed_list": {
+      "title": "🗂️ ~ Embed-Liste verwalten",
+      "description": "› Füge neue Embeds hinzu, ändere ihre Reihenfolge oder entferne diese. Wähle über das untere Dropdown, welches Embed du bearbeiten möchtest."
+    },
+    "fields": {
+      "title": "🧩 ~ Embed-Felder",
+      "description": "› Verwalte die Felder des aktuell ausgewählten Embeds. Wähle über das untere Dropdown ein Feld aus, um es zu bearbeiten, seine Position zu ändern oder zu löschen."
+    },
+    "success": {
+      "sent": "Deine wunderschöne Nachricht wurde erfolgreich abgesendet! <a:check:730387138381873184>",
+      "saved": "Die Änderungen an deiner Nachricht wurden erfolgreich gespeichert! <a:check:730387138381873184>",
+      "jump_link": "`🔗` ~ **Zur Nachricht springen:** [Klick hier!]({jump_url})"
+    }
+  },
+  "errors": {
+    "message_not_found": "› `❌` - **Nachricht nicht gefunden:** Die angegebene Nachricht konnte in diesem Kanal nicht gefunden werden. <:loveangry:784930958084276224>",
+    "invalid_color": "› `❌` - **Ungültige Farbe:** Es wurde kein gültiger Hexcode oder RGB-Wert angegeben. (Nutze `#5865F2` oder `rgb(88,101,242)`) <:loveangry:784930958084276224>",
+    "invalid_icon": "› `❌` - **Ungültiges Emoji:** Verwende ein Standard-Emoji oder einen Emoji dieses Servers. <:loveangry:784930958084276224>",
+    "invalid_timestamp": "› `❌` - **Ungültiger Zeitstempel:** Der eingegebene Wert ist ungültig. Nutze z.B. `04.10.2003 20:00` oder `in 2h`. <:loveangry:784930958084276224>",
+    "invalid_url": "› `❌` - **Ungültige URL:** Es wurde keine gültige URL erkannt. Sie sollte mit `https://` beginnen. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Zu viele Vorlagen:** Du kannst maximal {limit} Vorlagen speichern. <:loveangry:784930958084276224>",
+    "embed_limit": "› `❌` - **Zu viele Embeds:** Eine Nachricht kann maximal {limit} Embeds enthalten. <:loveangry:784930958084276224>",
+    "field_limit": "› `❌` - **Zu viele Felder:** Ein Embed kann maximal {limit} Felder enthalten. <:loveangry:784930958084276224>",
+    "no_template_selected": "› `❌` - **Keine Vorlage ausgewählt:** Wähle eine Vorlage aus dem Dropdown aus, bevor du sie bearbeitest. <:loveangry:784930958084276224>",
+    "not_own_message": "› `❌` - **Bearbeiten nicht möglich:** Diese Nachricht kann nicht bearbeitet werden, da sie nicht von mir selbst stammt. <:loveangry:784930958084276224>",
+    "nothing_to_send": "› `❌` - **Alles ist.. leer?** Die Nachricht hat weder einen Inhalt noch ein Embed - netter Versuch! <:loveangry:784930958084276224>",
+    "invalid_image": "› `❌` - **Ungültiges Bild:** Es wurde kein gültiges Bild erkannt. Die Formate `PNG`, `JPG`, `GIF`, `WEBP` oder `BMP` werden aktuell unterstützt. <:loveangry:784930958084276224>",
+    "footer_icon_without_text": "› `❌` - **Footer-Text fehlt:** Ein Footer-Icon benötigt auch einen Text. Ergänze einen Text oder entferne das Icon! <:loveangry:784930958084276224>",
+    "author_fields_without_name": "› `❌` - **Autor-Name fehlt:** Die URL und das Profilbild benötigen einen Autoren-Namen. Ergänze entweder einen Namen oder entferne die anderen Felder. <:loveangry:784930958084276224>",
+    "url_needs_title_or_description": "› `❌` - **Text fehlt:** Eine URL benötigt auch einen Titel oder eine Beschreibung. Ergänze eines von beidem oder entferne die URL. <:loveangry:784930958084276224>",
+    "webhook_forbidden": "› `❌` - **Bot-Rechte fehlen:** Mir fehlt die Berechtigung `WEBHOOKS VERWALTEN` in {channel}, um einen Webhook zu erstellen. <:loveangry:784930958084276224>",
+    "webhook_limit": "› `❌` - **Webhook-Limit erreicht:** In {channel} wurde bereits die maximale Anzahl an Webhooks ({limit}) erreicht. <:loveangry:784930958084276224>",
+    "webhook_invalid": "› `❌` - **Ungültiger Webhook:** Der hinterlegte Webhook konnte nicht gefunden werden (vermutlich wurde er gelöscht) - Lege den Webhook erneut fest. <:loveangry:784930958084276224>",
+    "bot_permission_missing": "› `❌` - **Bot-Rechte fehlen:** Ich benötige folgende Berechtigungen in {channel}: `{permissions}` <:loveangry:784930958084276224>",
+    "user_permission_missing": "› `❌` - **Rechte fehlen:** Dir fehlen folgende Berechtigungen in {channel}: `{permissions}` <:loveangry:784930958084276224>"
+  },
+  "modals": {
+    "content": {
+      "title": "Nachrichten-Inhalt bearbeiten",
+      "field": "❓ ~ WIE LAUTET DER INHALT DEINER NACHRICHT?",
+      "placeholder": "Der Text über dem Embed.. ✍️"
+    },
+    "colour": {
+      "title": "Embed-Farbe bearbeiten",
+      "field": "❓ ~ Welche Farbe soll das Embed haben?",
+      "placeholder": "z.B. #5865F2 oder rgb(88,101,242)"
+    },
+    "title": {
+      "title": "Embed-Titel bearbeiten",
+      "name": {
+        "question": "❓ ~ Wie lautet der Titel deines Embeds?",
+        "placeholder": "Supercooles Embed 😎"
+      },
+      "description": {
+        "question": "❓ ~ Was ist die Beschreibung deines Embeds?",
+        "placeholder": "Eine kurze Beschreibung des Embeds.. ✍️"
+      },
+      "url": {
+        "question": "❓ ~ Welche URL soll verlinkt werden?",
+        "placeholder": "z.B. https://bl4cklist.de"
+      }
+    },
+    "images": {
+      "title": "Embed-Bilder bearbeiten",
+      "thumbnail": "❓ ~ Welches Thumbnail soll verwendet werden?",
+      "image": "❓ ~ Welcher Banner soll verwendet werden?"
+    },
+    "author": {
+      "title": "Embed-Autor bearbeiten",
+      "name": {
+        "question": "❓ ~ Wie lautet der Name des Autors?",
+        "placeholder": "z.B. Clank 🤖"
+      },
+      "url": {
+        "question": "❓ ~ Welche URL soll verlinkt werden?",
+        "placeholder": "z.B. https://bl4cklist.de"
+      },
+      "icon": "❓ ~ Welches Profilbild soll verwendet werden?"
+    },
+    "footer": {
+      "title": "Embed-Footer bearbeiten",
+      "text": {
+        "question": "❓ ~ Was soll in der Fußzeile stehen?",
+        "placeholder": "z.B. Erstellt von Clank. Lade mich unbedingt ein! 🤖"
+      },
+      "icon": "❓ ~ Welches Icon soll angezeigt werden?"
+    },
+    "timestamp": {
+      "title": "Embed-Zeitstempel bearbeiten",
+      "timestamp": "❓ ~ Welcher Zeitpunkt wird festgelegt?",
+      "placeholder": "z.B. 'in 2h', 'morgen 18:00' oder '04.10.2003 20:00'"
+    },
+    "field": {
+      "title": "Embed-Feld bearbeiten",
+      "name": {
+        "question": "❓ ~ Wie lautet der Name des Felds?",
+        "placeholder": "z.B. Server-Status 🖥️"
+      },
+      "value": {
+        "question": "❓ ~ Was soll in dem Feld stehen?",
+        "placeholder": "z.B. Alle unsere Server-Systeme sind problemlos erreichbar. 🟢"
+      },
+      "inline": "❓ ~ Soll das Feld \"Nachbarn\" haben können?",
+      "inline_yes": "Ja",
+      "inline_no": "Nein"
+    },
+    "webhook": {
+      "title": "Webhook bearbeiten",
+      "name": {
+        "question": "❓ ~ Wie lautet der Name des Webhooks?",
+        "placeholder": "z.B. MeinServer.de - Info 📢"
+      },
+      "avatar": {
+        "question": "❓ ~ Welche Avatar-URL soll verwendet werden?",
+        "placeholder": "z.B. https://i.imgur.com/yed5Zfk.gif"
+      },
+      "url": {
+        "question": "❓ ~ Welche Webhook-URL soll verwendet werden?",
+        "placeholder": "Lege dies fest, um keine neue Webhook zu erstellen."
+      }
+    },
+    "channel": {
+      "title": "Kanal auswählen",
+      "select": "❓ ~ Wo soll die Nachricht gesendet werden?",
+      "placeholder": "Wähle einen Kanal aus.. 🖱️"
+    },
+    "template": {
+      "title": "Vorlage speichern",
+      "name": {
+        "question": "❓ ~ Wie lautet der Name der Vorlage?",
+        "placeholder": "z.B. Regelwerk, Team-Bewerben, .. ✍️"
+      },
+      "icon": {
+        "question": "❓ ~ Welches Emoji soll verwendet werden?",
+        "placeholder": "z.B. 📂 (oder Server-Emoji)"
+      }
+    }
+  },
+  "select": {
+    "placeholder": "🔨 ~ Was möchtest du bearbeiten?",
+    "embed_list": {
+      "label": "Embed-Liste anpassen",
+      "description": "› Verwalte die Reihenfolge oder füge neue Embeds hinzu."
+    },
+    "embed_content": {
+      "label": "Nachrichten-Inhalt",
+      "description": "› Bearbeite den Nachrichtentext über dem Embed."
+    },
+    "embed_colors": {
+      "label": "Embed-Farbe",
+      "description": "› Ändere die Farbe für die seitliche Linie des Embeds."
+    },
+    "embed_title": {
+      "label": "Embed-Titel & Beschreibung",
+      "description": "› Passe den Inhalt an und setze eine optionale Verlinkung."
+    },
+    "embed_images": {
+      "label": "Embed-Bilder",
+      "description": "› Lege ein Thumbnail oder ein Banner für das Embed fest."
+    },
+    "embed_author": {
+      "label": "Embed-Autor",
+      "description": "› Lege eine Kopfzeile mit Autoren-Text und Profilbild fest."
+    },
+    "embed_fields": {
+      "label": "Embed-Felder",
+      "description": "› Füge kleine informative Felder zu dem Embed hinzu."
+    },
+    "embed_footer": {
+      "label": "Embed-Footer",
+      "description": "› Füge eine Fußzeile unter dem Embed hinzu."
+    },
+    "embed_timestamp": {
+      "label": "Embed-Zeitstempel",
+      "description": "› Lege ein Datum für dein Embed fest oder entferne dies."
+    }
+  }
+}

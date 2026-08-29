@@ -34,5 +34,15 @@
         "description": "Welche Sprache soll der Bot verwenden?"
       }
     }
+  },
+  "builder": {
+    "embed": {
+      "name": "embed-builder",
+      "description": "› Erstelle eine eigene, benutzerdefinierte Discord-Embed-Nachricht. 🎨",
+      "parameter": {
+        "name": "nachricht-id",
+        "description": "Welche Nachricht möchtest du bearbeiten?"
+      }
+    }
   }
 }

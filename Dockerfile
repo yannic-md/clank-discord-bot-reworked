@@ -30,7 +30,7 @@ ENV PATH=/root/.local/bin:$PATH \
 
 COPY . .
 
-RUN chmod +x docker/entrypoint.sh
+RUN chmod +x scripts/docker/entrypoint.sh
 
-ENTRYPOINT ["docker/entrypoint.sh"]
+ENTRYPOINT ["scripts/docker/entrypoint.sh"]
 CMD ["python", "main.py"]

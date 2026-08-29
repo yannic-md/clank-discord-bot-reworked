@@ -1,0 +1,251 @@
+{
+  "main": {
+    "default_content": "This is my cool embed message!"
+  },
+  "buttons": {
+    "send": "Send",
+    "edit_save": "Save changes",
+    "webhook": "Webhook",
+    "channel": "Channel",
+    "templates": "Templates",
+    "back": "Back",
+    "confirm_yes": "Yes, send it!",
+    "confirm_no": "No, keep editing!",
+    "webhook_set": "Set webhook",
+    "webhook_edit": "Edit webhook",
+    "webhook_remove": "Remove webhook",
+    "template_save": "Save template",
+    "template_delete": "Delete template",
+    "embed_add": "Add embed",
+    "embed_remove": "Remove embed",
+    "up": "Up",
+    "down": "Down",
+    "field_add": "Add field",
+    "field_edit": "Edit field",
+    "field_delete": "Delete field"
+  },
+  "placeholders": {
+    "templates_empty": "No templates exist.. 😢",
+    "templates_select": "Select a template.. 🖱️",
+    "embed_list_select": "Select an embed.. 🖱️",
+    "embed_option_snippet": "Embed {number}: {snippet}",
+    "embed_option_label_empty": "Embed {number}: (empty)",
+    "embed_list_empty": "No embed created.. 😢",
+    "embed_placeholder_title": "New embed",
+    "fields_empty": "No field exist.. 😢",
+    "fields_select": "Select a field.. 🖱️",
+    "field_option_empty_name": "(No name)",
+    "this_channel": "this channel",
+    "other_channel": "the channel {channel}",
+    "many": "Many"
+  },
+  "info": {
+    "send_confirm": {
+      "title": "📨 ~ Do you really want to send the message?",
+      "description": "› This will send the message to the channel {channel}. This action cannot be undone, and perhaps you will be pleased with the work you have created.\n",
+      "webhook_notice": "`📢` ~ **Webhook:** Appears as `{username}`.",
+      "mention_permission_warning": "`⚠️` ~ **Mention unavailable:** You do not have permission to mention roles—therefore, the role mention will be sent without a notification.",
+      "everyone_notice": "`🚨` ~ **{users} users will be mentioned:** Your message will mention `@everyone` (or `@here`). Are you sure you want to do this?",
+      "roles_notice": "`🔔` ~ **Role Mention:** Notifications will be sent. \n> - {roles}",
+      "mentions_notice": "`👤` ~ **User Mention:** **{amount}** users will be notified."
+    },
+    "webhook": {
+      "title": "📢 ~ Edit Message Sender",
+      "enabled": "`✅` ~ **Status:** `ENABLED` - The message will be sent as `{username}`.",
+      "disabled": "`❌` ~ **Status:** `DISABLED` - The message will be sent as `Clank`.",
+      "description": "› Set a custom sender name and an optional avatar to send the message using a webhook in this channel, instead of the bot itself."
+    },
+    "templates": {
+      "title": "📁 ~ Embed Templates",
+      "description": "› Save the current draft of your embeds as a template or load an existing one using the dropdown menu below.",
+      "broken_links": {
+        "one": "`⚠️` ~ **`1` image link unreachable:** One image in this template can no longer be fetched (e.g. an expired upload) and may not display - The template was loaded anyway.",
+        "other": "`⚠️` ~ **`{count}` image links unreachable:** Some images in this template can no longer be fetched (e.g. expired uploads) and may not display - The template was loaded anyway."
+      },
+      "broken_embeds": {
+        "one": "`⚠️` ~ **`1` embed corrupted:** It could not be restored from the template and was skipped - Save the template again to clean it up.",
+        "other": "`⚠️` ~ **`{count}` embeds corrupted:** These could not be restored from the template and were skipped - Save the template again to clean it up."
+      },
+      "loaded": {
+        "one": "`✅` ~ **Template `{name}` loaded:** `1` embed and the message content were successfully applied.",
+        "other": "`✅` ~ **Template `{name}` loaded:** `{count}` embeds and the message content were successfully applied."
+      }
+    },
+    "embed_list": {
+      "title": "🗂️ ~ Manage Embed List",
+      "description": "› Add new embeds, change their order, or remove them. Choose which embed you want to edit using the dropdown menu below."
+    },
+    "fields": {
+      "title": "🧩 ~ Embed Fields",
+      "description": "› Manage the fields of the currently selected embed. Select a field from the dropdown menu below to edit, move, or delete it."
+    },
+    "success": {
+      "sent": "Your beautiful message was sent successfully! <a:check:730387138381873184>",
+      "saved": "The changes were saved successfully! <a:check:730387138381873184>",
+      "jump_link": "`🔗` ~ **Jump to message:** [Click here!]({jump_url})"
+    }
+  },
+  "errors": {
+    "message_not_found": "› `❌` - **Message Not Found:** The specified message could not be found in this channel. <:loveangry:784930958084276224>",
+    "invalid_color": "› `❌` - **Invalid Color:** No valid hex code or RGB value was provided. (Use `#5865F2` or `rgb(88,101,242)`) <:loveangry:784930958084276224>",
+    "invalid_icon": "› `❌` - **Invalid Emoji:** Use a standard emoji or an emoji from this server. <:loveangry:784930958084276224>",
+    "invalid_timestamp": "› `❌` - **Invalid Timestamp:** The entered value is invalid. Use e.g. `10/04/2003 20:00` or `in 2h`. <:loveangry:784930958084276224>",
+    "invalid_url": "› `❌` - **Invalid URL:** No valid URL was recognized. It should start with `https://`. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Too Many Templates:** You can save a maximum of {limit} templates. <:loveangry:784930958084276224>",
+    "embed_limit": "› `❌` - **Too Many Embeds:** A message can contain a maximum of {limit} embeds. <:loveangry:784930958084276224>",
+    "field_limit": "› `❌` - **Too Many Fields:** An embed can contain a maximum of {limit} fields. <:loveangry:784930958084276224>",
+    "no_template_selected": "› `❌` - **No Template Selected:** Select a template from the dropdown before editing it. <:loveangry:784930958084276224>",
+    "not_own_message": "› `❌` - **Cannot Edit:** This message cannot be edited because it was not sent by me. <:loveangry:784930958084276224>",
+    "nothing_to_send": "› `❌` - **Everything is.. empty?** The message has neither content nor an embed - nice try! <:loveangry:784930958084276224>",
+    "invalid_image": "› `❌` - **Invalid Image:** No valid image was recognized. The formats `PNG`, `JPG`, `GIF`, `WEBP`, or `BMP` are currently supported. <:loveangry:784930958084276224>",
+    "footer_icon_without_text": "› `❌` - **Missing Footer Text:** A footer icon also requires text. Add some text or remove the icon! <:loveangry:784930958084276224>",
+    "author_fields_without_name": "› `❌` - **Missing Author Name:** The URL and profile picture require an author name. Either add a name or remove the other fields. <:loveangry:784930958084276224>",
+    "url_needs_title_or_description": "› `❌` - **Missing Text:** A URL also requires a title or a description. Add one of the two or remove the URL. <:loveangry:784930958084276224>",
+    "webhook_forbidden": "› `❌` - **Missing Bot Permissions:** I lack the permission `MANAGE WEBHOOKS` in {channel} to create a webhook. <:loveangry:784930958084276224>",
+    "webhook_limit": "› `❌` - **Webhook Limit Reached:** The maximum number of webhooks ({limit}) has already been reached in {channel}. <:loveangry:784930958084276224>",
+    "webhook_invalid": "› `❌` - **Invalid Webhook:** The stored webhook could not be found (it was likely deleted) - Set the webhook again. <:loveangry:784930958084276224>",
+    "bot_permission_missing": "› `❌` - **Missing Bot Permissions:** I need the following permissions in {channel}: `{permissions}` <:loveangry:784930958084276224>",
+    "user_permission_missing": "› `❌` - **Missing Permissions:** You are missing the following permissions in {channel}: `{permissions}` <:loveangry:784930958084276224>"
+  },
+  "modals": {
+    "content": {
+      "title": "Edit Message Content",
+      "field": "❓ ~ WHAT IS THE CONTENT OF YOUR MESSAGE?",
+      "placeholder": "The text above the embed.. ✍️"
+    },
+    "colour": {
+      "title": "Edit Embed Color",
+      "field": "❓ ~ What color should the embed have?",
+      "placeholder": "e.g. #5865F2 or rgb(88,101,242)"
+    },
+    "title": {
+      "title": "Edit Embed Title",
+      "name": {
+        "question": "❓ ~ What is the title of your embed?",
+        "placeholder": "Super cool embed 😎"
+      },
+      "description": {
+        "question": "❓ ~ What is the description of your embed?",
+        "placeholder": "A short description of the embed.. ✍️"
+      },
+      "url": {
+        "question": "❓ ~ Which URL should be linked?",
+        "placeholder": "e.g. https://bl4cklist.de"
+      }
+    },
+    "images": {
+      "title": "Edit Embed Images",
+      "thumbnail": "❓ ~ Which thumbnail should be used?",
+      "image": "❓ ~ Which banner should be used?"
+    },
+    "author": {
+      "title": "Edit Embed Author",
+      "name": {
+        "question": "❓ ~ What is the author's name?",
+        "placeholder": "e.g. Clank 🤖"
+      },
+      "url": {
+        "question": "❓ ~ Which URL should be linked?",
+        "placeholder": "e.g. https://bl4cklist.de"
+      },
+      "icon": "❓ ~ Which profile picture should be used?"
+    },
+    "footer": {
+      "title": "Edit Embed Footer",
+      "text": {
+        "question": "❓ ~ What should be in the footer?",
+        "placeholder": "e.g. Created by Clank. Be sure to invite me! 🤖"
+      },
+      "icon": "❓ ~ Which icon should be displayed?"
+    },
+    "timestamp": {
+      "title": "Edit Embed Timestamp",
+      "timestamp": "❓ ~ Which timestamp will be set?",
+      "placeholder": "e.g. 'in 2h', 'tomorrow 18:00', or '10/04/2003 20:00'"
+    },
+    "field": {
+      "title": "Edit Embed Field",
+      "name": {
+        "question": "❓ ~ What is the name of the field?",
+        "placeholder": "e.g. Server Status 🖥️"
+      },
+      "value": {
+        "question": "❓ ~ What should be in the field?",
+        "placeholder": "e.g. All our server systems are fully reachable. 🟢"
+      },
+      "inline": "❓ ~ Should the field have \"neighbors\"?",
+      "inline_yes": "Yes",
+      "inline_no": "No"
+    },
+    "webhook": {
+      "title": "Edit Webhook",
+      "name": {
+        "question": "❓ ~ What is the name of the webhook?",
+        "placeholder": "e.g. MyServer.com - Info 📢"
+      },
+      "avatar": {
+        "question": "❓ ~ Which avatar URL should be used?",
+        "placeholder": "e.g. https://i.imgur.com/yed5Zfk.gif"
+      },
+      "url": {
+        "question": "❓ ~ Which webhook URL should be used?",
+        "placeholder": "Set this to avoid creating a new webhook."
+      }
+    },
+    "channel": {
+      "title": "Select Channel",
+      "select": "❓ ~ Where should the message be sent?",
+      "placeholder": "Select a channel.. 🖱️"
+    },
+    "template": {
+      "title": "Save Template",
+      "name": {
+        "question": "❓ ~ What is the name of the template?",
+        "placeholder": "e.g. Rules, Team Applications, .. ✍️"
+      },
+      "icon": {
+        "question": "❓ ~ Which emoji should be used?",
+        "placeholder": "e.g. 📂 (or server emoji)"
+      }
+    }
+  },
+  "select": {
+    "placeholder": "🔨 ~ What would you like to edit?",
+    "embed_list": {
+      "label": "Customize Embed List",
+      "description": "› Manage the order or add new embeds."
+    },
+    "embed_content": {
+      "label": "Message Content",
+      "description": "› Edit the message text above the embed."
+    },
+    "embed_colors": {
+      "label": "Embed Color",
+      "description": "› Change the color for the side border of the embed."
+    },
+    "embed_title": {
+      "label": "Embed Title & Description",
+      "description": "› Adjust the content and set an optional link."
+    },
+    "embed_images": {
+      "label": "Embed Images",
+      "description": "› Set a thumbnail or a banner for the embed."
+    },
+    "embed_author": {
+      "label": "Embed Author",
+      "description": "› Set a header with author text and profile picture."
+    },
+    "embed_fields": {
+      "label": "Embed Fields",
+      "description": "› Add small informative fields to the embed."
+    },
+    "embed_footer": {
+      "label": "Embed Footer",
+      "description": "› Add a footer below the embed."
+    },
+    "embed_timestamp": {
+      "label": "Embed Timestamp",
+      "description": "› Set a date for your embed or remove it."
+    }
+  }
+}

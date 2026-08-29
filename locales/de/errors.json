@@ -1,5 +1,6 @@
 {
   "unexpected": "› `❌` - **Unbekannter Fehler:** Da ist leider etwas schiefgelaufen.. Der Praktikant wird bestraft und die Bot-Entwickler wurden informiert! <a:deny:819942197192294440>",
+  "dead_interaction": "› `❌` - **Sitzung abgelaufen:** Diese Nachricht ist abgelaufen - Bitte führe den Befehl erneut aus. <a:deny:819942197192294440>",
   "no_permission": {
     "user": "› `❌` - **Rechte fehlen:** Dir fehlen die folgenden Berechtigungen: `{permissions}` <a:deny:819942197192294440>",
     "bot": "› `❌` - **Bot-Rechte fehlen:** Ich benötige die folgenden Berechtigungen: `{permissions}` <a:deny:819942197192294440>",
