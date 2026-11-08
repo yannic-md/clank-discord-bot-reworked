@@ -113,7 +113,7 @@ async def handle_dead_interaction(interaction: Interaction) -> None:
     custom_id: str = (interaction.data or {}).get("custom_id", "")  # type: ignore[assignment,call-overload]
     # Components V2 messages can't have their content/embeds set, so they can never be replaced by the error text.
     if custom_id.startswith(_PRESERVE_MESSAGE_PREFIXES) or (
-            interaction.message is not None and _is_components_v2(interaction.message)
+        interaction.message is not None and _is_components_v2(interaction.message)
     ):
         await _disable_and_notify(interaction, message)
     else:
