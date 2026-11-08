@@ -1,0 +1,102 @@
+{
+  "buttons": {
+    "back": "Back",
+    "send": "Send",
+    "webhook": "Webhook",
+    "channel": "Channel",
+    "templates": "Templates",
+    "template_save": "Save template",
+    "template_delete": "Delete template",
+    "webhook_set": "Set webhook",
+    "webhook_edit": "Edit webhook",
+    "webhook_remove": "Remove webhook",
+    "edit_save": "Save changes",
+    "confirm_yes": "Yes, send it!",
+    "confirm_no": "No, keep editing!",
+    "up": "Up",
+    "down": "Down"
+  },
+  "placeholders": {
+    "templates_select": "Select a template.. 🖱️",
+    "templates_empty": "No templates exist.. 😢",
+    "this_channel": "this channel",
+    "other_channel": "the channel {channel}"
+  },
+  "info": {
+    "webhook": {
+      "title": "📢 ~ Edit Message Sender",
+      "description": "› Set a custom sender name and an optional avatar to send the message using a webhook in this channel, instead of the bot itself.",
+      "enabled": "`✅` ~ **Status:** `ENABLED` - The message will be sent as `{username}`.",
+      "disabled": "`❌` ~ **Status:** `DISABLED` - The message will be sent as `{username}`."
+    },
+    "send_confirm": {
+      "title": "📨 ~ Do you really want to send the message?",
+      "description": "› This will send the message to the channel {channel}. This action cannot be undone, and perhaps you will be pleased with the work you have created.\n",
+      "webhook_notice": "`📢` ~ **Webhook:** Appears as `{username}`.",
+      "mention_permission_warning": "`⚠️` ~ **Mention unavailable:** You do not have permission to mention roles—therefore, the role mention will be sent without a notification."
+    },
+    "success": {
+      "sent": "Your beautiful message was sent successfully! <a:check:730387138381873184>",
+      "saved": "The changes were saved successfully! <a:check:730387138381873184>",
+      "jump_link": "`🔗` ~ **Jump to message:** [Click here!]({jump_url})"
+    }
+  },
+  "errors": {
+    "no_template_selected": "› `❌` - **No Template Selected:** Select a template from the dropdown before editing it. <:loveangry:784930958084276224>",
+    "invalid_icon": "› `❌` - **Invalid Emoji:** Use a standard emoji or an emoji from this server. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Too Many Templates:** You can save a maximum of {limit} templates. <:loveangry:784930958084276224>",
+    "webhook_forbidden": "› `❌` - **Missing Bot Permissions:** I lack the permission `MANAGE WEBHOOKS` in {channel} to create a webhook. <:loveangry:784930958084276224>",
+    "webhook_limit": "› `❌` - **Webhook Limit Reached:** The maximum number of webhooks ({limit}) has already been reached in {channel}. <:loveangry:784930958084276224>",
+    "webhook_invalid": "› `❌` - **Invalid Webhook:** The stored webhook could not be found (it was likely deleted) - Set the webhook again. <:loveangry:784930958084276224>",
+    "invalid_image": "› `❌` - **Invalid Image:** No valid image was recognized. The formats `PNG`, `JPG`, `GIF`, `WEBP`, or `BMP` are currently supported. <:loveangry:784930958084276224>",
+    "user_permission_missing": "› `❌` - **Missing Permissions:** You are missing the following permissions in {channel}: `{permissions}` <:loveangry:784930958084276224>",
+    "bot_permission_missing": "› `❌` - **Missing Bot Permissions:** I need the following permissions in {channel}: `{permissions}` <:loveangry:784930958084276224>",
+    "message_deleted": "› `❌` - **Message No Longer Exists:** The message you wanted to edit no longer exists. The builder was switched back to send mode - you can now send it as a new message. <:loveangry:784930958084276224>",
+    "message_not_found": "› `❌` - **Message Not Found:** The specified message could not be found in this channel. <:loveangry:784930958084276224>",
+    "invalid_color": "› `❌` - **Invalid Color:** No valid hex code or RGB value was provided. (Use `#5865F2` or `rgb(88,101,242)`) <:loveangry:784930958084276224>"
+  },
+  "modals": {
+    "webhook": {
+      "title": "Edit Webhook",
+      "name": {
+        "question": "❓ ~ What is the name of the webhook?",
+        "placeholder": "e.g. MyServer.com - Info 📢"
+      },
+      "avatar": {
+        "question": "❓ ~ Which avatar URL should be used?",
+        "placeholder": "e.g. https://i.imgur.com/yed5Zfk.gif"
+      },
+      "url": {
+        "question": "❓ ~ Which webhook URL should be used?",
+        "placeholder": "Set this to avoid creating a new webhook."
+      }
+    },
+    "template": {
+      "title": "Save Template",
+      "name": {
+        "question": "❓ ~ What is the name of the template?",
+        "placeholder": "e.g. Rules, Team Applications, .. ✍️"
+      },
+      "icon": {
+        "question": "❓ ~ Which emoji should be used?",
+        "placeholder": "e.g. 📂 (or server emoji)"
+      }
+    },
+    "channel": {
+      "title": "Select Channel",
+      "select": "❓ ~ Where should the message be sent?",
+      "placeholder": "Select a channel.. 🖱️"
+    },
+    "option_yes": "Yes",
+    "option_no": "No",
+    "colour": {
+      "placeholder": "e.g. #5865F2 or rgb(88,101,242)"
+    },
+    "images": {
+      "thumbnail": "❓ ~ Which thumbnail should be used?"
+    }
+  },
+  "select": {
+    "placeholder": "🔨 ~ What would you like to edit?"
+  }
+}

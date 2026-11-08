@@ -1,0 +1,177 @@
+{
+  "main": {
+    "default_content": "🦎 - This is my cool Container Builder message!"
+  },
+  "buttons": {
+    "order": "Order",
+    "order_contents": "Order of contents",
+    "thumbnail_create": "Create thumbnail",
+    "thumbnail_edit": "Edit thumbnail",
+    "component_add": "Add {kind}",
+    "move": "Move",
+    "item_add": "Add item",
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "placeholders": {
+    "snippet_container_children": {
+      "one": "{count} child element",
+      "other": "{count} child elements"
+    },
+    "snippet_gallery_items": {
+      "one": "{count} item",
+      "other": "{count} items"
+    },
+    "snippet_visible": "visible",
+    "snippet_hidden": "hidden",
+    "option_snippet": "{kind} {number}: {snippet}",
+    "option_label_empty": "{kind} {number}: (empty)",
+    "content_select": "Select an element.. 🖱️",
+    "switch_component": "Select a component.. 🖱️",
+    "switch_component_empty": "Nothing here yet.. 😢",
+    "child_elements": "Contents of the container.. 📂",
+    "move_target": "Select a target.. 🖱️",
+    "move_target_empty": "No target available.. 😢",
+    "components_empty": "No components available.. 😢",
+    "item_option": "Item {number}: {description}",
+    "item_no_description": "(No description)",
+    "switch_item": "Select an item.. 🖱️",
+    "switch_item_empty": "No items yet.. 😢"
+  },
+  "info": {
+    "kinds": {
+      "text_display": {
+        "label": "Text Display",
+        "description": "› Text displays show formatted text - just like normal message content, but as a standalone component. At most {max} characters per text display."
+      },
+      "container": {
+        "label": "Container",
+        "description": "› Containers group several elements in a colored box. They can hold text displays, media galleries and separators - but no other container.",
+        "empty": "› This container is still empty. Pick an element in the lower dropdown to add it."
+      },
+      "media_gallery": {
+        "label": "Media Gallery",
+        "description": "› Media galleries show up to {max} images or videos side by side, sorted within a grid.",
+        "empty": "› This media gallery is still empty. Click \"Edit Media Gallery\" to add images or videos."
+      },
+      "separator": {
+        "label": "Separator",
+        "description": "› Separators add spacing or a visible line between elements."
+      }
+    },
+    "location": {
+      "main": "Main message",
+      "child_of": "Child of Container {index}"
+    },
+    "content": {
+      "description": "› Manage elements that sit directly in the message - outside of containers. Pick an element in the lower dropdown to add or edit it."
+    },
+    "move": {
+      "title": "↔️ ~ Move {kind}",
+      "description": "› Current location: **{location}**\nPick the target in the lower dropdown. The element is appended at its end."
+    },
+    "order": {
+      "title": "🔀 ~ Component order - {location}",
+      "description": "› Pick an element in the lower dropdown and move it up or down with the arrow buttons.",
+      "description_empty": "› There are no elements to arrange here yet."
+    },
+    "templates": {
+      "title": "📁 ~ Container Templates",
+      "description": "› Save the current draft of your components as a template or load an existing one using the dropdown menu below.",
+      "loaded": {
+        "one": "`✅` ~ **Template `{name}` loaded:** `1` component was applied successfully.",
+        "other": "`✅` ~ **Template `{name}` loaded:** `{count}` components were applied successfully."
+      },
+      "broken_components": {
+        "one": "`⚠️` ~ **`1` component damaged:** It could not be restored from the template and was skipped - Save the template again to clean it up.",
+        "other": "`⚠️` ~ **`{count}` components damaged:** They could not be restored from the template and were skipped - Save the template again to clean it up."
+      },
+      "broken_links": {
+        "one": "`⚠️` ~ **`1` media link unreachable:** An image/video of this template can no longer be retrieved (e.g. an expired upload) and may not be displayed - The template was loaded anyway.",
+        "other": "`⚠️` ~ **`{count}` media links unreachable:** Some images/videos of this template can no longer be retrieved (e.g. expired uploads) and may not be displayed - The template was loaded anyway."
+      }
+    },
+    "load": {
+      "not_v2": "`⚠️` ~ **No Components V2 Layout:** The message cannot be edited - its text was taken over as a copy.",
+      "truncated": "`⚠️` ~ **Message Truncated:** The message has {original} components, the Container Builder supports at most {max} - only the first {kept} were taken over.",
+      "unsupported": {
+        "one": "`⚠️` ~ **`1` component unsupported:** It (e.g. a button or a file) was not taken over.",
+        "other": "`⚠️` ~ **`{count}` components unsupported:** They (e.g. buttons or files) were not taken over."
+      },
+      "copy_only": "The message therefore cannot be edited directly."
+    },
+    "preview_too_large": "› Preview unavailable here: together with the controls, this part ({amount} components) would exceed Discord's limit of 40. It is shown in full in the sent message."
+  },
+  "errors": {
+    "component_limit": "› `❌` - **Limit Reached:** At most {limit} components can be used. <:loveangry:784930958084276224>",
+    "nothing_to_send": "› `❌` - **Nothing To Send:** There is nothing to send yet - add a component first. <:loveangry:784930958084276224>",
+    "nothing_to_save": "› `❌` - **Nothing To Save:** There is nothing to save yet - add a component first. <:loveangry:784930958084276224>",
+    "total_text": "› `❌` - **Text Too Long:** The total text of all text displays must not exceed {max} characters. <:loveangry:784930958084276224>",
+    "move_target_gone": "› `❌` - **Target Not Found:** The target no longer exists. <:loveangry:784930958084276224>",
+    "gallery_max_items": "› `❌` - **Gallery Full:** A media gallery can hold at most {max} items. <:loveangry:784930958084276224>",
+    "load_nothing_usable": "› `❌` - **Nothing To Take Over:** This message contains no text or components that could be taken over. <:loveangry:784930958084276224>",
+    "load_no_supported": "› `❌` - **Not Supported:** This message contains no components the Container Builder supports. <:loveangry:784930958084276224>",
+    "thumbnail_no_image": "› `❌` - **No Image:** No image was uploaded. <:loveangry:784930958084276224>",
+    "thumbnail_needs_image": "› `❌` - **Image Missing:** Description and spoiler only apply together with an image. Upload an image - or leave both empty to remove the thumbnail. <:loveangry:784930958084276224>",
+    "gallery_invalid_media": "› `❌` - **Invalid File:** Please upload only valid images or videos. <:loveangry:784930958084276224>",
+    "gallery_no_file": "› `❌` - **No File:** No file was uploaded. <:loveangry:784930958084276224>"
+  },
+  "modals": {
+    "spoiler": {
+      "question": "❓ ~ Should it be marked as a spoiler?"
+    },
+    "description": {
+      "placeholder": "e.g. Our server's logo 🖼️",
+      "field": "❓ ~ Description of the image?"
+    },
+    "content": {
+      "field": "❓ ~ What should the text display say?",
+      "placeholder": "The text for your text display.. ✍️",
+      "title": "Edit Text Display"
+    },
+    "container": {
+      "field": "❓ ~ What color should the container have?",
+      "title": "Edit Container"
+    },
+    "separator": {
+      "visible": "Yes, with a visible line",
+      "invisible": "No, spacing only",
+      "small": "Small",
+      "large": "Large",
+      "appearance": "❓ ~ Should the separator be visible?",
+      "spacing": "❓ ~ How large should the spacing be?",
+      "title": "Edit Separator"
+    },
+    "thumbnail": {
+      "title": "Edit Thumbnail"
+    },
+    "gallery": {
+      "title": "Edit Gallery Item",
+      "media_edit": "❓ ~ Which image/video should be used?",
+      "media_add": "❓ ~ Which images/videos (up to {max})?",
+      "description_all": "❓ ~ Description for all items?"
+    }
+  },
+  "select": {
+    "content": {
+      "label": "Message Content",
+      "description": "› Add text or media directly to the message."
+    },
+    "container": {
+      "description": "› Create colored boxes & add text or media."
+    },
+    "order": {
+      "label": "Component order",
+      "description": "› Change the order of all containers and elements."
+    },
+    "text_display": {
+      "description": "› Add formatted text or edit it."
+    },
+    "media_gallery": {
+      "description": "› Show multiple images or videos side by side."
+    },
+    "separator": {
+      "description": "› Add spacing or a visible line between elements."
+    }
+  }
+}

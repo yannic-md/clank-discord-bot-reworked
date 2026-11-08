@@ -43,6 +43,14 @@
         "name": "nachricht-id",
         "description": "Welche Nachricht möchtest du bearbeiten?"
       }
+    },
+    "container": {
+      "name": "container-builder",
+      "description": "› Erstelle eine Nachricht aus Containern und weiteren UI-Komponenten. 📦",
+      "parameter": {
+        "name": "nachricht-id",
+        "description": "Welche Nachricht möchtest du bearbeiten?"
+      }
     }
   }
 }

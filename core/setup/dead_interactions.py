@@ -13,7 +13,7 @@ logger: Logger = logging.getLogger("discord")
 _warned_about_missing_view_store: bool = False
 
 # `custom_id` prefixes for screens that want their message's content/embeds preserved.
-_PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed_builder:",)
+_PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed:",)
 
 
 def _has_live_handler(interaction: Interaction) -> bool:
