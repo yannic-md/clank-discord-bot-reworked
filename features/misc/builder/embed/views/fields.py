@@ -11,7 +11,10 @@ from features.misc.builder.embed.views.base import BuilderScreenView, show
 
 
 class EmbedFieldsView(BuilderScreenView):
+    """Screen to add, edit, delete and reorder the fields of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Build the info embed and the field dropdown, keeping the active field in range."""
         super().__init__()
         self.session: BuilderSession = session
         fields = list(session.active_embed.fields)
@@ -71,12 +74,14 @@ class EmbedFieldsView(BuilderScreenView):
 
     @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed:fields:back")
     async def back_button(self: EmbedFieldsView, interaction: Interaction, _button: Button) -> None:
+        """Go back to the main screen."""
         from features.misc.builder.embed.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
     @button(label="Add", style=ButtonStyle.green, row=0, custom_id="embed:fields:add")
     async def add_button(self: EmbedFieldsView, interaction: Interaction, _button: Button) -> None:
+        """Open the modal to add a field, or show the limit error if the embed is full."""
         if len(self.session.active_embed.fields) >= MAX_EMBED_FIELDS:
             message = translate(self.session.language, "builder.embed.errors.field_limit", limit=MAX_EMBED_FIELDS)
             await append_error(interaction, self.embeds, self, message)
@@ -86,11 +91,13 @@ class EmbedFieldsView(BuilderScreenView):
 
     @button(label="Edit", style=ButtonStyle.blurple, row=0, custom_id="embed:fields:edit")
     async def edit_button(self: EmbedFieldsView, interaction: Interaction, _button: Button) -> None:
+        """Open the modal to edit the active field."""
         assert self.session.active_field is not None
         await interaction.response.send_modal(EmbedFieldModal(self.session, self.session.active_field))
 
     @button(label="Delete", style=ButtonStyle.red, row=0, custom_id="embed:fields:delete")
     async def delete_button(self: EmbedFieldsView, interaction: Interaction, _button: Button) -> None:
+        """Delete the active field."""
         assert self.session.active_field is not None
         self.session.active_embed.remove_field(self.session.active_field)
         fields_left: int = len(self.session.active_embed.fields)
@@ -107,11 +114,13 @@ class EmbedFieldsView(BuilderScreenView):
         custom_id="embed:fields:select",
     )
     async def field_select(self: EmbedFieldsView, interaction: Interaction, select_obj: Select) -> None:
+        """Make the chosen field the active one."""
         self.session.active_field = int(select_obj.values[0])
         await show(interaction, EmbedFieldsView(self.session))
 
     @button(label="Up", style=ButtonStyle.gray, row=2, custom_id="embed:fields:up")
     async def up_button(self: EmbedFieldsView, interaction: Interaction, _button: Button) -> None:
+        """Move the active field one position up."""
         assert self.session.active_field is not None
         move_embed_field(self.session.active_embed, self.session.active_field, -1)
         self.session.active_field -= 1
@@ -119,6 +128,7 @@ class EmbedFieldsView(BuilderScreenView):
 
     @button(label="Down", style=ButtonStyle.gray, row=2, custom_id="embed:fields:down")
     async def down_button(self: EmbedFieldsView, interaction: Interaction, _button: Button) -> None:
+        """Move the active field one position down."""
         assert self.session.active_field is not None
         move_embed_field(self.session.active_embed, self.session.active_field, 1)
         self.session.active_field += 1

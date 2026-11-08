@@ -18,7 +18,10 @@ from features.misc.builder.validation import (
 
 
 class SendConfirmView(BuilderLayoutView):
+    """Screen asking the user to confirm sending the message, with a preview of it."""
+
     def __init__(self, session: ContainerBuilderSession, *, error: str | None = None) -> None:
+        """`error` is an optional error box to show."""
         from features.misc.builder.container.views.gui import MainView
 
         super().__init__()
@@ -46,6 +49,7 @@ class SendConfirmView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_confirm(interaction: Interaction) -> None:
+            """Check permissions on the target channel, send the message and report the result."""
             if not nodes:
                 await show(interaction, MainView(session))
                 return
@@ -86,6 +90,7 @@ class SendConfirmView(BuilderLayoutView):
             await interaction.response.edit_message(view=success_view)
 
         async def on_cancel(interaction: Interaction) -> None:
+            """Go back to the main screen without sending."""
             await show(interaction, MainView(session))
 
         add_button(
@@ -99,6 +104,7 @@ class SendConfirmView(BuilderLayoutView):
 
 
 def _jump_link_text(language: SupportedLanguage, jump_url: str) -> str:
+    """Localized text linking to the sent message."""
     return ts(language, "info.success.jump_link", jump_url=jump_url)
 
 

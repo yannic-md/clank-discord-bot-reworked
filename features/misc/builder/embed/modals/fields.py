@@ -7,7 +7,10 @@ from features.misc.builder.embed.session import BuilderSession
 
 
 class EmbedFieldModal(Modal):
+    """Modal to add a field to the active embed or edit an existing one."""
+
     def __init__(self, session: BuilderSession, field_index: int | None) -> None:
+        """`field_index` is the field to edit, or `None` to add a new one."""
         super().__init__(title=translate(session.language, "builder.embed.modals.field.title"))
         self.session: BuilderSession = session
         self.field_index: int | None = field_index
@@ -52,6 +55,7 @@ class EmbedFieldModal(Modal):
         )
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Add or update the field and return to the field list."""
         from features.misc.builder.embed.views import EmbedFieldsView, show
 
         embed: Embed = self.session.active_embed

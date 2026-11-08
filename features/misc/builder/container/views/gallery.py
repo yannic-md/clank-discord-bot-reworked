@@ -12,6 +12,8 @@ from features.misc.builder.container.views.base import BuilderLayoutView, add_bu
 
 
 class MediaGalleryItemsView(BuilderLayoutView):
+    """Screen to add, edit, remove and reorder the items of one media gallery."""
+
     def __init__(
         self,
         session: ContainerBuilderSession,
@@ -20,6 +22,9 @@ class MediaGalleryItemsView(BuilderLayoutView):
         active_index: int | None = None,
         error: str | None = None,
     ) -> None:
+        """`node_id` is the media gallery, `active_index` the selected item (defaults to the first) and `error` an optional
+        error box to show.
+        """
         from features.misc.builder.container.views.component_list import ComponentKindListView
 
         super().__init__()
@@ -45,6 +50,7 @@ class MediaGalleryItemsView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the media gallery list."""
             parent = find_parent(session, node_id)
             back_parent_id = parent.id if parent else None
             back_view = ComponentKindListView(session, kind=ComponentKind.MEDIA_GALLERY, parent_id=back_parent_id)
@@ -53,6 +59,7 @@ class MediaGalleryItemsView(BuilderLayoutView):
         add_button(nav_row, on_back, label=ts(session.language, "buttons.back"), style=ButtonStyle.gray, emoji="◀️")
 
         async def on_add(interaction: Interaction) -> None:
+            """Open the modal to add items, or show the limit error if the gallery is full."""
             if len(items) >= MAX_V2_MEDIA_GALLERY_ITEMS:
                 error = t(session.language, "errors.gallery_max_items", max=MAX_V2_MEDIA_GALLERY_ITEMS)
                 await show(
@@ -72,6 +79,7 @@ class MediaGalleryItemsView(BuilderLayoutView):
         )
 
         async def on_edit(interaction: Interaction) -> None:
+            """Open the modal to replace the media of the selected item."""
             assert active_index is not None
             await interaction.response.send_modal(MediaGalleryItemModal(session, node_id=node_id, item_index=active_index))
 
@@ -85,6 +93,7 @@ class MediaGalleryItemsView(BuilderLayoutView):
         )
 
         async def on_remove(interaction: Interaction) -> None:
+            """Delete the selected item."""
             assert active_index is not None
             del items[active_index]
             await show(interaction, MediaGalleryItemsView(session, node_id=node_id))
@@ -122,6 +131,7 @@ class MediaGalleryItemsView(BuilderLayoutView):
             select_disabled = True
 
         async def on_switch(interaction: Interaction) -> None:
+            """Select another item of the gallery."""
             if not items:
                 return
             new_index = int(switch_select.values[0])
@@ -135,11 +145,13 @@ class MediaGalleryItemsView(BuilderLayoutView):
         order_row: ActionRow = ActionRow()
 
         async def on_up(interaction: Interaction) -> None:
+            """Move the selected item one position up."""
             assert active_index is not None and active_index > 0
             items[active_index - 1], items[active_index] = items[active_index], items[active_index - 1]
             await show(interaction, MediaGalleryItemsView(session, node_id=node_id, active_index=active_index - 1))
 
         async def on_down(interaction: Interaction) -> None:
+            """Move the selected item one position down."""
             assert active_index is not None and active_index < len(items) - 1
             items[active_index + 1], items[active_index] = items[active_index], items[active_index + 1]
             await show(interaction, MediaGalleryItemsView(session, node_id=node_id, active_index=active_index + 1))

@@ -13,6 +13,7 @@ class MoveView(BuilderLayoutView):
     """Moves a component between the message itself and containers (appended at the end)."""
 
     def __init__(self, session: ContainerBuilderSession, *, node_id: int, error: str | None = None) -> None:
+        """`node_id` is the component to move (anything but a container) and `error` an optional error box to show."""
         from features.misc.builder.container.views.component_list import ComponentKindListView
 
         super().__init__()
@@ -34,6 +35,7 @@ class MoveView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the list the component was opened from."""
             await show(interaction, ComponentKindListView(session, kind=node.kind, parent_id=current_parent_id))
 
         add_button(nav_row, on_back, label=ts(session.language, "buttons.back"), style=ButtonStyle.gray, emoji="◀️")
@@ -43,6 +45,7 @@ class MoveView(BuilderLayoutView):
         options = move_targets(session, node)
 
         async def on_select(interaction: Interaction) -> None:
+            """Move the component into the chosen container (or the top level) and show the list it now belongs to."""
             value = target_select.values[0]
             if value == "__none__":
                 return

@@ -6,6 +6,7 @@ from features.misc.builder.container.translations import t
 
 
 def find_node(session: ContainerBuilderSession, node_id: int) -> ComponentNode | None:
+    """The node with this id from the top level or a container's children, or `None`."""
     for node in session.components:
         if node.id == node_id:
             return node
@@ -35,6 +36,7 @@ def get_list(session: ContainerBuilderSession, parent_id: int | None) -> list[Co
 
 
 def describe_location(session: ContainerBuilderSession, parent_id: int | None) -> str:
+    """Localized name of where `parent_id` lives: the main message or "Child of Container N"."""
     if parent_id is None:
         return t(session.language, "info.location.main")
 
@@ -54,10 +56,12 @@ def node_cost(node: ComponentNode) -> int:
 
 
 def total_cost(nodes: list[ComponentNode]) -> int:
+    """Component budget used by `nodes` including all their descendants."""
     return sum(node_cost(node) for node in nodes)
 
 
 def remaining_budget(session: ContainerBuilderSession) -> int:
+    """How many more components the message can still hold."""
     return MAX_USER_COMPONENTS - total_cost(session.components)
 
 
@@ -78,6 +82,7 @@ def count_by_kind(nodes: list[ComponentNode], kind: ComponentKind) -> int:
 
 
 def total_text_length(nodes: list[ComponentNode]) -> int:
+    """Combined text length of all text displays in `nodes`, including those inside containers."""
     total = 0
     for node in nodes:
         if node.kind == ComponentKind.TEXT_DISPLAY:
@@ -115,6 +120,7 @@ def non_empty_nodes(nodes: list[ComponentNode]) -> list[ComponentNode]:
 
 
 def count_nodes(nodes: list[ComponentNode]) -> int:
+    """Number of `nodes` including all nested children."""
     return sum(1 + count_nodes(node.children) for node in nodes)
 
 

@@ -27,6 +27,10 @@ from features.misc.builder.container.views.base import (
 
 
 class ComponentKindListView(BuilderLayoutView):
+    """Screen listing all components of one kind - in the message or inside a container - with controls to add, edit, remove,
+    reorder and move them.
+    """
+
     def __init__(
         self,
         session: ContainerBuilderSession,
@@ -35,6 +39,9 @@ class ComponentKindListView(BuilderLayoutView):
         parent_id: int | None,
         error: str | None = None,
     ) -> None:
+        """`kind` is the component kind to list, `parent_id` the container to list it from (`None` for the top level) and
+        `error` an optional error box to show.
+        """
         from features.misc.builder.container.views.gallery import MediaGalleryItemsView
         from features.misc.builder.container.views.gui import MainView, MessageContentView
         from features.misc.builder.container.views.move import MoveView
@@ -77,6 +84,7 @@ class ComponentKindListView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the screen this list was opened from."""
             if parent_id is not None:
                 await show(interaction, ComponentKindListView(session, kind=ComponentKind.CONTAINER, parent_id=None))
             elif kind == ComponentKind.CONTAINER:
@@ -89,6 +97,7 @@ class ComponentKindListView(BuilderLayoutView):
         can_add = remaining_budget(session) >= 1
 
         async def on_add(interaction: Interaction) -> None:
+            """Add a component of this kind, or show the limit error if the message is full."""
             if remaining_budget(session) < 1:
                 error = t(session.language, "errors.component_limit", limit=MAX_USER_COMPONENTS)
                 await show(interaction, ComponentKindListView(session, kind=kind, parent_id=parent_id, error=error))
@@ -107,6 +116,7 @@ class ComponentKindListView(BuilderLayoutView):
         add_button(nav_row, on_add, label=add_label, style=ButtonStyle.green, emoji="➕", disabled=not can_add)
 
         async def on_edit(interaction: Interaction) -> None:
+            """Edit the selected component - galleries open their item screen, all other kinds a modal."""
             assert active_node is not None
             if kind == ComponentKind.MEDIA_GALLERY:
                 await show(interaction, MediaGalleryItemsView(session, node_id=active_node.id))
@@ -118,6 +128,7 @@ class ComponentKindListView(BuilderLayoutView):
         add_button(nav_row, on_edit, label=edit_label, style=ButtonStyle.blurple, emoji="✏️", disabled=active_node is None)
 
         async def on_remove(interaction: Interaction) -> None:
+            """Delete the selected component."""
             assert active_node is not None
             owning_list.remove(active_node)
             await show(interaction, ComponentKindListView(session, kind=kind, parent_id=parent_id))
@@ -133,6 +144,7 @@ class ComponentKindListView(BuilderLayoutView):
             text_node = active_node
 
             async def on_thumbnail(interaction: Interaction) -> None:
+                """Open the thumbnail modal for the selected text display."""
                 await interaction.response.send_modal(ThumbnailModal(session, node_id=text_node.id))
 
             # Creating a thumbnail turns the text into a section: it uses two more components of the budget.
@@ -170,6 +182,7 @@ class ComponentKindListView(BuilderLayoutView):
             switch_disabled = True
 
         async def on_switch(interaction: Interaction) -> None:
+            """Select another component of this kind."""
             if not nodes:
                 return
             session.active_selection[selection_key] = int(switch_select.values[0])
@@ -186,6 +199,7 @@ class ComponentKindListView(BuilderLayoutView):
                 sub_row: ActionRow = ActionRow()
 
                 async def on_sub_select(interaction: Interaction) -> None:
+                    """Open the list of child components of the selected container."""
                     assert active_node is not None
                     value = sub_select.values[0]
                     child_kind = ComponentKind(value.removeprefix("child_"))
@@ -209,16 +223,19 @@ class ComponentKindListView(BuilderLayoutView):
         reorder_row: ActionRow = ActionRow()
 
         def swap_with(neighbour: ComponentNode) -> None:
+            """Swap the selected component with `neighbour` in the list owning them."""
             assert active_node is not None
             first, second = owning_list.index(active_node), owning_list.index(neighbour)
             owning_list[first], owning_list[second] = owning_list[second], owning_list[first]
 
         async def on_up(interaction: Interaction) -> None:
+            """Move the selected component one position up."""
             assert position is not None and position > 0
             swap_with(nodes[position - 1])
             await show(interaction, ComponentKindListView(session, kind=kind, parent_id=parent_id))
 
         async def on_down(interaction: Interaction) -> None:
+            """Move the selected component one position down."""
             assert position is not None and position < len(nodes) - 1
             swap_with(nodes[position + 1])
             await show(interaction, ComponentKindListView(session, kind=kind, parent_id=parent_id))
@@ -245,6 +262,7 @@ class ComponentKindListView(BuilderLayoutView):
         if kind != ComponentKind.CONTAINER:
 
             async def on_move(interaction: Interaction) -> None:
+                """Open the screen to move the selected component into another container."""
                 assert active_node is not None
                 await show(interaction, MoveView(session, node_id=active_node.id))
 
@@ -261,6 +279,7 @@ class ComponentKindListView(BuilderLayoutView):
         if kind == ComponentKind.CONTAINER:
 
             async def on_child_order(interaction: Interaction) -> None:
+                """Open the order screen for the contents of the selected container."""
                 assert active_node is not None
                 await show(interaction, ComponentOrderView(session, parent_id=active_node.id))
 
@@ -290,6 +309,7 @@ class ComponentKindListView(BuilderLayoutView):
 def _modal_for_kind(
     session: ContainerBuilderSession, kind: ComponentKind, *, parent_id: int | None, node_id: int | None
 ) -> Modal:
+    """The modal to create or edit a component of `kind`; media galleries have none and raise `ValueError`."""
     if kind == ComponentKind.TEXT_DISPLAY:
         return TextDisplayModal(session, parent_id=parent_id, node_id=node_id)
     if kind == ComponentKind.CONTAINER:

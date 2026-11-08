@@ -12,7 +12,10 @@ from features.misc.builder.validation import is_valid_image_attachment, is_valid
 
 
 class EmbedImagesModal(Modal):
+    """Modal to set or clear the thumbnail and main image of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Offer one upload slot each for the thumbnail and the image."""
         super().__init__(title=translate(session.language, "builder.embed.modals.images.title"))
         self.session: BuilderSession = session
 
@@ -30,6 +33,7 @@ class EmbedImagesModal(Modal):
         )
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the uploads, set them as thumbnail and image (an empty slot clears it) and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         for attachment_list in (self.thumbnail_input.values, self.image_input.values):
@@ -49,7 +53,10 @@ class EmbedImagesModal(Modal):
 
 
 class EmbedAuthorModal(Modal):
+    """Modal to edit the author name, URL and icon of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the fields with the active embed's author."""
         super().__init__(title=translate(session.language, "builder.embed.modals.author.title"))
         self.session: BuilderSession = session
         embed: Embed = session.active_embed
@@ -76,6 +83,7 @@ class EmbedAuthorModal(Modal):
         self.add_item(Label(text=translate(session.language, "builder.embed.modals.author.icon"), component=self.icon_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the input, apply the author to the active embed and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         embed: Embed = self.session.active_embed
@@ -120,7 +128,10 @@ class EmbedAuthorModal(Modal):
 
 
 class EmbedFooterModal(Modal):
+    """Modal to edit the footer text and icon of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the fields with the active embed's footer."""
         super().__init__(title=translate(session.language, "builder.embed.modals.footer.title"))
         self.session: BuilderSession = session
         embed: Embed = session.active_embed
@@ -139,6 +150,7 @@ class EmbedFooterModal(Modal):
         self.add_item(Label(text=translate(session.language, "builder.embed.modals.footer.icon"), component=self.icon_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the input, apply the footer to the active embed and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         embed: Embed = self.session.active_embed
@@ -173,7 +185,10 @@ class EmbedFooterModal(Modal):
 
 
 class EmbedTimestampModal(Modal):
+    """Modal to edit the timestamp of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the field with the active embed's timestamp."""
         super().__init__(title=translate(session.language, "builder.embed.modals.timestamp.title"))
         self.session: BuilderSession = session
         embed: Embed = session.active_embed
@@ -189,6 +204,7 @@ class EmbedTimestampModal(Modal):
         self.add_item(self.timestamp_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Parse the timestamp (empty removes it), apply it to the active embed and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         embed: Embed = self.session.active_embed

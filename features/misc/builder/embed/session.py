@@ -44,10 +44,12 @@ class BuilderSession:
 
     @property
     def active_embed(self) -> Embed:
+        """The embed currently being edited."""
         return self.embeds[self.active_embed_index]
 
     @property
     def message_content(self) -> str | None:
+        """The message text, or `None` if it is empty."""
         return self.content or None
 
     @property
@@ -57,4 +59,5 @@ class BuilderSession:
 
 
 def is_own_message(message: Message, bot_user: Member | User | None) -> bool:
+    """Whether `message` was written by the bot itself."""
     return bot_user is not None and message.author.id == bot_user.id

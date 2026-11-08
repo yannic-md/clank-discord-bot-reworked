@@ -12,7 +12,10 @@ from features.misc.builder.validation import convert_to_emoji
 
 
 class SaveTemplateModal(Modal):
+    """Modal asking for a name and icon to save the current components as a template."""
+
     def __init__(self, session: ContainerBuilderSession) -> None:
+        """Pre-fill the fields with the currently loaded template, so saving without changes overwrites it."""
         super().__init__(title=ts(session.language, "modals.template.title"))
         self.session = session
 
@@ -38,6 +41,7 @@ class SaveTemplateModal(Modal):
         self.add_item(self.icon_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the input, save the template (overwriting one of the same name) and show the template list."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.templates import TemplatesView
 

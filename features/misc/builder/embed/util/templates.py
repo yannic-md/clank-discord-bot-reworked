@@ -55,12 +55,14 @@ def _assert_readable(embed: Embed) -> None:
 
 
 def _rebuild_embed(data: object) -> Embed:
+    """Rebuild an embed from its stored dict, rejecting data the builder cannot handle."""
     embed = Embed.from_dict(data)  # type: ignore[arg-type]
     _assert_readable(embed)
     return embed
 
 
 def _to_template(record: EmbedTemplateRecord) -> EmbedTemplate:
+    """Convert a stored record into a template, dropping embeds that cannot be rebuilt."""
     embeds: list[Embed] = []
     dropped: int = 0
 

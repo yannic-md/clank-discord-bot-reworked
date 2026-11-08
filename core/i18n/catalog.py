@@ -9,15 +9,10 @@ LOCALES_DIR = Path("locales")
 def _load_catalog() -> dict[SupportedLanguage, dict[str, object]]:
     """Load every locale file into memory once at import time.
 
-    Each supported language has its own directory under `locales/` (e.g.
-    `locales/de/`), containing any number of domain files such as
-    `common.json` or `settings.json`. New domains can be added freely by
-    dropping another `<domain>.json` file into each language directory.
-
-    Domains can also be grouped in subdirectories: `locales/de/builder/embed.json`
-    is the domain `builder.embed`, so its keys read `builder.embed.<key>`.
-    A file named like its folder (`builder/builder.json`) is that folder's shared part: its
-    keys read `builder.<key>`.
+    Each language directory under `locales/` (e.g. `locales/de/`) holds any number of
+    `<domain>.json` files. Subdirectories nest the domain: `builder/embed.json` is the
+    domain `builder.embed`, and a file named like its folder (`builder/builder.json`)
+    is that folder's shared part, with keys read as `builder.<key>`.
 
     Returns:
         dict[SupportedLanguage, dict[str, object]]: For each supported language,

@@ -19,7 +19,10 @@ from features.misc.builder.container.views.base import BuilderLayoutView, add_bu
 
 
 class MainView(BuilderLayoutView):
+    """Main screen of the container builder: a live preview with the controls to edit and send it."""
+
     def __init__(self, session: ContainerBuilderSession, *, error: str | None = None, notice: str | None = None) -> None:
+        """`error` and `notice` are optional status boxes shown above the controls."""
         from features.misc.builder.container.views.component_list import ComponentKindListView
         from features.misc.builder.container.views.order import ComponentOrderView
         from features.misc.builder.container.views.send import SendConfirmView, save_message_changes
@@ -35,6 +38,7 @@ class MainView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_send(interaction: Interaction) -> None:
+            """Ask for confirmation before sending, unless there is nothing to send."""
             if not non_empty_nodes(session.components):
                 error = t(session.language, "errors.nothing_to_send")
                 await show(interaction, MainView(session, error=error))
@@ -42,16 +46,20 @@ class MainView(BuilderLayoutView):
             await show(interaction, SendConfirmView(session))
 
         async def on_webhook(interaction: Interaction) -> None:
+            """Open the webhook screen."""
             await show(interaction, WebhookView(session))
 
         async def on_channel(interaction: Interaction) -> None:
+            """Open the modal to choose the target channel."""
             await interaction.response.send_modal(ChannelModal(session))
 
         async def on_templates(interaction: Interaction) -> None:
+            """Reload the user's templates and open the template screen."""
             session.templates = await load_user_templates(session.slashcmd_author_id)
             await show(interaction, TemplatesView(session))
 
         async def on_save(interaction: Interaction) -> None:
+            """Save the changes to the message being edited."""
             await save_message_changes(interaction, session, self)
 
         if session.edit_mode:
@@ -108,6 +116,7 @@ class MainView(BuilderLayoutView):
         ]
 
         async def on_select(interaction: Interaction) -> None:
+            """Open the screen for the chosen entry: message content, order or containers."""
             value = component_select.values[0]
             if value == MESSAGE_CONTENT_VALUE:
                 await show(interaction, MessageContentView(session))
@@ -132,6 +141,7 @@ class MessageContentView(BuilderLayoutView):
     """Hub for components that sit directly in the message (outside of any container)."""
 
     def __init__(self, session: ContainerBuilderSession) -> None:
+        """Build the screen for components placed directly in the message."""
         from features.misc.builder.container.views.component_list import ComponentKindListView
         from features.misc.builder.container.views.order import ComponentOrderView
 
@@ -145,11 +155,13 @@ class MessageContentView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the main screen."""
             await show(interaction, MainView(session))
 
         add_button(nav_row, on_back, label=ts(session.language, "buttons.back"), style=ButtonStyle.gray, emoji="◀️")
 
         async def on_order(interaction: Interaction) -> None:
+            """Open the order screen for the components in the message."""
             await show(interaction, ComponentOrderView(session, parent_id=None, content_only=True))
 
         content_count = len(content_nodes(session.components))
@@ -174,6 +186,7 @@ class MessageContentView(BuilderLayoutView):
         ]
 
         async def on_select(interaction: Interaction) -> None:
+            """Open the list for the chosen component kind."""
             value = content_select.values[0]
             await show(interaction, ComponentKindListView(session, kind=ComponentKind(value), parent_id=None))
 

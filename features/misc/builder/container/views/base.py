@@ -18,10 +18,13 @@ ItemCallback = Callable[[Interaction], Coroutine[Any, Any, Any]]
 
 
 class BuilderLayoutView(LayoutView):
+    """Base class of every container-builder screen: a layout view that disables its controls on timeout."""
+
     message: Message | None = None
     session: ContainerBuilderSession
 
     def __init__(self) -> None:
+        """Create the view with the shared builder timeout."""
         super().__init__(timeout=BUILDER_VIEW_TIMEOUT)
         self.overflow_notes: list[str] = []
         """Status texts that no longer fit into the 40-component budget of this screen (a message with the
@@ -29,6 +32,7 @@ class BuilderLayoutView(LayoutView):
         ephemeral follow-up messages instead."""
 
     async def on_timeout(self) -> None:
+        """Disable all buttons and selects of the sent message once the view expires."""
         if self.message is None:
             return
 
@@ -56,6 +60,7 @@ class BuilderLayoutView(LayoutView):
             self.add_item(row)
 
     def add_error(self, message: str) -> None:
+        """Add an error box with `message` to the screen."""
         self.add_status(error_container(message))
 
     def add_item_top(self, item: Item, *, fallback: Callable[[], Item]) -> None:
@@ -73,6 +78,7 @@ class BuilderLayoutView(LayoutView):
             self.add_item(child)
 
     async def on_error(self, interaction: Interaction, error: Exception, item: Item) -> None:
+        """Forward unhandled errors to the central error handler."""
         await error_handler(interaction, error)  # type: ignore[arg-type]
 
 
@@ -92,6 +98,7 @@ async def send_overflow_notes(interaction: Interaction, view: BuilderLayoutView)
 
 
 def track_active_view(view: BuilderLayoutView) -> None:
+    """Make `view` the session's active screen and stop the one it replaces."""
     session = view.session
     if session.active_view is not None and session.active_view is not view:
         assert isinstance(session.active_view, BuilderLayoutView)
@@ -100,6 +107,7 @@ def track_active_view(view: BuilderLayoutView) -> None:
 
 
 def info_container(text: str) -> Container:
+    """Blurple container showing `text`."""
     return Container(TextDisplay(text), accent_colour=Colour.blurple())
 
 
@@ -117,6 +125,7 @@ def empty_node_container(session: ContainerBuilderSession, node: ComponentNode, 
 
 
 def error_container(message: str) -> Container:
+    """Red container showing `message`."""
     return Container(TextDisplay(message), accent_colour=Colour.red())
 
 
@@ -129,6 +138,7 @@ def add_button(
     emoji: str | None = None,
     disabled: bool = False,
 ) -> Button:
+    """Create a button that runs `callback`, add it to `row` and return it."""
     button_item: Button = Button(label=label, style=style, emoji=emoji, disabled=disabled)
     button_item.callback = callback  # type: ignore[assignment]
     row.add_item(button_item)
@@ -145,6 +155,7 @@ def add_select(
     min_values: int = 1,
     max_values: int = 1,
 ) -> Select:
+    """Create a select that runs `callback`, add it to `row` and return it; no `options` yields a "—" placeholder."""
     select_item: Select = Select(
         options=options or [SelectOption(label="—", value="__none__")],
         placeholder=placeholder,

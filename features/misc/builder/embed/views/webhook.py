@@ -11,7 +11,10 @@ from features.misc.builder.session import WebhookSender
 
 
 class WebhookView(BuilderScreenView):
+    """Screen to configure the custom sender identity used when sending through a webhook."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Show whether a custom sender is active and which name it uses."""
         super().__init__()
         self.session: BuilderSession = session
 
@@ -45,16 +48,19 @@ class WebhookView(BuilderScreenView):
 
     @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed:webhook:back")
     async def back_button(self: WebhookView, interaction: Interaction, _button: Button) -> None:
+        """Go back to the main screen."""
         from features.misc.builder.embed.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
     @button(label="Set", style=ButtonStyle.blurple, row=0, custom_id="embed:webhook:set")
     async def set_button(self: WebhookView, interaction: Interaction, _button: Button) -> None:
+        """Open the modal to set the custom sender name and avatar."""
         await interaction.response.send_modal(WebhookModal(self.session))
 
     @button(label="Remove", style=ButtonStyle.red, row=0, custom_id="embed:webhook:remove")
     async def remove_button(self: WebhookView, interaction: Interaction, _button: Button) -> None:
+        """Delete the webhook, if any, and reset the sender to the bot."""
         if self.session.webhook.webhook_url:
             with contextlib.suppress(NotFound, Forbidden, HTTPException):
                 await Webhook.from_url(self.session.webhook.webhook_url, client=interaction.client).delete()

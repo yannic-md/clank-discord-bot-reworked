@@ -40,6 +40,8 @@ _SELECT_OPTION_VALUES: list[tuple[str, str]] = [
 
 
 class EmbedBuilderGUI(BuilderScreenView):
+    """Main screen of the embed builder: a live preview with the controls to edit and send it."""
+
     _MODALS: dict[str, type] = {
         "embed_content": MessageContentModal,
         "embed_colors": EmbedColourModal,
@@ -51,6 +53,7 @@ class EmbedBuilderGUI(BuilderScreenView):
     }
 
     def __init__(self, session: BuilderSession) -> None:
+        """Build the preview from the non-empty embeds and enable the controls that apply."""
         super().__init__()
         self.session: BuilderSession = session
         self.content: str | None = session.message_content
@@ -120,6 +123,7 @@ class EmbedBuilderGUI(BuilderScreenView):
         custom_id="embed:gui:edit_options",
     )
     async def edit_options(self: EmbedBuilderGUI, interaction: Interaction, select_obj: Select) -> None:
+        """Open the editor chosen in the dropdown."""
         value: str = select_obj.values[0]
         if value == "embed_list":
             await show(interaction, EmbedListView(self.session))
@@ -140,35 +144,43 @@ class EmbedBuilderGUI(BuilderScreenView):
 
     @button(label="Senden", style=ButtonStyle.green, row=0, custom_id="embed:gui:send")
     async def send_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Ask for confirmation before sending."""
         await show(interaction, SendConfirmView(self.session))
 
     @button(label="Änderung speichern", style=ButtonStyle.green, row=0, custom_id="embed:gui:save")
     async def save_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Save the changes to the message being edited."""
         await save_message_changes(interaction, self.session, self)
 
     @button(label="Webhook", style=ButtonStyle.blurple, row=0, custom_id="embed:gui:webhook")
     async def webhook_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Open the webhook screen."""
         await show(interaction, WebhookView(self.session))
 
     @button(label="Kanal", style=ButtonStyle.gray, row=0, custom_id="embed:gui:channel")
     async def channel_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Open the modal to choose the target channel."""
         await interaction.response.send_modal(ChannelModal(self.session))
 
     @button(label="Embed-Vorlagen", style=ButtonStyle.red, row=0, custom_id="embed:gui:manage_template")
     async def manage_template(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Reload the user's templates and open the template screen."""
         self.session.templates = await load_user_templates(self.session.slashcmd_author_id)
         await show(interaction, TemplatesView(self.session))
 
     @button(label="Active embed", style=ButtonStyle.gray, row=2, disabled=True)
     async def active_embed_label(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Disabled button that only labels the position controls."""
         pass
 
     @button(label="Up", style=ButtonStyle.blurple, row=2, custom_id="embed:gui:main_up")
     async def main_up_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Move the active embed one position up."""
         move_active_embed(self.session, -1)
         await show(interaction, EmbedBuilderGUI(self.session))
 
     @button(label="Down", style=ButtonStyle.blurple, row=2, custom_id="embed:gui:main_down")
     async def main_down_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
+        """Move the active embed one position down."""
         move_active_embed(self.session, 1)
         await show(interaction, EmbedBuilderGUI(self.session))

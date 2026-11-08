@@ -20,6 +20,7 @@ from features.misc.builder.container.util.tree import total_cost, truncate_to_bu
 
 
 def node_to_data(node: ComponentNode) -> dict[str, object]:
+    """Serialize a node and its children into the JSON-able dict stored in a template."""
     data: dict[str, object] = {"kind": node.kind.value}
     if node.kind == ComponentKind.TEXT_DISPLAY:
         data["content"] = node.content
@@ -43,6 +44,7 @@ def node_to_data(node: ComponentNode) -> dict[str, object]:
 
 
 def _optional_text(value: object, max_length: int) -> str | None:
+    """`value` cut to `max_length`, or `None` if it is not a non-empty string."""
     return value[:max_length] if isinstance(value, str) and value else None
 
 
@@ -145,4 +147,5 @@ async def save_user_template(user_id: int, template: ContainerTemplate) -> None:
 
 
 async def delete_user_template(user_id: int, name: str) -> None:
+    """Delete the template `name` of the user."""
     await template_repo.delete_user_template(user_id, name)

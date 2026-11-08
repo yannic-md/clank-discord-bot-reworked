@@ -53,11 +53,13 @@ class ContainerBuilderSession:
         return self.channel or self.slashcmd_channel
 
     def new_id(self) -> int:
+        """Hand out the next unused component id."""
         node_id = self.next_id
         self.next_id += 1
         return node_id
 
     def __post_init__(self) -> None:
+        """Seed a new session with one default text display."""
         # A fresh `/container-builder` invocation always starts with one seeded TextDisplay,
         # so the main screen's live preview is never blank on first use.
         if not self.components:

@@ -19,4 +19,5 @@ class WebhookSender:
 
     @property
     def enabled(self) -> bool:
+        """Whether any custom sender identity (name, avatar or webhook) is configured."""
         return self.username is not None or self.avatar_url is not None or self.webhook_url is not None

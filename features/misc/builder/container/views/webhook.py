@@ -14,6 +14,7 @@ class WebhookView(BuilderLayoutView):
     """Lets the user pick a custom sender identity (name/avatar/webhook) for the message."""
 
     def __init__(self, session: ContainerBuilderSession, *, error: str | None = None) -> None:
+        """`error` is an optional error box to show."""
         from features.misc.builder.container.views.gui import MainView
 
         super().__init__()
@@ -34,12 +35,15 @@ class WebhookView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the main screen."""
             await show(interaction, MainView(session))
 
         async def on_set(interaction: Interaction) -> None:
+            """Open the modal to set the custom sender name and avatar."""
             await interaction.response.send_modal(WebhookModal(session))
 
         async def on_remove(interaction: Interaction) -> None:
+            """Delete the webhook, if any, and reset the sender to the bot."""
             if session.webhook.webhook_url:
                 with contextlib.suppress(NotFound, Forbidden, HTTPException):
                     await Webhook.from_url(session.webhook.webhook_url, client=interaction.client).delete()

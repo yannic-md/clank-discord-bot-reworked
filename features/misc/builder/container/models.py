@@ -16,6 +16,8 @@ MAX_USER_COMPONENTS: int = MAX_V2_TOTAL_COMPONENTS - _RESERVED_CHROME_BUDGET
 
 
 class ComponentKind(Enum):
+    """The kinds of component the container builder can create."""
+
     TEXT_DISPLAY = "text_display"
     CONTAINER = "container"
     MEDIA_GALLERY = "media_gallery"
@@ -50,6 +52,8 @@ ORDER_VALUE: str = "order"
 
 @dataclass
 class GalleryItem:
+    """One image or video of a media gallery."""
+
     media_url: str
     description: str | None = None
     spoiler: bool = False
@@ -85,6 +89,7 @@ class ComponentNode:
 
     @property
     def has_accessory(self) -> bool:
+        """Whether this text display has a thumbnail (and is thus rendered as a section)."""
         return self.thumbnail_url is not None
 
 

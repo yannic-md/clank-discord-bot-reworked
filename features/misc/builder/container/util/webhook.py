@@ -49,14 +49,17 @@ async def send_via_webhook(
 
 
 def webhook_forbidden_text(session: ContainerBuilderSession, channel: GuildChannel | Thread) -> str:
+    """Error text for missing permission to manage webhooks in `channel`."""
     channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
     return ts(session.language, "errors.webhook_forbidden", channel=channel_ref)
 
 
 def webhook_limit_text(session: ContainerBuilderSession, channel: GuildChannel | Thread) -> str:
+    """Error text for `channel` having reached Discord's webhook limit."""
     channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
     return ts(session.language, "errors.webhook_limit", channel=channel_ref, limit=MAX_WEBHOOK_COUNT)
 
 
 def webhook_invalid_text(language: SupportedLanguage) -> str:
+    """Error text for a webhook that is no longer valid."""
     return ts(language, "errors.webhook_invalid")

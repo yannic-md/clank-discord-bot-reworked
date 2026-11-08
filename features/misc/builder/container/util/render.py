@@ -7,6 +7,7 @@ from features.misc.builder.container.util.tree import find_parent
 
 
 def build_item(node: ComponentNode) -> Item:
+    """Convert a component node into the matching discord.py item."""
     if node.kind == ComponentKind.TEXT_DISPLAY:
         text_display: TextDisplay = TextDisplay(node.content)
         if node.has_accessory:
@@ -43,6 +44,7 @@ def preview_item(session: ContainerBuilderSession, node: ComponentNode) -> Item:
 
 
 def build_items(nodes: list[ComponentNode]) -> list[Item]:
+    """Convert `nodes` into discord.py items, keeping their order."""
     return [build_item(node) for node in nodes]
 
 
@@ -51,12 +53,14 @@ class StaticLayoutView(LayoutView):
     and for the final message actually sent to the channel."""
 
     def __init__(self, items: list[Item]) -> None:
+        """Wrap `items` in a view that never times out."""
         super().__init__(timeout=None)
         for item in items:
             self.add_item(item)
 
 
 def text_message_view(text: str, *, colour: Colour | None = None) -> StaticLayoutView:
+    """Wrap `text` in a view - inside an accent-coloured container if `colour` is given."""
     content: Item = TextDisplay(text)
     if colour is not None:
         content = Container(content, accent_colour=colour)

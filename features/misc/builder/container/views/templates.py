@@ -40,9 +40,12 @@ def template_status_box(language: SupportedLanguage, name: str, *, count: int, d
 
 
 class TemplatesView(BuilderLayoutView):
+    """Screen to save, load and delete the user's container templates."""
+
     def __init__(
         self, session: ContainerBuilderSession, *, status: Container | None = None, error: str | None = None
     ) -> None:
+        """`status` is an optional status box (e.g. after loading a template) and `error` an optional error box."""
         from features.misc.builder.container.views.gui import MainView
 
         super().__init__()
@@ -54,12 +57,15 @@ class TemplatesView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the main screen."""
             await show(interaction, MainView(session))
 
         async def on_save(interaction: Interaction) -> None:
+            """Open the modal to save the current components as a template."""
             await interaction.response.send_modal(SaveTemplateModal(session))
 
         async def on_delete(interaction: Interaction) -> None:
+            """Delete the selected template, or show an error if none is selected."""
             name = session.active_template_name
             if name is None:
                 error = ts(session.language, "errors.no_template_selected")
@@ -103,6 +109,7 @@ class TemplatesView(BuilderLayoutView):
             placeholder = ts(session.language, "placeholders.templates_empty")
 
         async def on_select(interaction: Interaction) -> None:
+            """Replace the current components with the chosen template and report skipped components."""
             name = template_select.values[0]
             template = next((existing for existing in session.templates if existing.name == name), None)
             if template is None:

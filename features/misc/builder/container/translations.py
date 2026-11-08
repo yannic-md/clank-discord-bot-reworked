@@ -16,10 +16,12 @@ def ts(language: SupportedLanguage, key: str, /, count: int | None = None, **var
 
 
 def kind_label(language: SupportedLanguage, kind: ComponentKind) -> str:
+    """Localized name of the component `kind`."""
     return t(language, f"info.kinds.{kind.value}.label")
 
 
 def kind_info_text(language: SupportedLanguage, kind: ComponentKind) -> str:
+    """Localized description of the component `kind`, with its limit filled in where it has one."""
     limits: dict[ComponentKind, str] = {
         ComponentKind.TEXT_DISPLAY: format_number(language, MAX_V2_TEXT_DISPLAY_LENGTH),
         ComponentKind.MEDIA_GALLERY: str(MAX_V2_MEDIA_GALLERY_ITEMS),

@@ -23,7 +23,10 @@ logger: Logger = logging.getLogger("discord")
 
 
 class TemplatesView(BuilderScreenView):
+    """Screen to save, load and delete the user's embed templates."""
+
     def __init__(self, session: BuilderSession, *, status_embed: Embed | None = None) -> None:
+        """`status_embed` is an optional status shown below the info embed (e.g. after loading a template)."""
         super().__init__()
         self.session: BuilderSession = session
 
@@ -66,16 +69,19 @@ class TemplatesView(BuilderScreenView):
 
     @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed:templates:back")
     async def back_button(self: TemplatesView, interaction: Interaction, _button: Button) -> None:
+        """Go back to the main screen."""
         from features.misc.builder.embed.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
     @button(label="Save", style=ButtonStyle.green, row=0, custom_id="embed:templates:save")
     async def save_template_button(self: TemplatesView, interaction: Interaction, _button: Button) -> None:
+        """Open the modal to save the current embeds as a template."""
         await interaction.response.send_modal(SaveTemplateModal(self.session))
 
     @button(label="Delete", style=ButtonStyle.red, row=0, custom_id="embed:templates:delete")
     async def delete_template_button(self: TemplatesView, interaction: Interaction, _button: Button) -> None:
+        """Delete the selected template, or show an error if none is selected."""
         name: str | None = self.session.active_template_name
         if name is None:
             await append_error(
@@ -131,6 +137,7 @@ class TemplatesView(BuilderScreenView):
         custom_id="embed:templates:select",
     )
     async def template_select(self: TemplatesView, interaction: Interaction, select_obj: Select) -> None:
+        """Replace the current content and embeds with the chosen template."""
         name: str = select_obj.values[0]
         template: EmbedTemplate | None = next(
             (existing for existing in self.session.templates if existing.name == name), None

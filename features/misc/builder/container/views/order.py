@@ -21,6 +21,7 @@ class ComponentOrderView(BuilderLayoutView):
         content_only: bool = False,
         error: str | None = None,
     ) -> None:
+        """`parent_id`: container to order (`None` = top level); `content_only`: skip components inside containers."""
         from features.misc.builder.container.views.component_list import ComponentKindListView
         from features.misc.builder.container.views.gui import MainView, MessageContentView
 
@@ -34,6 +35,7 @@ class ComponentOrderView(BuilderLayoutView):
         location = t(session.language, "select.content.label") if content_only else describe_location(session, parent_id)
 
         def swap(first: ComponentNode, second: ComponentNode) -> None:
+            """Swap `first` and `second` in the list being ordered."""
             first_index, second_index = owning_list.index(first), owning_list.index(second)
             owning_list[first_index], owning_list[second_index] = owning_list[second_index], owning_list[first_index]
 
@@ -57,6 +59,7 @@ class ComponentOrderView(BuilderLayoutView):
         nav_row: ActionRow = ActionRow()
 
         async def on_back(interaction: Interaction) -> None:
+            """Go back to the screen the order screen was opened from."""
             if parent_id is not None:
                 await show(interaction, ComponentKindListView(session, kind=ComponentKind.CONTAINER, parent_id=None))
             elif content_only:
@@ -67,11 +70,13 @@ class ComponentOrderView(BuilderLayoutView):
         add_button(nav_row, on_back, label=ts(session.language, "buttons.back"), style=ButtonStyle.gray, emoji="◀️")
 
         async def on_up(interaction: Interaction) -> None:
+            """Move the selected component one position up."""
             assert active_index is not None and active_index > 0
             swap(nodes[active_index - 1], nodes[active_index])
             await show(interaction, ComponentOrderView(session, parent_id=parent_id, content_only=content_only))
 
         async def on_down(interaction: Interaction) -> None:
+            """Move the selected component one position down."""
             assert active_index is not None and active_index < len(nodes) - 1
             swap(nodes[active_index + 1], nodes[active_index])
             await show(interaction, ComponentOrderView(session, parent_id=parent_id, content_only=content_only))
@@ -114,6 +119,7 @@ class ComponentOrderView(BuilderLayoutView):
             select_disabled = True
 
         async def on_switch(interaction: Interaction) -> None:
+            """Select another component to move."""
             if not nodes:
                 return
             session.active_selection[selection_key] = int(switch_select.values[0])

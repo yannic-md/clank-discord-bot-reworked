@@ -50,7 +50,10 @@ from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, identity_kwa
 
 
 class SendConfirmView(BuilderScreenView):
+    """Screen asking the user to confirm sending the message, with a preview of it."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Describe the target channel, webhook and mentions the message will notify."""
         super().__init__()
         self.session: BuilderSession = session
         channel: GuildChannel | Thread = session.target_channel
@@ -118,6 +121,7 @@ class SendConfirmView(BuilderScreenView):
 
     @button(label="Confirm", style=ButtonStyle.green, row=0, custom_id="embed:send:confirm")
     async def confirm_button(self: SendConfirmView, interaction: Interaction, _button: Button) -> None:
+        """Check permissions on the target channel, send the message and report the result."""
         session: BuilderSession = self.session
         channel: GuildChannel | Thread = session.target_channel
         if not await has_message_content(interaction, session, self):
@@ -154,12 +158,14 @@ class SendConfirmView(BuilderScreenView):
 
     @button(label="Cancel", style=ButtonStyle.gray, row=0, custom_id="embed:send:cancel")
     async def cancel_button(self: SendConfirmView, interaction: Interaction, _button: Button) -> None:
+        """Go back to the main screen without sending."""
         from features.misc.builder.embed.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
 
 async def save_message_changes(interaction: Interaction, session: BuilderSession, view: BuilderScreenView) -> None:
+    """Write the current content and embeds back to the message that is being edited."""
     assert session.target_message is not None
     channel = session.target_message.channel
     assert isinstance(channel, GuildChannel | Thread)

@@ -20,6 +20,8 @@ from core.i18n.translator import translate
 
 
 class LanguageSettings(Cog):
+    """Cog with the slash commands to view and change the guild and user language."""
+
     guild_lang: Group = Group(
         name=cmd("commands.guild_language.group.name"),
         description=cmd("commands.guild_language.group.description"),
@@ -30,6 +32,7 @@ class LanguageSettings(Cog):
     )
 
     def __init__(self, client: AutoShardedBot) -> None:
+        """Store the bot client."""
         self.client = client
 
     @guild_lang.command(
@@ -135,4 +138,5 @@ class LanguageSettings(Cog):
 
 
 async def setup(client: AutoShardedBot) -> None:
+    """Register the `LanguageSettings` cog."""
     await client.add_cog(LanguageSettings(client))

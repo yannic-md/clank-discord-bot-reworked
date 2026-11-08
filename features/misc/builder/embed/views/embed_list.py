@@ -10,7 +10,10 @@ from features.misc.builder.embed.views.base import BuilderScreenView, create_emb
 
 
 class EmbedListView(BuilderScreenView):
+    """Screen to add, remove, select and reorder the embeds of the message."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Build the info embed and the embed dropdown from the session."""
         super().__init__()
         self.session: BuilderSession = session
 
@@ -60,12 +63,14 @@ class EmbedListView(BuilderScreenView):
 
     @button(label="Back", style=ButtonStyle.gray, row=0, custom_id="embed:list:back")
     async def back_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
+        """Go back to the main screen."""
         from features.misc.builder.embed.views.gui import EmbedBuilderGUI
 
         await show(interaction, EmbedBuilderGUI(self.session))
 
     @button(label="Add", style=ButtonStyle.green, row=0, custom_id="embed:list:add")
     async def add_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
+        """Add a new embed, or show the limit error if the message is full."""
         if len(self.session.embeds) >= MAX_EMBED_COUNT:
             message = translate(self.session.language, "builder.embed.errors.embed_limit", limit=MAX_EMBED_COUNT)
             await append_error(interaction, self.embeds, self, message)
@@ -82,6 +87,7 @@ class EmbedListView(BuilderScreenView):
 
     @button(label="Remove", style=ButtonStyle.red, row=0, custom_id="embed:list:remove")
     async def remove_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
+        """Delete the active embed."""
         if not self.session.embeds:
             await show(interaction, EmbedListView(self.session))
             return
@@ -99,19 +105,23 @@ class EmbedListView(BuilderScreenView):
         custom_id="embed:list:select",
     )
     async def embed_select(self: EmbedListView, interaction: Interaction, select_obj: Select) -> None:
+        """Make the chosen embed the active one."""
         self.session.active_embed_index = int(select_obj.values[0])
         await show(interaction, EmbedListView(self.session))
 
     @button(label="Active embed", style=ButtonStyle.gray, row=2, disabled=True)
     async def active_label(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
+        """Disabled button that only labels the position controls."""
         pass
 
     @button(label="Up", style=ButtonStyle.blurple, row=2, custom_id="embed:list:up")
     async def up_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
+        """Move the active embed one position up."""
         move_active_embed(self.session, -1)
         await show(interaction, EmbedListView(self.session))
 
     @button(label="Down", style=ButtonStyle.blurple, row=2, custom_id="embed:list:down")
     async def down_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
+        """Move the active embed one position down."""
         move_active_embed(self.session, 1)
         await show(interaction, EmbedListView(self.session))

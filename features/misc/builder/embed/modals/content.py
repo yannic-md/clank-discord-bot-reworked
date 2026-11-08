@@ -18,7 +18,10 @@ MAX_EMBED_DESCRIPTION_INPUT: int = min(MAX_EMBED_DESCRIPTION, MAX_MODAL_TEXTINPU
 
 
 class MessageContentModal(Modal):
+    """Modal to edit the plain text content of the message."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the text field with the current message content."""
         super().__init__(title=translate(session.language, "builder.embed.modals.content.title"))
         self.session: BuilderSession = session
 
@@ -36,6 +39,7 @@ class MessageContentModal(Modal):
         self.add_item(self.content_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Store the content (turning `@RoleName` into real mentions) and return to the main screen."""
         content: str = self.content_input.value.strip()
         guild: Guild | None = interaction.guild
         if guild is not None:
@@ -48,7 +52,10 @@ class MessageContentModal(Modal):
 
 
 class EmbedTitleDescModal(Modal):
+    """Modal to edit the title, description and title URL of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the fields with the active embed's values."""
         super().__init__(title=translate(session.language, "builder.embed.modals.title.title"))
         self.session: BuilderSession = session
         embed: Embed = session.active_embed
@@ -83,6 +90,7 @@ class EmbedTitleDescModal(Modal):
         self.add_item(self.url_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the URL, apply title, description and URL to the active embed and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         name: str = self.name_input.value.strip()
@@ -117,7 +125,10 @@ class EmbedTitleDescModal(Modal):
 
 
 class EmbedColourModal(Modal):
+    """Modal to edit the colour of the active embed."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the colour field with the active embed's colour."""
         super().__init__(title=translate(session.language, "builder.embed.modals.colour.title"))
         self.session: BuilderSession = session
         embed: Embed = session.active_embed
@@ -132,6 +143,7 @@ class EmbedColourModal(Modal):
         self.add_item(self.colour_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Parse the colour (empty removes it), apply it to the active embed and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         value: str = self.colour_input.value.strip()

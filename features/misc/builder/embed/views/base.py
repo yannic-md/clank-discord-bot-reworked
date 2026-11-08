@@ -25,9 +25,11 @@ class BuilderScreenView(View):
     session: BuilderSession
 
     def __init__(self) -> None:
+        """Create the view with the shared builder timeout."""
         super().__init__(timeout=BUILDER_VIEW_TIMEOUT)
 
     async def on_timeout(self) -> None:
+        """Disable all controls of the sent message once the view expires."""
         if self.message is None:
             return
 
@@ -90,6 +92,7 @@ async def has_message_content(interaction: Interaction, session: BuilderSession,
 
 
 def create_success_embed(session: BuilderSession, key: str, jump_url: str | None = None) -> Embed:
+    """Green embed with the text of `key`, plus a link to the message if `jump_url` is given."""
     description: str = translate(session.language, key)
     if jump_url:
         description += f"\n\n{translate(session.language, 'builder.info.success.jump_link', jump_url=jump_url)}"

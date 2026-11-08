@@ -26,7 +26,10 @@ from features.misc.builder.embed.views.base import track_active_view
 
 
 class EmbedBuilder(Cog):
+    """Cog providing the `/embed-builder` slash command."""
+
     def __init__(self, client: AutoShardedBot) -> None:
+        """Store the bot client."""
         self.client: AutoShardedBot = client
 
     @command(name=cmd("commands.builder.embed.name"), description=cmd("commands.builder.embed.description"))
@@ -38,6 +41,7 @@ class EmbedBuilder(Cog):
     @perms_send_message
     @guild_only()
     async def embed_builder(self, interaction: Interaction, message_id: str | None = None) -> None:
+        """Open the embed builder - for a new message, or to edit the message `message_id`."""
         assert interaction.guild_id is not None
         assert isinstance(interaction.channel, (TextChannel, VoiceChannel, StageChannel, Thread))
         assert isinstance(interaction.user, Member)
@@ -92,4 +96,5 @@ class EmbedBuilder(Cog):
 
 
 async def setup(client: AutoShardedBot) -> None:
+    """Register the `EmbedBuilder` cog."""
     await client.add_cog(EmbedBuilder(client))

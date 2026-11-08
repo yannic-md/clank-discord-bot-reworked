@@ -26,7 +26,10 @@ from features.misc.builder.container.views.gui import MainView
 
 
 class ContainerBuilder(Cog):
+    """Cog providing the `/container-builder` slash command."""
+
     def __init__(self, client: AutoShardedBot) -> None:
+        """Store the bot client."""
         self.client: AutoShardedBot = client
 
     @command(name=cmd("commands.builder.container.name"), description=cmd("commands.builder.container.description"))
@@ -38,6 +41,7 @@ class ContainerBuilder(Cog):
     @perms_send_message
     @guild_only()
     async def container_builder(self, interaction: Interaction, message_id: str | None = None) -> None:
+        """Open the container builder - for a new message, or to edit the message `message_id`."""
         assert interaction.guild_id is not None
         assert isinstance(interaction.channel, (TextChannel, VoiceChannel, StageChannel, Thread))
         assert isinstance(interaction.user, Member)
@@ -79,4 +83,5 @@ class ContainerBuilder(Cog):
 
 
 async def setup(client: AutoShardedBot) -> None:
+    """Register the `ContainerBuilder` cog."""
     await client.add_cog(ContainerBuilder(client))

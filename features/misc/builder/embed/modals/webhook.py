@@ -20,7 +20,10 @@ from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, find_webhook
 
 
 class WebhookModal(Modal):
+    """Modal to set the custom sender name and avatar used when sending through a webhook."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the fields with the sender identity currently set on the session."""
         super().__init__(title=translate(session.language, "builder.modals.webhook.title"))
         self.session: BuilderSession = session
 
@@ -53,6 +56,7 @@ class WebhookModal(Modal):
         self.add_item(self.url_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the avatar URL, store the sender identity on the session and show the webhook screen."""
         from features.misc.builder.embed.views import WebhookView, show
 
         avatar_url: str = self.avatar_input.value.strip()
@@ -135,7 +139,10 @@ class WebhookModal(Modal):
 
 
 class ChannelModal(Modal):
+    """Modal to choose the channel the message is sent to."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Offer the channel types a message can be sent to."""
         super().__init__(title=translate(session.language, "builder.modals.channel.title"))
         self.session: BuilderSession = session
 
@@ -147,6 +154,7 @@ class ChannelModal(Modal):
         self.add_item(Label(text=translate(session.language, "builder.modals.channel.select"), component=self.channel_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Store the chosen channel - or reset to the default if none was chosen - and return to the main screen."""
         from features.misc.builder.embed.views import EmbedBuilderGUI, show
 
         if not self.channel_input.values:

@@ -10,6 +10,7 @@ _MEDIA_EXTENSIONS: tuple[str, ...] = (*IMAGE_EXTENSIONS, ".mp4", ".webm", ".mov"
 
 
 def is_valid_media_attachment(attachment: Attachment) -> bool:
+    """Whether `attachment` is an image or video, judged by its content type or else its file extension."""
     content_type = (attachment.content_type or "").lower()
     if content_type.startswith(("image/", "video/")):
         return True
@@ -17,6 +18,7 @@ def is_valid_media_attachment(attachment: Attachment) -> bool:
 
 
 def _iter_text_displays(nodes: list[ComponentNode]) -> Iterator[ComponentNode]:
+    """Yield every text display in `nodes`, descending into containers."""
     for node in nodes:
         if node.kind == ComponentKind.TEXT_DISPLAY:
             yield node

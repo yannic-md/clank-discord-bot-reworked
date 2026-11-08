@@ -17,6 +17,7 @@ def load_locale_json(file: Path) -> tuple[object, list[str]]:
     problems: list[str] = []
 
     def hook(pairs: list[tuple[str, object]]) -> dict[str, object]:
+        """Collect keys that appear more than once in one JSON object, since `json` silently keeps only the last."""
         counts: dict[str, int] = {}
         for key, _ in pairs:
             counts[key] = counts.get(key, 0) + 1

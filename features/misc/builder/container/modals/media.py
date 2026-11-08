@@ -15,7 +15,10 @@ from features.misc.builder.validation import is_valid_image_attachment
 
 
 class ThumbnailModal(Modal):
+    """Modal to set, replace or remove the thumbnail shown next to a text display."""
+
     def __init__(self, session: ContainerBuilderSession, *, node_id: int) -> None:
+        """`node_id` is the text display the thumbnail belongs to."""
         super().__init__(title=t(session.language, "modals.thumbnail.title"))
         self.session = session
         self.node_id = node_id
@@ -46,6 +49,7 @@ class ThumbnailModal(Modal):
         self.add_item(Label(text=t(session.language, "modals.spoiler.question"), component=self.spoiler_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Apply the uploaded image as thumbnail - or remove the existing one if none was uploaded - and show the list."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.component_list import ComponentKindListView
 
@@ -58,6 +62,7 @@ class ThumbnailModal(Modal):
         session.active_selection[(parent_id, ComponentKind.TEXT_DISPLAY)] = node.id
 
         async def back(error: str | None = None) -> None:
+            """Show the text display list, optionally with the error `error`."""
             view = ComponentKindListView(session, kind=ComponentKind.TEXT_DISPLAY, parent_id=parent_id, error=error)
             await show(interaction, view)
 
@@ -98,7 +103,10 @@ class ThumbnailModal(Modal):
 
 
 class MediaGalleryItemModal(Modal):
+    """Modal to add gallery items by upload, or to replace the media of one existing item."""
+
     def __init__(self, session: ContainerBuilderSession, *, node_id: int, item_index: int | None) -> None:
+        """`node_id` is the media gallery, `item_index` the item to edit (`None` to add new ones)."""
         super().__init__(title=t(session.language, "modals.gallery.title"))
         self.session = session
         self.node_id = node_id
@@ -145,6 +153,7 @@ class MediaGalleryItemModal(Modal):
         self.add_item(Label(text=t(session.language, "modals.spoiler.question"), component=self.spoiler_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the uploads, add or update the gallery items and show the gallery screen."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.gallery import MediaGalleryItemsView
 
@@ -157,6 +166,7 @@ class MediaGalleryItemModal(Modal):
         spoiler = self.spoiler_input.value == "yes"
 
         async def back(active_index: int | None, error: str | None = None) -> None:
+            """Show the gallery screen with `active_index` selected, optionally with the error `error`."""
             view = MediaGalleryItemsView(session, node_id=self.node_id, active_index=active_index, error=error)
             await show(interaction, view)
 

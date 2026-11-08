@@ -12,7 +12,10 @@ from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, find_webhook
 
 
 class WebhookModal(Modal):
+    """Modal to set the custom sender name and avatar used when sending through a webhook."""
+
     def __init__(self, session: ContainerBuilderSession) -> None:
+        """Pre-fill the fields with the sender identity currently set on the session."""
         super().__init__(title=ts(session.language, "modals.webhook.title"))
         self.session = session
 
@@ -42,6 +45,7 @@ class WebhookModal(Modal):
         self.add_item(self.url_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the avatar URL, store the sender identity on the session and show the webhook screen."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.webhook import WebhookView
 
@@ -99,7 +103,10 @@ class WebhookModal(Modal):
 
 
 class ChannelModal(Modal):
+    """Modal to choose the channel the message is sent to."""
+
     def __init__(self, session: ContainerBuilderSession) -> None:
+        """Offer the channel types a message can be sent to."""
         super().__init__(title=ts(session.language, "modals.channel.title"))
         self.session = session
 
@@ -111,6 +118,7 @@ class ChannelModal(Modal):
         self.add_item(Label(text=ts(session.language, "modals.channel.select"), component=self.channel_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Store the chosen channel - or reset to the default if none was chosen - and show the main screen."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.gui import MainView
 

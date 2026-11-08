@@ -54,6 +54,7 @@ def _discord_signature_expired(url: str, *, now: datetime) -> bool | None:
 
 
 async def _is_reachable(session: aiohttp.ClientSession, url: str) -> bool:
+    """Whether a HEAD request to `url` succeeds (status below 400) without following redirects."""
     try:
         async with session.head(url, allow_redirects=False) as response:
             return response.status < 400

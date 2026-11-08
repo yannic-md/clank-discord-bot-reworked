@@ -10,7 +10,10 @@ from features.misc.builder.validation import convert_to_colour
 
 
 class TextDisplayModal(Modal):
+    """Modal to create or edit the text of a text display."""
+
     def __init__(self, session: ContainerBuilderSession, *, parent_id: int | None, node_id: int | None) -> None:
+        """`parent_id`: container to add to (`None` = top level); `node_id`: text display to edit (`None` = create)."""
         super().__init__(title=t(session.language, "modals.content.title"))
         self.session = session
         self.parent_id = parent_id
@@ -28,6 +31,7 @@ class TextDisplayModal(Modal):
         self.add_item(self.content_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Save the text unless the shared text limit would be exceeded, then show the text display list."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.component_list import ComponentKindListView
 
@@ -56,7 +60,10 @@ class TextDisplayModal(Modal):
 
 
 class ContainerModal(Modal):
+    """Modal to create or edit a container's accent colour and spoiler flag."""
+
     def __init__(self, session: ContainerBuilderSession, *, node_id: int | None) -> None:
+        """`node_id` is the container to edit, or `None` to create one."""
         super().__init__(title=t(session.language, "modals.container.title"))
         self.session = session
         self.node_id = node_id
@@ -85,6 +92,7 @@ class ContainerModal(Modal):
         self.add_item(Label(text=t(session.language, "modals.spoiler.question"), component=self.spoiler_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Parse the colour, save the container and show the container list."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.component_list import ComponentKindListView
 
@@ -126,7 +134,10 @@ class ContainerModal(Modal):
 
 
 class SeparatorModal(Modal):
+    """Modal to create or edit a separator's visibility and spacing."""
+
     def __init__(self, session: ContainerBuilderSession, *, parent_id: int | None, node_id: int | None) -> None:
+        """`parent_id`: container to add to (`None` = top level); `node_id`: separator to edit (`None` = create)."""
         super().__init__(title=t(session.language, "modals.separator.title"))
         self.session = session
         self.parent_id = parent_id
@@ -165,6 +176,7 @@ class SeparatorModal(Modal):
         self.add_item(Label(text=t(session.language, "modals.separator.spacing"), component=self.spacing_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Save the separator and show the separator list."""
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.component_list import ComponentKindListView
 

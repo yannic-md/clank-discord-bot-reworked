@@ -56,6 +56,7 @@ def snippet_for(node: ComponentNode, language: SupportedLanguage, max_length: in
 
 
 def label_for(node: ComponentNode, number: int, language: SupportedLanguage) -> str:
+    """Dropdown label for `node`, e.g. "Text Display 2: Hello", shortened to fit the option label limit."""
     kind = kind_label(language, node.kind)
     # The snippet may use whatever room the dropdown label (100 characters) has left after "Kind 1: ".
     room = MAX_SELECT_OPTION_LABEL - len(t(language, "placeholders.option_snippet", kind=kind, number=number, snippet=""))

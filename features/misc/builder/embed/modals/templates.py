@@ -12,7 +12,10 @@ from features.misc.builder.validation import convert_to_emoji
 
 
 class SaveTemplateModal(Modal):
+    """Modal asking for a name and icon to save the current embeds as a template."""
+
     def __init__(self, session: BuilderSession) -> None:
+        """Pre-fill the fields with the currently loaded template, so saving without changes overwrites it."""
         super().__init__(title=translate(session.language, "builder.modals.template.title"))
         self.session: BuilderSession = session
 
@@ -42,6 +45,7 @@ class SaveTemplateModal(Modal):
         self.add_item(self.icon_input)
 
     async def on_submit(self, interaction: Interaction) -> None:
+        """Validate the icon, save the template (overwriting one of the same name) and show the template list."""
         from features.misc.builder.embed.views import TemplatesView, show
 
         guild: Guild | None = interaction.guild

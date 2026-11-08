@@ -22,6 +22,7 @@ class ContainerTemplateRecord:
 
 
 def _to_record(row: ContainerTemplate) -> ContainerTemplateRecord:
+    """Convert a database row into a record; a malformed `components` column counts as empty."""
     # `components` is a JSON column: a hand-edited or corrupted row could hold something
     # other than the expected array. Anything that is not a list is treated as "no
     # components" rather than propagated as a type error downstream.
