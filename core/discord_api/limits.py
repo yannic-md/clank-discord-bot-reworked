@@ -64,3 +64,11 @@ MAX_THREADS_NAME: int = 100
 
 # Files
 MAX_FILE_SIZE: int = 10485760
+
+# Components V2 (Container)
+MAX_V2_TOTAL_COMPONENTS: int = 40
+MAX_V2_TEXT_DISPLAY_LENGTH: int = 4000
+MAX_V2_TOTAL_TEXT_LENGTH: int = 4000  # sum of all TextDisplay content across the whole message
+MAX_V2_MEDIA_GALLERY_ITEMS: int = 10
+MAX_V2_MEDIA_GALLERY_ITEM_DESCRIPTION: int = 256
+MAX_V2_THUMBNAIL_DESCRIPTION: int = 256

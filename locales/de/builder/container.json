@@ -1,0 +1,177 @@
+{
+  "main": {
+    "default_content": "🦎 - Das ist meine coole Container-Builder Nachricht!"
+  },
+  "buttons": {
+    "order": "Reihenfolge",
+    "order_contents": "Reihenfolge der Inhalte",
+    "thumbnail_create": "Thumbnail erstellen",
+    "thumbnail_edit": "Thumbnail bearbeiten",
+    "component_add": "{kind} hinzufügen",
+    "move": "Verschieben",
+    "item_add": "Bild hinzufügen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen"
+  },
+  "placeholders": {
+    "snippet_container_children": {
+      "one": "{count} Element",
+      "other": "{count} Elemente"
+    },
+    "snippet_gallery_items": {
+      "one": "{count} Element",
+      "other": "{count} Elemente"
+    },
+    "snippet_visible": "sichtbar",
+    "snippet_hidden": "unsichtbar",
+    "option_snippet": "{kind} {number}: {snippet}",
+    "option_label_empty": "{kind} {number}: (leer)",
+    "content_select": "Wähle ein Element aus.. 🖱️",
+    "switch_component": "Wähle eine Komponente aus.. 🖱️",
+    "switch_component_empty": "Noch nichts vorhanden.. 😢",
+    "child_elements": "Inhalt des Containers.. 📂",
+    "move_target": "Wähle ein Ziel aus.. 🖱️",
+    "move_target_empty": "Kein Ziel vorhanden.. 😢",
+    "components_empty": "Keine Komponenten vorhanden.. 😢",
+    "item_option": "Element {number}: {description}",
+    "item_no_description": "(Ohne Beschreibung)",
+    "switch_item": "Wähle ein Element aus.. 🖱️",
+    "switch_item_empty": "Noch keine Elemente vorhanden.. 😢"
+  },
+  "info": {
+    "kinds": {
+      "text_display": {
+        "label": "Textfeld",
+        "description": "› Textfelder zeigen formatierten Text an - wie normaler Nachrichteninhalt, aber als eigene Komponente. Maximal {max} Zeichen pro Textfeld."
+      },
+      "container": {
+        "label": "Container",
+        "description": "› Container fassen mehrere Elemente in einer farbigen Box zusammen. Sie können Textfelder, Medien-Galerien und Trennlinien enthalten - aber keine weiteren Container.",
+        "empty": "› Dieser Container ist noch leer. Wähle über das untere Dropdown ein Element aus, um es hinzuzufügen."
+      },
+      "media_gallery": {
+        "label": "Medien-Galerie",
+        "description": "› Medien-Galerien zeigen bis zu {max} Bilder oder Videos nebeneinander und sortiert innerhalb eines Grids an.",
+        "empty": "› Diese Medien-Galerie ist noch leer. Klicke auf \"Medien-Galerie bearbeiten\", um Bilder oder Videos hinzuzufügen."
+      },
+      "separator": {
+        "label": "Trennlinie",
+        "description": "› Trennlinien fügen Abstand oder eine sichtbare Linie zwischen Elementen ein."
+      }
+    },
+    "location": {
+      "main": "Info",
+      "child_of": "Inhalte von Container {index}"
+    },
+    "content": {
+      "description": "› Verwalte Elemente, die direkt in der Nachricht stehen - also außerhalb von Containern. Wähle über das untere Dropdown ein Element aus, um es hinzuzufügen oder zu bearbeiten."
+    },
+    "move": {
+      "title": "↔️ ~ {kind} verschieben",
+      "description": "`📍` › Aktueller Ort: **{location}**\n› Wähle über das untere Dropdown das neue Ziel aus - Das Element wird dort am Ende angehängt."
+    },
+    "order": {
+      "title": "🔀 ~ Komponenten-Reihenfolge - {location}",
+      "description": "› Wähle über das untere Dropdown ein Element aus und verschiebe es mit den Pfeil-Buttons nach oben oder unten.",
+      "description_empty": "› Hier gibt es noch keine Elemente zum Anordnen."
+    },
+    "templates": {
+      "title": "📁 ~ Container-Vorlagen",
+      "description": "› Speichere den aktuellen Entwurf deiner Komponenten als Vorlage oder lade eine bestehende über das untere Dropdown-Menü.",
+      "loaded": {
+        "one": "`✅` ~ **Vorlage `{name}` geladen:** `1` Komponente wurde erfolgreich übernommen.",
+        "other": "`✅` ~ **Vorlage `{name}` geladen:** `{count}` Komponenten wurden erfolgreich übernommen."
+      },
+      "broken_components": {
+        "one": "`⚠️` ~ **`1` Komponente beschädigt:** Diese konnte aus der Vorlage nicht wiederhergestellt werden und wurde übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen.",
+        "other": "`⚠️` ~ **`{count}` Komponenten beschädigt:** Diese konnten aus der Vorlage nicht wiederhergestellt werden und wurden übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen."
+      },
+      "broken_links": {
+        "one": "`⚠️` ~ **`1` Medien-Link nicht erreichbar:** Ein Bild/Video dieser Vorlage ist nicht mehr abrufbar (z.B. abgelaufener Upload) und wird eventuell nicht angezeigt - Die Vorlage wurde trotzdem geladen.",
+        "other": "`⚠️` ~ **`{count}` Medien-Links nicht erreichbar:** Einige Bilder/Videos dieser Vorlage sind nicht mehr abrufbar (z.B. abgelaufene Uploads) und werden eventuell nicht angezeigt - Die Vorlage wurde trotzdem geladen."
+      }
+    },
+    "load": {
+      "not_v2": "`⚠️` ~ **Kein Components-V2-Layout:** Die Nachricht kann nicht bearbeitet werden - ihr Text wurde als Kopie übernommen.",
+      "truncated": "`⚠️` ~ **Nachricht gekürzt:** Die Nachricht umfasst {original} Komponenten, der Container-Builder unterstützt maximal {max} - nur die ersten {kept} wurden übernommen.",
+      "unsupported": {
+        "one": "`⚠️` ~ **`1` Komponente nicht unterstützt:** Sie (z.B. ein Button oder eine Datei) wurde nicht übernommen.",
+        "other": "`⚠️` ~ **`{count}` Komponenten nicht unterstützt:** Sie (z.B. Buttons oder Dateien) wurden nicht übernommen."
+      },
+      "copy_only": "Die Nachricht kann daher nicht direkt bearbeitet werden."
+    },
+    "preview_too_large": "› Die Vorschau ist hier nicht möglich: Zusammen mit den Bedienelementen würde dieser Teil ({amount} Komponenten) Discords Limit von 40 überschreiten. In der gesendeten Nachricht wird er vollständig angezeigt."
+  },
+  "errors": {
+    "component_limit": "› `❌` - **Limit erreicht:** Es können maximal {limit} Komponenten verwendet werden. <:loveangry:784930958084276224>",
+    "nothing_to_send": "› `❌` - **Nichts zu senden:** Es gibt noch nichts zu senden - füge zuerst eine Komponente hinzu. <:loveangry:784930958084276224>",
+    "nothing_to_save": "› `❌` - **Nichts zu speichern:** Es gibt noch nichts zu speichern - füge zuerst eine Komponente hinzu. <:loveangry:784930958084276224>",
+    "total_text": "› `❌` - **Text zu lang:** Der gesamte Text aller Text-Anzeigen darf {max} Zeichen nicht überschreiten. <:loveangry:784930958084276224>",
+    "move_target_gone": "› `❌` - **Ziel nicht gefunden:** Das Ziel existiert nicht mehr. <:loveangry:784930958084276224>",
+    "gallery_max_items": "› `❌` - **Galerie voll:** Eine Medien-Galerie kann maximal {max} Elemente enthalten. <:loveangry:784930958084276224>",
+    "load_nothing_usable": "› `❌` - **Nichts zu übernehmen:** Diese Nachricht enthält keinen Text oder keine Komponenten, die übernommen werden könnten. <:loveangry:784930958084276224>",
+    "load_no_supported": "› `❌` - **Nicht unterstützt:** Diese Nachricht enthält keine Komponenten, die der Container-Builder unterstützt. <:loveangry:784930958084276224>",
+    "thumbnail_no_image": "› `❌` - **Kein Bild:** Es wurde kein Bild hochgeladen. <:loveangry:784930958084276224>",
+    "thumbnail_needs_image": "› `❌` - **Bild fehlt:** Beschreibung und Spoiler gelten nur zusammen mit einem Bild. Lade ein Bild hoch - oder lass beides leer, um das Thumbnail zu entfernen. <:loveangry:784930958084276224>",
+    "gallery_invalid_media": "› `❌` - **Ungültige Datei:** Bitte lade nur gültige Bilder oder Videos hoch. <:loveangry:784930958084276224>",
+    "gallery_no_file": "› `❌` - **Keine Datei:** Es wurde keine Datei hochgeladen. <:loveangry:784930958084276224>"
+  },
+  "modals": {
+    "spoiler": {
+      "question": "❓ ~ Soll es als Spoiler markiert werden?"
+    },
+    "description": {
+      "placeholder": "z.B. Das Logo unseres Servers 🖼️",
+      "field": "❓ ~ Beschreibung des Bildes?"
+    },
+    "content": {
+      "field": "❓ ~ Was soll in dem Textfeld stehen?",
+      "placeholder": "Der Text für dein Textfeld.. ✍️",
+      "title": "Textfeld bearbeiten"
+    },
+    "container": {
+      "field": "❓ ~ Welche Farbe soll der Container haben?",
+      "title": "Container bearbeiten"
+    },
+    "separator": {
+      "visible": "Ja, mit sichtbarer Linie",
+      "invisible": "Nein, nur Abstand",
+      "small": "Klein",
+      "large": "Groß",
+      "appearance": "❓ ~ Soll die Trennlinie sichtbar sein?",
+      "spacing": "❓ ~ Wie groß soll der Abstand sein?",
+      "title": "Trennlinie bearbeiten"
+    },
+    "thumbnail": {
+      "title": "Thumbnail bearbeiten"
+    },
+    "gallery": {
+      "title": "Galerie-Element bearbeiten",
+      "media_edit": "❓ ~ Welches Bild/Video soll genutzt werden?",
+      "media_add": "❓ ~ Welche Bilder/Videos (bis zu {max})?",
+      "description_all": "❓ ~ Beschreibung für alle?"
+    }
+  },
+  "select": {
+    "content": {
+      "label": "Nachrichteninhalt",
+      "description": "› Füge Texte oder Medien direkt in die Nachricht ein."
+    },
+    "container": {
+      "description": "› Erstelle farbige Boxen & füge Texte oder Medien hinzu."
+    },
+    "order": {
+      "label": "Komponenten-Reihenfolge",
+      "description": "› Ändere die Reihenfolge aller Container und Elemente."
+    },
+    "text_display": {
+      "description": "› Füge formatierten Text hinzu oder bearbeite ihn."
+    },
+    "media_gallery": {
+      "description": "› Zeige mehrere Bilder oder Videos nebeneinander."
+    },
+    "separator": {
+      "description": "› Füge Abstand oder eine sichtbare Trennlinie hinzu."
+    }
+  }
+}

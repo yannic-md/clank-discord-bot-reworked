@@ -23,9 +23,7 @@ def cmd(key: str) -> locale_str:
         locale_str: Wraps the default-language text, tagged with `key` for translation.
 
     Raises:
-        KeyError: If `key` has no entry for `DEFAULT_LANGUAGE`. Command metadata must
-            always have a default value to register with Discord in the first place,
-            so a missing entry here is a bot-author mistake, not a runtime condition.
+        KeyError: If `key` has no entry for `DEFAULT_LANGUAGE`, which Discord needs to register the command.
     """
     default: str | None = lookup(DEFAULT_LANGUAGE, key)
     if default is None:

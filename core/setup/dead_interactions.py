@@ -2,8 +2,8 @@ import logging
 from logging import Logger
 from typing import Any
 
-from discord import HTTPException, Interaction, InteractionType
-from discord.ui import Button, ChannelSelect, MentionableSelect, RoleSelect, Select, UserSelect, View
+from discord import HTTPException, Interaction, InteractionType, Message
+from discord.ui import Button, ChannelSelect, LayoutView, MentionableSelect, RoleSelect, Select, UserSelect, View
 
 from core.enums.language import SupportedLanguage
 from core.i18n.resolve import get_language
@@ -13,7 +13,7 @@ logger: Logger = logging.getLogger("discord")
 _warned_about_missing_view_store: bool = False
 
 # `custom_id` prefixes for screens that want their message's content/embeds preserved.
-_PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed_builder:",)
+_PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed:",)
 
 
 def _has_live_handler(interaction: Interaction) -> bool:
@@ -53,6 +53,11 @@ def _has_live_handler(interaction: Interaction) -> bool:
     return key in views_by_message.get(None, {})
 
 
+def _is_components_v2(message: Message) -> bool:
+    """Whether `message` uses Components V2, which cannot be replaced by plain content or embeds."""
+    return message.flags.components_v2
+
+
 async def _replace_message(interaction: Interaction, message: str) -> None:
     """Default handling: overwrite the dead message with the error and drop its view entirely."""
     try:
@@ -63,16 +68,18 @@ async def _replace_message(interaction: Interaction, message: str) -> None:
 
 
 async def _disable_and_notify(interaction: Interaction, message: str) -> None:
-    """Gentle handling for `_PRESERVE_MESSAGE_PREFIXES` screens: disable the message's components
-    in place - leaving its content/embeds completely untouched - and report the error as a
-    separate ephemeral reply instead.
+    """Gentle handling for `_PRESERVE_MESSAGE_PREFIXES` screens and Components V2 messages: disable the
+    message's components in place - leaving its content/embeds completely untouched - and report the
+    error as a separate ephemeral reply instead.
     """
     if interaction.message is None:
         await _replace_message(interaction, message)
         return
 
-    disabled_view: View = View.from_message(interaction.message, timeout=None)
-    for child in disabled_view.children:
+    # A Components V2 message can only be rebuilt as a `LayoutView`
+    view_cls: type[View] | type[LayoutView] = LayoutView if _is_components_v2(interaction.message) else View
+    disabled_view: View | LayoutView = view_cls.from_message(interaction.message, timeout=None)
+    for child in disabled_view.walk_children():
         if isinstance(child, (Button, Select, UserSelect, RoleSelect, MentionableSelect, ChannelSelect)):
             child.disabled = True
 
@@ -104,7 +111,10 @@ async def handle_dead_interaction(interaction: Interaction) -> None:
     message: str = translate(language, "errors.dead_interaction")
 
     custom_id: str = (interaction.data or {}).get("custom_id", "")  # type: ignore[assignment,call-overload]
-    if custom_id.startswith(_PRESERVE_MESSAGE_PREFIXES):
+    # Components V2 messages can't have their content/embeds set, so they can never be replaced by the error text.
+    if custom_id.startswith(_PRESERVE_MESSAGE_PREFIXES) or (
+        interaction.message is not None and _is_components_v2(interaction.message)
+    ):
         await _disable_and_notify(interaction, message)
     else:
         await _replace_message(interaction, message)

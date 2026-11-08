@@ -11,17 +11,9 @@ PluralCategory = Literal["zero", "one", "two", "few", "many", "other"]
 
 
 def _default_plural_rule(count: int) -> PluralCategory:
-    """CLDR two-category plural rule: "one" for exactly 1, "other" otherwise.
+    """CLDR two-category plural rule ("one" for exactly 1, else "other"), correct for German and English.
 
-    This is the correct rule for both currently supported languages (German,
-    English). Languages with more plural categories (e.g. Polish, Russian,
-    Arabic) can override it via `_PLURAL_RULES` without changing call sites.
-
-    Args:
-        count (int): The quantity being pluralized for.
-
-    Returns:
-        PluralCategory: "one" or "other".
+    Languages with more categories can override it via `_PLURAL_RULES`.
     """
     return "one" if count == 1 else "other"
 

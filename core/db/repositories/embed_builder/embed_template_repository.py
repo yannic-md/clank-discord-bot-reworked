@@ -23,6 +23,7 @@ class EmbedTemplateRecord:
 
 
 def _to_record(row: EmbedTemplate) -> EmbedTemplateRecord:
+    """Convert a database row into a record; a malformed `embeds` column counts as empty."""
     # `embeds` is a JSON column: a hand-edited or corrupted row could hold something
     # other than the expected array of embed dicts. Anything that is not a list is
     # treated as "no embeds" rather than propagated as a type error downstream.

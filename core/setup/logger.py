@@ -13,10 +13,12 @@ class _ExceptionFilter(Filter):
     """Splits log records by whether they carry exception info."""
 
     def __init__(self, *, keep_exceptions: bool) -> None:
+        """Keep only records with exception info if `keep_exceptions` is set, otherwise only those without."""
         super().__init__()
         self._keep_exceptions: bool = keep_exceptions
 
     def filter(self, record: LogRecord) -> bool:
+        """Whether `record` belongs in this handler, judged by its exception info."""
         has_exception: bool = record.exc_info is not None
         return has_exception == self._keep_exceptions
 
@@ -25,10 +27,12 @@ class TrimmingFileHandler(FileHandler):
     """A file handler that caps a log file at `max_bytes` by dropping its oldest lines."""
 
     def __init__(self, filename: Path, *, max_bytes: int, encoding: str | None = None) -> None:
+        """Append to `filename` and trim the file once it grows beyond `max_bytes`."""
         super().__init__(filename, mode="a", encoding=encoding)
         self.max_bytes: int = max_bytes
 
     def emit(self, record: LogRecord) -> None:
+        """Write `record`, trimming the file first if it reached its size limit."""
         try:
             if self.stream is None:
                 self.stream: TextIOWrapper | None = self._open()
@@ -39,6 +43,7 @@ class TrimmingFileHandler(FileHandler):
             self.handleError(record)
 
     def _current_size(self) -> int:
+        """Current size of the log file in bytes."""
         assert self.stream is not None
         self.stream.seek(0, 2)
         return self.stream.tell()
@@ -68,6 +73,7 @@ class TrimmingFileHandler(FileHandler):
 
 
 def _make_handler(filename: str, *, max_bytes: int = MAX_LOG_BYTES) -> TrimmingFileHandler:
+    """Create a size-limited handler for the log file `filename` inside the log directory."""
     handler: TrimmingFileHandler = TrimmingFileHandler(LOG_DIR / filename, max_bytes=max_bytes, encoding="utf-8")
     handler.setFormatter(Formatter(LOG_FORMAT, DT_FMT, style="{"))
     return handler

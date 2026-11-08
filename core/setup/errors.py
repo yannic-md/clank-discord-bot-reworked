@@ -81,6 +81,7 @@ async def _notify_error_channel(client: discord.Client, command_name: str, origi
 
 
 async def _reply_to_interaction(interaction: Interaction, message: str) -> None:
+    """Send `message` ephemerally - as a follow-up if the interaction was already answered."""
     try:
         if interaction.response.is_done():
             await interaction.followup.send(message, ephemeral=True)

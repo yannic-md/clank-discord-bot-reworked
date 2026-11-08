@@ -1,0 +1,102 @@
+{
+  "buttons": {
+    "back": "Zurück",
+    "send": "Senden",
+    "webhook": "Webhook",
+    "channel": "Kanal",
+    "templates": "Vorlagen",
+    "template_save": "Vorlage speichern",
+    "template_delete": "Vorlage löschen",
+    "webhook_set": "Webhook festlegen",
+    "webhook_edit": "Webhook bearbeiten",
+    "webhook_remove": "Webhook entfernen",
+    "edit_save": "Änderungen Speichern",
+    "confirm_yes": "Ja, senden!",
+    "confirm_no": "Nein, bearbeiten!",
+    "up": "Hoch",
+    "down": "Runter"
+  },
+  "placeholders": {
+    "templates_select": "Wähle eine Vorlage aus.. 🖱️",
+    "templates_empty": "Keine Vorlagen vorhanden.. 😢",
+    "this_channel": "diesem Kanal",
+    "other_channel": "dem Kanal {channel}"
+  },
+  "info": {
+    "webhook": {
+      "title": "📢 ~ Absender der Nachricht bearbeiten",
+      "description": "› Lege einen benutzerdefinierten Namen für den Absender und einen optionalen Avatar fest, mit dem die Nachricht über einen Webhook dieses Kanals gesendet wird, statt über den Bot selbst.",
+      "enabled": "`✅` ~ **Status:** `AKTIVIERT` - Die Nachricht wird als `{username}` gesendet.",
+      "disabled": "`❌` ~ **Status:** `DEAKTIVIERT` - Die Nachricht wird als `{username}` gesendet."
+    },
+    "send_confirm": {
+      "title": "📨 ~ Möchtest du wirklich die Nachricht senden?",
+      "description": "› Die Nachricht wird in dem Kanal {channel} gesendet. Diese Aktion kann nicht rückgängig gemacht werden und vielleicht freust du dich über dein erschaffenes Werk.\n",
+      "webhook_notice": "`📢` ~ **Webhook:** Gesendet als `{username}`.",
+      "mention_permission_warning": "`⚠️` ~ **Erwähnung nicht möglich:** Du verfügst nicht über die Berechtigung, Rollen zu erwähnen - daher wird die Rollen-Erwähnung ohne Benachrichtigung gesendet."
+    },
+    "success": {
+      "sent": "Deine wunderschöne Nachricht wurde erfolgreich abgesendet! <a:check:730387138381873184>",
+      "saved": "Die Änderungen an deiner Nachricht wurden erfolgreich gespeichert! <a:check:730387138381873184>",
+      "jump_link": "`🔗` ~ **Zur Nachricht springen:** [Klick hier!]({jump_url})"
+    }
+  },
+  "errors": {
+    "no_template_selected": "› `❌` - **Keine Vorlage ausgewählt:** Wähle eine Vorlage aus dem Dropdown aus, bevor du sie bearbeitest. <:loveangry:784930958084276224>",
+    "invalid_icon": "› `❌` - **Ungültiges Emoji:** Verwende ein Standard-Emoji oder einen Emoji dieses Servers. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Zu viele Vorlagen:** Du kannst maximal {limit} Vorlagen speichern. <:loveangry:784930958084276224>",
+    "webhook_forbidden": "› `❌` - **Bot-Rechte fehlen:** Mir fehlt die Berechtigung `WEBHOOKS VERWALTEN` in {channel}, um einen Webhook zu erstellen. <:loveangry:784930958084276224>",
+    "webhook_limit": "› `❌` - **Webhook-Limit erreicht:** In {channel} wurde bereits die maximale Anzahl an Webhooks ({limit}) erreicht. <:loveangry:784930958084276224>",
+    "webhook_invalid": "› `❌` - **Ungültiger Webhook:** Der hinterlegte Webhook konnte nicht gefunden werden (vermutlich wurde er gelöscht) - Lege den Webhook erneut fest. <:loveangry:784930958084276224>",
+    "invalid_image": "› `❌` - **Ungültiges Bild:** Es wurde kein gültiges Bild erkannt. Die Formate `PNG`, `JPG`, `GIF`, `WEBP` oder `BMP` werden aktuell unterstützt. <:loveangry:784930958084276224>",
+    "user_permission_missing": "› `❌` - **Rechte fehlen:** Dir fehlen folgende Berechtigungen in {channel}: `{permissions}` <:loveangry:784930958084276224>",
+    "bot_permission_missing": "› `❌` - **Bot-Rechte fehlen:** Ich benötige folgende Berechtigungen in {channel}: `{permissions}` <:loveangry:784930958084276224>",
+    "message_deleted": "› `❌` - **Nachricht nicht mehr vorhanden:** Die Nachricht, die du bearbeiten wolltest, existiert nicht mehr. Der Builder wurde in den Sendemodus zurückgesetzt - du kannst sie jetzt als neue Nachricht senden. <:loveangry:784930958084276224>",
+    "message_not_found": "› `❌` - **Nachricht nicht gefunden:** Die angegebene Nachricht konnte in diesem Kanal nicht gefunden werden. <:loveangry:784930958084276224>",
+    "invalid_color": "› `❌` - **Ungültige Farbe:** Es wurde kein gültiger Hexcode oder RGB-Wert angegeben. (Nutze `#5865F2` oder `rgb(88,101,242)`) <:loveangry:784930958084276224>"
+  },
+  "modals": {
+    "webhook": {
+      "title": "Webhook bearbeiten",
+      "name": {
+        "question": "❓ ~ Wie lautet der Name des Webhooks?",
+        "placeholder": "z.B. MeinServer.de - Info 📢"
+      },
+      "avatar": {
+        "question": "❓ ~ Welche Avatar-URL soll verwendet werden?",
+        "placeholder": "z.B. https://i.imgur.com/yed5Zfk.gif"
+      },
+      "url": {
+        "question": "❓ ~ Welche Webhook-URL soll verwendet werden?",
+        "placeholder": "Lege dies fest, um keinen neuen Webhook zu erstellen."
+      }
+    },
+    "template": {
+      "title": "Vorlage speichern",
+      "name": {
+        "question": "❓ ~ Wie lautet der Name der Vorlage?",
+        "placeholder": "z.B. Regelwerk, Team-Bewerben, .. ✍️"
+      },
+      "icon": {
+        "question": "❓ ~ Welches Emoji soll verwendet werden?",
+        "placeholder": "z.B. 📂 (oder Server-Emoji)"
+      }
+    },
+    "channel": {
+      "title": "Kanal auswählen",
+      "select": "❓ ~ Wo soll die Nachricht gesendet werden?",
+      "placeholder": "Wähle einen Kanal aus.. 🖱️"
+    },
+    "option_yes": "Ja",
+    "option_no": "Nein",
+    "colour": {
+      "placeholder": "z.B. #5865F2 oder rgb(88,101,242)"
+    },
+    "images": {
+      "thumbnail": "❓ ~ Welches Thumbnail soll verwendet werden?"
+    }
+  },
+  "select": {
+    "placeholder": "🔨 ~ Was möchtest du bearbeiten?"
+  }
+}
