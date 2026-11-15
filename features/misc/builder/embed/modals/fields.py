@@ -4,6 +4,7 @@ from discord.ui import Label, Modal, RadioGroup, TextInput
 from core.discord_api.limits import MAX_EMBED_FIELD_NAME, MAX_EMBED_FIELD_VALUE
 from core.i18n.translator import translate
 from features.misc.builder.embed.session import BuilderSession
+from features.misc.builder.embed.validation import append_error, text_limit_problem, text_over_limit
 
 
 class EmbedFieldModal(Modal):
@@ -62,6 +63,18 @@ class EmbedFieldModal(Modal):
         name: str = self.name_input.value
         value: str = self.value_input.value
         inline: bool = self.inline_input.value == "yes"
+
+        existing = embed.fields[self.field_index] if self.field_index is not None else None
+        over: int = text_over_limit(
+            self.session.embeds,
+            removed=len(existing.name or "") + len(existing.value or "") if existing else 0,
+            added=len(name) + len(value),
+        )
+
+        if over:
+            fields_view = EmbedFieldsView(self.session)
+            await append_error(interaction, fields_view.embeds, fields_view, text_limit_problem(self.session.language, over))
+            return
 
         if self.field_index is None:
             embed.add_field(name=name, value=value, inline=inline)

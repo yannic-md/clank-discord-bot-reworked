@@ -18,7 +18,7 @@ class ContainerTemplate(Base):
     written as one whole unit and is never queried, joined or sorted on.
     """
 
-    __tablename__ = "container_builder_templates"
+    __tablename__ = "builder_container_templates"
     __table_args__ = (UniqueConstraint("user_id", "name", name="uq_container_builder_template_user_name"),)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)

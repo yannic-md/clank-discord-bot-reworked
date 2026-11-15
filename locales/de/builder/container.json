@@ -36,13 +36,17 @@
     "item_option": "Element {number}: {description}",
     "item_no_description": "(Ohne Beschreibung)",
     "switch_item": "Wähle ein Element aus.. 🖱️",
-    "switch_item_empty": "Noch keine Elemente vorhanden.. 😢"
+    "switch_item_empty": "Noch keine Elemente vorhanden.. 😢",
+    "snippet_row_buttons": {
+      "one": "{count} Button",
+      "other": "{count} Buttons"
+    }
   },
   "info": {
     "kinds": {
       "text_display": {
         "label": "Textfeld",
-        "description": "› Textfelder zeigen formatierten Text an - wie normaler Nachrichteninhalt, aber als eigene Komponente. Maximal {max} Zeichen pro Textfeld."
+        "description": "› Textfelder zeigen formatierten Text an - wie normaler Nachrichteninhalt, aber als eigene Komponente."
       },
       "container": {
         "label": "Container",
@@ -57,6 +61,9 @@
       "separator": {
         "label": "Trennlinie",
         "description": "› Trennlinien fügen Abstand oder eine sichtbare Linie zwischen Elementen ein."
+      },
+      "action_row": {
+        "label": "Button-Reihe"
       }
     },
     "location": {
@@ -100,37 +107,55 @@
       },
       "copy_only": "Die Nachricht kann daher nicht direkt bearbeitet werden."
     },
-    "preview_too_large": "› Die Vorschau ist hier nicht möglich: Zusammen mit den Bedienelementen würde dieser Teil ({amount} Komponenten) Discords Limit von 40 überschreiten. In der gesendeten Nachricht wird er vollständig angezeigt."
+    "preview_too_large": "› Die Vorschau ist hier nicht möglich: Zusammen mit den Bedienelementen würde dieser Teil ({amount} Komponenten) Discords Limit von 40 überschreiten. In der gesendeten Nachricht wird er vollständig angezeigt.",
+    "placement": {
+      "message_row": "In der Nachricht - Reihe {row}",
+      "container_row": "In Container {container} - Reihe {row}",
+      "text": "Neben dem Text \"{text}\"",
+      "short_row": "Reihe {row}",
+      "short_container_row": "Container {container}, Reihe {row}",
+      "short_text": "Neben einem Text",
+      "rows": "› Buttons stehen in **Reihen** - direkt in der Nachricht oder in einem Container - oder neben einem Text. Ein Dropdown jedoch benötigt immer eine gesamte Reihe.",
+      "outline": "Aufbau der Nachricht",
+      "marked": "› Das ausgewählte Element ist **fett** markiert.",
+      "preview_truncated": "› Die Vorschau unten zeigt nur die ersten {shown} von {total} Reihen."
+    }
   },
   "errors": {
-    "component_limit": "› `❌` - **Limit erreicht:** Es können maximal {limit} Komponenten verwendet werden. <:loveangry:784930958084276224>",
+    "component_limit": "› `❌` - **Limit erreicht:** Es können maximal `{limit}` Komponenten verwendet werden. <:loveangry:784930958084276224>",
     "nothing_to_send": "› `❌` - **Nichts zu senden:** Es gibt noch nichts zu senden - füge zuerst eine Komponente hinzu. <:loveangry:784930958084276224>",
     "nothing_to_save": "› `❌` - **Nichts zu speichern:** Es gibt noch nichts zu speichern - füge zuerst eine Komponente hinzu. <:loveangry:784930958084276224>",
-    "total_text": "› `❌` - **Text zu lang:** Der gesamte Text aller Text-Anzeigen darf {max} Zeichen nicht überschreiten. <:loveangry:784930958084276224>",
+    "total_text": "› `❌` - **Text zu lang:** Der gesamte Text aller Textfelder darf `{max}` Zeichen nicht überschreiten. <:loveangry:784930958084276224>",
     "move_target_gone": "› `❌` - **Ziel nicht gefunden:** Das Ziel existiert nicht mehr. <:loveangry:784930958084276224>",
-    "gallery_max_items": "› `❌` - **Galerie voll:** Eine Medien-Galerie kann maximal {max} Elemente enthalten. <:loveangry:784930958084276224>",
+    "gallery_max_items": "› `❌` - **Galerie voll:** Eine Medien-Galerie kann maximal `{max}` Elemente enthalten. <:loveangry:784930958084276224>",
     "load_nothing_usable": "› `❌` - **Nichts zu übernehmen:** Diese Nachricht enthält keinen Text oder keine Komponenten, die übernommen werden könnten. <:loveangry:784930958084276224>",
     "load_no_supported": "› `❌` - **Nicht unterstützt:** Diese Nachricht enthält keine Komponenten, die der Container-Builder unterstützt. <:loveangry:784930958084276224>",
     "thumbnail_no_image": "› `❌` - **Kein Bild:** Es wurde kein Bild hochgeladen. <:loveangry:784930958084276224>",
     "thumbnail_needs_image": "› `❌` - **Bild fehlt:** Beschreibung und Spoiler gelten nur zusammen mit einem Bild. Lade ein Bild hoch - oder lass beides leer, um das Thumbnail zu entfernen. <:loveangry:784930958084276224>",
     "gallery_invalid_media": "› `❌` - **Ungültige Datei:** Bitte lade nur gültige Bilder oder Videos hoch. <:loveangry:784930958084276224>",
-    "gallery_no_file": "› `❌` - **Keine Datei:** Es wurde keine Datei hochgeladen. <:loveangry:784930958084276224>"
+    "gallery_no_file": "› `❌` - **Keine Datei:** Es wurde keine Datei hochgeladen. <:loveangry:784930958084276224>",
+    "placement_full": "› `❌` - **Kein Platz:** In der Nachricht ist dafür kein Platz mehr. <:loveangry:784930958084276224>",
+    "placement_row_full": "› `❌` - **Reihe voll:** Eine Reihe kann höchstens `5` Buttons enthalten. <:loveangry:784930958084276224>",
+    "placement_target_gone": "› `❌` - **Nicht gefunden:** Dieser Ort existiert nicht mehr. <:loveangry:784930958084276224>",
+    "placement_webhook": "› `❌` - **Eigener Absender aktiv:** Über eine Webhook können nur Link-Buttons gesendet werden. <:loveangry:784930958084276224>",
+    "placement_select_empty": "› `❌` - **Dropdown leer:** Füge dem Dropdown zuerst Optionen hinzu. <:loveangry:784930958084276224>",
+    "placement_form": "› `❌` - **Nicht platzierbar:** Ein Formular wird nicht in die Nachricht gesetzt, sondern von einem Button geöffnet. <:loveangry:784930958084276224>"
   },
   "modals": {
     "spoiler": {
-      "question": "❓ ~ Soll es als Spoiler markiert werden?"
+      "question": "🙈 ~ Soll es als Spoiler markiert werden?"
     },
     "description": {
       "placeholder": "z.B. Das Logo unseres Servers 🖼️",
-      "field": "❓ ~ Beschreibung des Bildes?"
+      "field": "📝 ~ Beschreibung des Bildes?"
     },
     "content": {
-      "field": "❓ ~ Was soll in dem Textfeld stehen?",
+      "field": "💬 ~ Was soll in dem Textfeld stehen?",
       "placeholder": "Der Text für dein Textfeld.. ✍️",
       "title": "Textfeld bearbeiten"
     },
     "container": {
-      "field": "❓ ~ Welche Farbe soll der Container haben?",
+      "field": "🎨 ~ Welche Farbe soll der Container haben?",
       "title": "Container bearbeiten"
     },
     "separator": {
@@ -138,8 +163,8 @@
       "invisible": "Nein, nur Abstand",
       "small": "Klein",
       "large": "Groß",
-      "appearance": "❓ ~ Soll die Trennlinie sichtbar sein?",
-      "spacing": "❓ ~ Wie groß soll der Abstand sein?",
+      "appearance": "👁️ ~ Soll die Trennlinie sichtbar sein?",
+      "spacing": "📏 ~ Wie groß soll der Abstand sein?",
       "title": "Trennlinie bearbeiten"
     },
     "thumbnail": {
@@ -147,9 +172,9 @@
     },
     "gallery": {
       "title": "Galerie-Element bearbeiten",
-      "media_edit": "❓ ~ Welches Bild/Video soll genutzt werden?",
-      "media_add": "❓ ~ Welche Bilder/Videos (bis zu {max})?",
-      "description_all": "❓ ~ Beschreibung für alle?"
+      "media_edit": "🖼️ ~ Welches Bild/Video soll genutzt werden?",
+      "media_add": "🎞️ ~ Welche Bilder/Videos (bis zu {max})?",
+      "description_all": "📝 ~ Beschreibung für alle?"
     }
   },
   "select": {
@@ -172,6 +197,12 @@
     },
     "separator": {
       "description": "› Füge Abstand oder eine sichtbare Trennlinie hinzu."
+    },
+    "placement": {
+      "unplace": "Aus der Nachricht entfernen",
+      "new_row_message": "Neue Reihe in der Nachricht",
+      "new_row_container": "Neue Reihe in Container {container}",
+      "next_to_text": "Setzt den Button neben diesen Text"
     }
   }
 }

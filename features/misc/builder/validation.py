@@ -4,6 +4,7 @@ from urllib.parse import ParseResult, urlparse
 from discord import AllowedMentions, Attachment, Colour, Guild, Member, PartialEmoji, Thread
 from discord.abc import GuildChannel
 
+from core.discord_api.emoji import is_discord_emoji
 from core.enums.language import SupportedLanguage
 from core.i18n.translator import lookup, translate
 
@@ -14,11 +15,6 @@ _RAW_HEX_PATTERN: re.Pattern[str] = re.compile(r"^[0-9a-fA-F]{6}$")
 EVERYONE_PATTERN: re.Pattern[str] = re.compile(r"@(everyone|here)")
 USER_MENTION_PATTERN: re.Pattern[str] = re.compile(r"<@!?(\d+)>")
 ROLE_MENTION_PATTERN: re.Pattern[str] = re.compile(r"<@&(\d+)>")
-
-# Standard unicode emoji live entirely outside this range, which lets us reject plain
-# text (e.g. "abc") as an icon without needing a full emoji-data dependency.
-_MIN_EMOJI_CODEPOINT = 0x2000
-_MAX_ICON_LENGTH = 8
 
 IMAGE_EXTENSIONS = (".png", ".jpg", ".jpeg", ".gif", ".webp", ".bmp")
 
@@ -72,24 +68,60 @@ def convert_to_emoji(text: str, guild: Guild) -> str | None:
 
         return str(partial)
 
-    if len(value) > _MAX_ICON_LENGTH or all(ord(char) < _MIN_EMOJI_CODEPOINT for char in value):
+    # Only what Discord takes as an emoji: anything else would be refused when the message is sent.
+    if not is_discord_emoji(value):
         return None
 
     return value
 
 
+def _is_well_formed_host(host: str) -> bool:
+    """Whether the host is one Discord calls well formed: dotted labels of letters, digits and hyphens (any letters, so
+    that internationalised names work) with a top level of letters only - or four numbers up to 255."""
+    host = host.removesuffix(".")  # one trailing dot is fine
+    labels = host.split(".")
+    if len(labels) < 2:
+        return False
+
+    if all(label.isdecimal() or not label for label in labels):  # numbers only: an IPv4 address or nothing at all
+        return len(labels) == 4 and all(label.isdecimal() and int(label) <= 255 for label in labels)
+
+    for label in labels:
+        if not 1 <= len(label) <= 63 or label.startswith("-") or label.endswith("-"):
+            return False
+        if any(ord(char) < 128 and not (char.isalnum() or char == "-") for char in label):
+            return False
+
+    top = labels[-1]
+    if top.startswith("xn--"):  # an internationalised top level, in its ASCII form
+        return len(top) > 4
+    return len(top) >= 2 and all(char.isalpha() for char in top)
+
+
 def is_valid_url(text: str) -> bool:
     """Check whether `text` is a well-formed `http(s)://` URL with a real (dotted) host.
 
-    Rejects things like "https://bl4cklist" that pass a naive scheme-only check but
-    are not "well formed" per Discord's own URL validation.
+    Rejects what Discord answers with "Not a well formed URL": "https://bl4cklist" (no dot), but also a host with an
+    empty or too long part, an underscore, a top level of one letter or with digits, a port that is no number, ...
+    The rules were measured against Discord's own check.
     """
     value: str = text.strip()
     if not value or any(char.isspace() for char in value):
         return False
 
     parsed: ParseResult = urlparse(value)
-    return parsed.scheme in ("http", "https") and "." in parsed.netloc and len(parsed.netloc) > 3
+    if parsed.scheme not in ("http", "https"):
+        return False
+
+    userinfo, at, host_and_port = parsed.netloc.rpartition("@")
+    if at and not userinfo:
+        return False
+
+    host, colon, port = host_and_port.partition(":")
+    if colon and not (port.isdecimal() and int(port) >= 1):
+        return False
+
+    return _is_well_formed_host(host)
 
 
 def is_valid_image_url(text: str) -> bool:

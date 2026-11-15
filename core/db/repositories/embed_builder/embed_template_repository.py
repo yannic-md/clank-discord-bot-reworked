@@ -20,6 +20,8 @@ class EmbedTemplateRecord:
     icon: str
     content: str
     embeds_data: list[dict[str, object]]
+    rows_data: list[list[dict[str, object]]]
+    """The message's button rows, each a list of inline button definitions (empty if there are none)."""
 
 
 def _to_record(row: EmbedTemplate) -> EmbedTemplateRecord:
@@ -28,11 +30,14 @@ def _to_record(row: EmbedTemplate) -> EmbedTemplateRecord:
     # other than the expected array of embed dicts. Anything that is not a list is
     # treated as "no embeds" rather than propagated as a type error downstream.
     stored: object = row.embeds
+    stored_rows: object = row.components
+    rows = [list(entry) for entry in stored_rows if isinstance(entry, list)] if isinstance(stored_rows, list) else []
     return EmbedTemplateRecord(
         name=row.name,
         icon=row.icon,
         content=row.message_content,
         embeds_data=list(stored) if isinstance(stored, list) else [],
+        rows_data=rows,
     )
 
 
@@ -56,6 +61,7 @@ async def upsert_user_template(
     icon: str,
     content: str,
     embeds_data: list[dict[str, object]],
+    rows_data: list[list[dict[str, object]]],
 ) -> None:
     """Create the template, or replace the user's existing one with the same name.
 
@@ -69,12 +75,14 @@ async def upsert_user_template(
             icon=icon,
             message_content=content,
             embeds=embeds_data,
+            components=rows_data,
         )
 
         stmt = stmt.on_duplicate_key_update(
             icon=stmt.inserted.icon,
             message_content=stmt.inserted.message_content,
             embeds=stmt.inserted.embeds,
+            components=stmt.inserted.components,
             updated_at=func.now(),
         )
 

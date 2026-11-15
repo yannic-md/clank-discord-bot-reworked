@@ -14,6 +14,7 @@ from features.misc.builder.embed.modals import (
 )
 from features.misc.builder.embed.session import BuilderSession
 from features.misc.builder.embed.util.embed_ops import move_active_embed, non_empty_embeds
+from features.misc.builder.embed.util.placement import placed_item_ids
 from features.misc.builder.embed.util.templates import load_user_templates
 from features.misc.builder.embed.views.base import (
     BuilderScreenView,
@@ -22,12 +23,16 @@ from features.misc.builder.embed.views.base import (
 )
 from features.misc.builder.embed.views.embed_list import EmbedListView
 from features.misc.builder.embed.views.fields import EmbedFieldsView
+from features.misc.builder.embed.views.interactive import InteractiveHubView
 from features.misc.builder.embed.views.send import SendConfirmView, save_message_changes
 from features.misc.builder.embed.views.templates import TemplatesView
 from features.misc.builder.embed.views.webhook import WebhookView
+from features.misc.builder.interactive.hub import owned_counts, owned_text
+from features.misc.builder.interactive.models import INTERACTIVE_EMOJI
 
 _SELECT_OPTION_VALUES: list[tuple[str, str]] = [
     ("embed_list", "🗂️"),
+    ("embed_buttons", INTERACTIVE_EMOJI),
     ("embed_content", "💬"),
     ("embed_colors", "🎨"),
     ("embed_title", "✏️"),
@@ -37,6 +42,15 @@ _SELECT_OPTION_VALUES: list[tuple[str, str]] = [
     ("embed_footer", "🦶"),
     ("embed_timestamp", "⏰"),
 ]
+
+
+def _select_key(value: str, field: str) -> str:
+    """Locale key of the `field` (`label` / `description`) of a main-menu entry. The buttons entry reads the
+    text both builders share; every other entry has its own."""
+    if value == "embed_buttons":
+        return f"builder.select.interactive.{field}"
+
+    return f"builder.embed.select.{value}.{field}"
 
 
 class EmbedBuilderGUI(BuilderScreenView):
@@ -92,8 +106,8 @@ class EmbedBuilderGUI(BuilderScreenView):
         self.edit_options.options = [
             SelectOption(
                 emoji=emoji,
-                label=translate(session.language, f"builder.embed.select.{value}.label"),
-                description=translate(session.language, f"builder.embed.select.{value}.description"),
+                label=translate(session.language, _select_key(value, "label")),
+                description=translate(session.language, _select_key(value, "description")),
                 value=value,
             )
             for value, emoji in _SELECT_OPTION_VALUES
@@ -114,6 +128,11 @@ class EmbedBuilderGUI(BuilderScreenView):
             self.remove_item(self.main_up_button)
             self.remove_item(self.main_down_button)
 
+        # What the message has in the way of buttons and dropdowns, below the dropdown. Only information: disabled.
+        owned: str | None = owned_text(session.language, *owned_counts(session.library, placed_item_ids(session)))
+        if owned is not None:
+            self.add_item(Button(label=owned, style=ButtonStyle.gray, disabled=True, row=3, custom_id="embed:gui:owned"))
+
     @select(
         cls=Select,
         placeholder="Was möchtest du bearbeiten?",
@@ -127,6 +146,11 @@ class EmbedBuilderGUI(BuilderScreenView):
         value: str = select_obj.values[0]
         if value == "embed_list":
             await show(interaction, EmbedListView(self.session))
+            return
+
+        if value == "embed_buttons":
+            self.session.active_item_id = None  # the screen opens on its overview, nothing selected
+            await show(interaction, InteractiveHubView(self.session))
             return
 
         if value != "embed_content" and not self.session.embeds:

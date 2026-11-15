@@ -70,7 +70,7 @@ class ContainerBuilder(Cog):
             assert isinstance(client_user, ClientUser)
 
             # Own messages are edited in place, everyone else's are copied into a new message.
-            fatal_error, notice = load_message_into_session(session, target_message, client_user.id)
+            fatal_error, notice = await load_message_into_session(session, target_message, client_user.id)
             if fatal_error is not None:
                 await interaction.response.send_message(fatal_error, ephemeral=True)
                 return

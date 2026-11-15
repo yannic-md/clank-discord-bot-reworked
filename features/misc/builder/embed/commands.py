@@ -15,12 +15,14 @@ from discord.abc import GuildChannel
 from discord.app_commands import allowed_installs, checks, command, default_permissions, describe, guild_only, rename
 from discord.ext.commands import AutoShardedBot, Cog
 
+from core.db.repositories.interactive_builder.interactive_item_repository import list_items_for_message
 from core.discord_api.perms import perms_send_message
 from core.enums.language import SupportedLanguage
 from core.i18n.discord_translator import cmd
 from core.i18n.resolve import get_language
 from core.i18n.translator import translate
 from features.misc.builder.embed.session import BuilderSession
+from features.misc.builder.embed.util.placement import import_rows
 from features.misc.builder.embed.views import EmbedBuilderGUI
 from features.misc.builder.embed.views.base import track_active_view
 
@@ -88,6 +90,12 @@ class EmbedBuilder(Cog):
             edit_mode=edit_mode,
             target_message=target_message,
         )
+
+        if target_message is not None:
+            # The bot's own buttons are only recognised on its own messages, where their stored behaviour is
+            # taken over too. On anyone else's message only link buttons can be copied.
+            records = {record.id: record for record in await list_items_for_message(target_message.id)} if edit_mode else {}
+            import_rows(session, target_message, records)
 
         view: EmbedBuilderGUI = EmbedBuilderGUI(session)
         track_active_view(view)

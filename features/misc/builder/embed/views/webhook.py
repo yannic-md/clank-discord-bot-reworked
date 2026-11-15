@@ -6,8 +6,57 @@ from discord.ui import Button, button
 from core.i18n.translator import translate
 from features.misc.builder.embed.modals import WebhookModal
 from features.misc.builder.embed.session import BuilderSession
+from features.misc.builder.embed.util.placement import remove_interactive_items
 from features.misc.builder.embed.views.base import BuilderScreenView, show
+from features.misc.builder.interactive.messages import screen
 from features.misc.builder.session import WebhookSender
+
+
+async def apply_sender(interaction: Interaction, session: BuilderSession, sender: WebhookSender) -> None:
+    """Make `sender` the message's sender identity - after the user confirmed that the buttons that run actions
+    are removed, if there are any (a webhook can only carry link buttons)."""
+    if sender.enabled and session.library.interactive():
+        await show(interaction, WebhookConfirmView(session, sender))
+        return
+
+    session.webhook = sender
+    await show(interaction, WebhookView(session))
+
+
+class WebhookConfirmView(BuilderScreenView):
+    """Warns that a webhook sender costs the buttons that run actions, and asks to confirm."""
+
+    def __init__(self, session: BuilderSession, pending: WebhookSender) -> None:
+        """`pending` is the sender identity that is only applied once the user confirms."""
+        super().__init__()
+        self.session: BuilderSession = session
+        self.pending: WebhookSender = pending
+
+        count = len(session.library.interactive())
+        self.info_embed: Embed = Embed(
+            title=screen(session.language, "webhook_confirm.title"),
+            description=screen(session.language, "webhook_confirm.description", count=count),
+            colour=Colour.orange(),
+        )
+        self.content: str | None = None
+        self.embeds: list[Embed] = [self.info_embed]
+
+        self.confirm_button.label = translate(session.language, "builder.buttons.confirm_yes")
+        self.confirm_button.emoji = "✅"
+        self.cancel_button.label = translate(session.language, "builder.buttons.confirm_no")
+        self.cancel_button.emoji = "✏️"
+
+    @button(label="Confirm", style=ButtonStyle.red, row=0, custom_id="embed:webhook:confirm_remove_buttons")
+    async def confirm_button(self: WebhookConfirmView, interaction: Interaction, _button: Button) -> None:
+        """Remove the buttons that run actions and apply the sender identity."""
+        remove_interactive_items(self.session)
+        self.session.webhook = self.pending
+        await show(interaction, WebhookView(self.session))
+
+    @button(label="Cancel", style=ButtonStyle.gray, row=0, custom_id="embed:webhook:cancel_remove_buttons")
+    async def cancel_button(self: WebhookConfirmView, interaction: Interaction, _button: Button) -> None:
+        """Keep everything as it was and go back to the webhook screen."""
+        await show(interaction, WebhookView(self.session))
 
 
 class WebhookView(BuilderScreenView):

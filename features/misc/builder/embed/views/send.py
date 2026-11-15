@@ -20,17 +20,22 @@ from discord.abc import GuildChannel, Messageable
 from discord.ui import Button, button
 from discord.utils import MISSING
 
-from core.discord_api.limits import MAX_EMBED_COUNT, MAX_WEBHOOK_COUNT
+from core.discord_api.limits import MAX_WEBHOOK_COUNT
 from core.i18n.translator import translate
+from features.misc.builder.discord_errors import send_problem_text
 from features.misc.builder.embed.session import BuilderSession
 from features.misc.builder.embed.util.embed_ops import non_empty_embeds
+from features.misc.builder.embed.util.placement import build_view, placed_item_ids
 from features.misc.builder.embed.validation import (
     append_error,
     check_for_mention_perms,
     count_user_mentions,
     describe_role_mentions,
     get_role_mention_count,
+    has_room_for_error,
     is_everyone_mentioned,
+    text_limit_problem,
+    text_over_limit,
 )
 from features.misc.builder.embed.views.base import (
     BuilderScreenView,
@@ -40,6 +45,9 @@ from features.misc.builder.embed.views.base import (
     track_active_view,
 )
 from features.misc.builder.formatting import format_number
+from features.misc.builder.interactive.draft import ItemDraft
+from features.misc.builder.interactive.store import Persisted, attach, persist_items, rollback
+from features.misc.builder.interactive.ui import sendable_problem
 from features.misc.builder.session import WebhookSender
 from features.misc.builder.validation import (
     build_allowed_mentions,
@@ -131,23 +139,63 @@ class SendConfirmView(BuilderScreenView):
             return
 
         embeds: list[Embed] = non_empty_embeds(session.embeds)
+        if not await _fits_text_limit(interaction, session, self, embeds):
+            return
+
         if not await _has_bot_channel_send_perms(interaction, session, channel, self, has_embeds=bool(embeds)):
+            return
+
+        placed: list[ItemDraft] = placed_drafts(session)
+        if session.webhook.enabled and any(not draft.is_link for draft in placed):
+            # Buttons that run actions cannot be sent through a webhook - the editor keeps them out, so this
+            # is only a safety net.
+            message: str = translate(session.language, "builder.embed.errors.placement_webhook")
+            await append_error(interaction, self.embeds, self, message)
+            return
+
+        unsendable = sendable_problem(session.language, placed, session.library)
+        if unsendable is not None:
+            await append_error(interaction, self.embeds, self, unsendable)
             return
 
         assert isinstance(interaction.user, Member)
         allowed: AllowedMentions = build_allowed_mentions(channel, interaction.user)
-        if session.webhook.enabled:
-            sent = await _send_via_webhook(interaction, channel, session, allowed, embeds, self)
-            if sent is None:
-                return
+        persisted: Persisted = await persist_items(
+            session.library, placed, guild_id=session.guild_id, creator_id=session.slashcmd_author_id
+        )
+        jump_url: str | None
+        try:
+            if session.webhook.enabled:
+                sent = await _send_via_webhook(interaction, channel, session, allowed, embeds, self)
+                if sent is None:
+                    await rollback(session.library, persisted)
+                    return
 
-            jump_url: str | None = sent.jump_url
-        else:
-            assert isinstance(channel, Messageable)
-            sent_message: Message = await channel.send(
-                content=session.message_content, embeds=embeds, allowed_mentions=allowed
-            )
-            jump_url = sent_message.jump_url
+                sent_id, sent_channel_id, jump_url = sent.id, sent.channel.id, sent.jump_url
+            else:
+                assert isinstance(channel, Messageable)
+                sent_message: Message = await channel.send(
+                    content=session.message_content,
+                    embeds=embeds,
+                    allowed_mentions=allowed,
+                    view=build_view(session) or MISSING,
+                )
+                sent_id, sent_channel_id, jump_url = sent_message.id, sent_message.channel.id, sent_message.jump_url
+
+        except HTTPException as error:
+            await rollback(session.library, persisted)
+            problem = send_problem_text(session.language, error)
+            if problem is None:
+                raise
+
+            await append_error(interaction, self.embeds, self, problem)
+            return
+
+        except BaseException:
+            await rollback(session.library, persisted)
+            raise
+
+        await attach(session.library, persisted, channel_id=sent_channel_id, message_id=sent_id)
 
         self.stop()
         if channel.id == session.slashcmd_channel.id:
@@ -174,19 +222,69 @@ async def save_message_changes(interaction: Interaction, session: BuilderSession
         return
 
     embeds: list[Embed] = non_empty_embeds(session.embeds)
+    if not await _fits_text_limit(interaction, session, view, embeds):
+        return
+
     if not await _has_bot_channel_send_perms(interaction, session, channel, view, has_embeds=bool(embeds)):
         return
 
+    placed: list[ItemDraft] = placed_drafts(session)
+    unsendable = sendable_problem(session.language, placed, session.library)
+    if unsendable is not None:
+        await append_error(interaction, view.embeds, view, unsendable)
+        return
+
     allowed: AllowedMentions = build_allowed_mentions(channel, interaction.user)  # type: ignore[arg-type]
+    persisted: Persisted = await persist_items(
+        session.library, placed, guild_id=session.guild_id, creator_id=session.slashcmd_author_id
+    )
     try:
-        await session.target_message.edit(content=session.message_content, embeds=embeds, allowed_mentions=allowed)
+        await session.target_message.edit(
+            content=session.message_content, embeds=embeds, allowed_mentions=allowed, view=build_view(session)
+        )
     except NotFound:
+        await rollback(session.library, persisted)
         await _restore_send_mode(interaction, session)
         return
+
+    except HTTPException as error:
+        await rollback(session.library, persisted)
+        problem = send_problem_text(session.language, error)
+        if problem is None:
+            raise
+
+        await append_error(interaction, view.embeds, view, problem)
+        return
+
+    except BaseException:
+        await rollback(session.library, persisted)
+        raise
+
+    await attach(session.library, persisted, channel_id=channel.id, message_id=session.target_message.id)
 
     view.stop()
     success_embed: Embed = create_success_embed(session, "builder.info.success.saved")
     await interaction.response.edit_message(content=None, embeds=[success_embed], view=None)
+
+
+async def _fits_text_limit(
+    interaction: Interaction, session: BuilderSession, view: BuilderScreenView, embeds: list[Embed]
+) -> bool:
+    """Whether the embeds hold no more text than one message may (6000 characters). The editor keeps every change
+    within it, so only a stored template or an imported message could get here with too much - say so instead of
+    sending what Discord refuses."""
+    over: int = text_over_limit(embeds)
+    if not over:
+        return True
+
+    await append_error(interaction, view.embeds, view, text_limit_problem(session.language, over))
+    return False
+
+
+def placed_drafts(session: BuilderSession) -> list[ItemDraft]:
+    """The buttons that sit in the message's rows, in the order they appear."""
+    drafts = (session.library.get(item_id) for item_id in placed_item_ids(session))
+    return [draft for draft in drafts if draft is not None]
 
 
 async def _restore_send_mode(interaction: Interaction, session: BuilderSession) -> None:
@@ -194,6 +292,9 @@ async def _restore_send_mode(interaction: Interaction, session: BuilderSession) 
     fresh "send a new message" session again (send button, webhook, channel), keeping all content."""
     from features.misc.builder.embed.views.gui import EmbedBuilderGUI
 
+    for draft in session.library.items.values():
+        draft.db_id = None
+    session.library.loaded_db_ids.clear()
     session.edit_mode = False
     session.target_message = None
 
@@ -201,8 +302,8 @@ async def _restore_send_mode(interaction: Interaction, session: BuilderSession) 
     track_active_view(gui)
 
     message: str = translate(session.language, "builder.errors.message_deleted")
-    # Appending the error as one more embed is impossible at Discord's embed cap - then it is sent separately.
-    fits: bool = len(gui.embeds) < MAX_EMBED_COUNT
+    # Appending the error as one more embed is impossible at Discord's embed or text cap - then it is sent separately.
+    fits: bool = has_room_for_error(gui.embeds, message)
     embeds: list[Embed] = [*gui.embeds, Embed(description=message, colour=Colour.red())] if fits else gui.embeds
     await interaction.response.edit_message(content=gui.content, embeds=embeds, view=gui)
     gui.message = await interaction.original_response()
@@ -247,10 +348,13 @@ async def _send_via_webhook(
             allowed_mentions=allowed,
             wait=True,
             content=session.content or MISSING,
+            view=build_view(session) or MISSING,
             **identity_kwargs(session.webhook, channel),
         )
-    except NotFound:
-        # The webhook is gone - stop treating it as a configured identity going forward.
+    except HTTPException as error:
+        if error.status not in (401, 404):  # 404: the webhook is gone; 401: its token is wrong
+            raise
+        # The webhook cannot be used - stop treating it as a configured identity going forward.
         session.webhook = WebhookSender()
         message = translate(session.language, "builder.errors.webhook_invalid")
         await append_error(interaction, view.embeds, view, message)

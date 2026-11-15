@@ -5,6 +5,7 @@ from core.discord_api.limits import MAX_SELECT_ITEMS
 from core.i18n.translator import translate
 from features.misc.builder.embed.session import BuilderSession
 from features.misc.builder.embed.util.embed_ops import non_empty_embeds
+from features.misc.builder.embed.util.placement import rows_to_data
 from features.misc.builder.embed.util.templates import EmbedTemplate, load_user_templates, save_user_template
 from features.misc.builder.embed.validation import append_error
 from features.misc.builder.templates import DEFAULT_TEMPLATE_ICON, MAX_TEMPLATE_ICON_LENGTH, MAX_TEMPLATE_NAME_LENGTH
@@ -81,6 +82,7 @@ class SaveTemplateModal(Modal):
             icon=icon,
             content=self.session.content,
             embeds=[embed.copy() for embed in non_empty_embeds(self.session.embeds)],
+            button_rows=rows_to_data(self.session),
         )
         await save_user_template(owner_id, template)
 

@@ -13,8 +13,12 @@
     "edit_save": "Änderungen Speichern",
     "confirm_yes": "Ja, senden!",
     "confirm_no": "Nein, bearbeiten!",
+    "yes": "Ja, platzieren!",
+    "no": "Nein, zurück!",
     "up": "Hoch",
-    "down": "Runter"
+    "down": "Runter",
+    "left": "Links",
+    "right": "Rechts"
   },
   "placeholders": {
     "templates_select": "Wähle eine Vorlage aus.. 🖱️",
@@ -44,47 +48,60 @@
   "errors": {
     "no_template_selected": "› `❌` - **Keine Vorlage ausgewählt:** Wähle eine Vorlage aus dem Dropdown aus, bevor du sie bearbeitest. <:loveangry:784930958084276224>",
     "invalid_icon": "› `❌` - **Ungültiges Emoji:** Verwende ein Standard-Emoji oder einen Emoji dieses Servers. <:loveangry:784930958084276224>",
-    "template_limit": "› `❌` - **Zu viele Vorlagen:** Du kannst maximal {limit} Vorlagen speichern. <:loveangry:784930958084276224>",
+    "template_limit": "› `❌` - **Zu viele Vorlagen:** Du kannst maximal `{limit}` Vorlagen speichern. <:loveangry:784930958084276224>",
     "webhook_forbidden": "› `❌` - **Bot-Rechte fehlen:** Mir fehlt die Berechtigung `WEBHOOKS VERWALTEN` in {channel}, um einen Webhook zu erstellen. <:loveangry:784930958084276224>",
-    "webhook_limit": "› `❌` - **Webhook-Limit erreicht:** In {channel} wurde bereits die maximale Anzahl an Webhooks ({limit}) erreicht. <:loveangry:784930958084276224>",
-    "webhook_invalid": "› `❌` - **Ungültiger Webhook:** Der hinterlegte Webhook konnte nicht gefunden werden (vermutlich wurde er gelöscht) - Lege den Webhook erneut fest. <:loveangry:784930958084276224>",
+    "webhook_limit": "› `❌` - **Webhook-Limit erreicht:** In {channel} wurde bereits die maximale Anzahl an Webhooks (`{limit}`) erreicht. <:loveangry:784930958084276224>",
+    "webhook_invalid": "› `❌` - **Ungültiger Webhook:** Der hintergelegte Webhook konnte nicht gefunden werden (vermutlich wurde er gelöscht) - Lege den Webhook erneut fest. <:loveangry:784930958084276224>",
     "invalid_image": "› `❌` - **Ungültiges Bild:** Es wurde kein gültiges Bild erkannt. Die Formate `PNG`, `JPG`, `GIF`, `WEBP` oder `BMP` werden aktuell unterstützt. <:loveangry:784930958084276224>",
     "user_permission_missing": "› `❌` - **Rechte fehlen:** Dir fehlen folgende Berechtigungen in {channel}: `{permissions}` <:loveangry:784930958084276224>",
     "bot_permission_missing": "› `❌` - **Bot-Rechte fehlen:** Ich benötige folgende Berechtigungen in {channel}: `{permissions}` <:loveangry:784930958084276224>",
     "message_deleted": "› `❌` - **Nachricht nicht mehr vorhanden:** Die Nachricht, die du bearbeiten wolltest, existiert nicht mehr. Der Builder wurde in den Sendemodus zurückgesetzt - du kannst sie jetzt als neue Nachricht senden. <:loveangry:784930958084276224>",
     "message_not_found": "› `❌` - **Nachricht nicht gefunden:** Die angegebene Nachricht konnte in diesem Kanal nicht gefunden werden. <:loveangry:784930958084276224>",
-    "invalid_color": "› `❌` - **Ungültige Farbe:** Es wurde kein gültiger Hexcode oder RGB-Wert angegeben. (Nutze `#5865F2` oder `rgb(88,101,242)`) <:loveangry:784930958084276224>"
+    "invalid_color": "› `❌` - **Ungültige Farbe:** Es wurde kein gültiger Hexcode oder RGB-Wert angegeben. (Nutze `#5865F2` oder `rgb(88,101,242)`) <:loveangry:784930958084276224>",
+    "discord_rejected": "› `❌` - **Von Discord abgelehnt:** Discord akzeptiert die Nachricht so nicht - sie wurde nicht gesendet. Meist liegt es an einem Emoji oder Link:\n{problems} <:loveangry:784930958084276224>",
+    "rejected_unknown": "Discord nennt keinen Grund.",
+    "channel_deleted": "› `❌` - **Kanal nicht gefunden:** Der Kanal, in den gesendet werden soll, existiert nicht mehr. Wähle über „Kanal“ einen anderen aus. <:loveangry:784930958084276224>",
+    "rejected_subject": {
+      "emoji": "Emoji",
+      "url": "Link",
+      "label": "Text",
+      "placeholder": "Platzhalter",
+      "description": "Beschreibung",
+      "content": "Text",
+      "title": "Titel",
+      "value": "Wert"
+    }
   },
   "modals": {
     "webhook": {
       "title": "Webhook bearbeiten",
       "name": {
-        "question": "❓ ~ Wie lautet der Name des Webhooks?",
+        "question": "🏷️ ~ Wie lautet der Name des Webhooks?",
         "placeholder": "z.B. MeinServer.de - Info 📢"
       },
       "avatar": {
-        "question": "❓ ~ Welche Avatar-URL soll verwendet werden?",
+        "question": "👤 ~ Welche Avatar-URL soll verwendet werden?",
         "placeholder": "z.B. https://i.imgur.com/yed5Zfk.gif"
       },
       "url": {
-        "question": "❓ ~ Welche Webhook-URL soll verwendet werden?",
+        "question": "🔗 ~ Welche Webhook-URL soll genutzt werden?",
         "placeholder": "Lege dies fest, um keinen neuen Webhook zu erstellen."
       }
     },
     "template": {
       "title": "Vorlage speichern",
       "name": {
-        "question": "❓ ~ Wie lautet der Name der Vorlage?",
+        "question": "🏷️ ~ Wie lautet der Name der Vorlage?",
         "placeholder": "z.B. Regelwerk, Team-Bewerben, .. ✍️"
       },
       "icon": {
-        "question": "❓ ~ Welches Emoji soll verwendet werden?",
+        "question": "😀 ~ Welches Emoji soll verwendet werden?",
         "placeholder": "z.B. 📂 (oder Server-Emoji)"
       }
     },
     "channel": {
       "title": "Kanal auswählen",
-      "select": "❓ ~ Wo soll die Nachricht gesendet werden?",
+      "select": "📢 ~ Wo soll die Nachricht gesendet werden?",
       "placeholder": "Wähle einen Kanal aus.. 🖱️"
     },
     "option_yes": "Ja",
@@ -93,10 +110,14 @@
       "placeholder": "z.B. #5865F2 oder rgb(88,101,242)"
     },
     "images": {
-      "thumbnail": "❓ ~ Welches Thumbnail soll verwendet werden?"
+      "thumbnail": "📷 ~ Welches Thumbnail soll verwendet werden?"
     }
   },
   "select": {
-    "placeholder": "🔨 ~ Was möchtest du bearbeiten?"
+    "placeholder": "🔨 ~ Was möchtest du bearbeiten?",
+    "interactive": {
+      "label": "Buttons & Dropdowns",
+      "description": "› Erstelle Buttons, die bestimmte Aktionen ausführen."
+    }
   }
 }

@@ -1,15 +1,38 @@
-from discord import ButtonStyle, Colour, Interaction, Member, Message, NotFound, Thread, WebhookMessage
+from discord import (
+    AllowedMentions,
+    ButtonStyle,
+    Colour,
+    HTTPException,
+    Interaction,
+    Member,
+    Message,
+    NotFound,
+    Thread,
+    WebhookMessage,
+)
 from discord.abc import GuildChannel, Messageable
 from discord.ui import ActionRow
 
+from core.discord_api.limits import MAX_V2_TOTAL_TEXT_LENGTH
 from core.enums.language import SupportedLanguage
+from features.misc.builder.container.models import ComponentNode
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import t, ts
-from features.misc.builder.container.util.render import StaticLayoutView, build_items, text_message_view
-from features.misc.builder.container.util.tree import non_empty_nodes
+from features.misc.builder.container.util.placement import placed_item_ids
+from features.misc.builder.container.util.render import (
+    StaticLayoutView,
+    final_items,
+    preview_items,
+    text_message_view,
+)
+from features.misc.builder.container.util.tree import non_empty_nodes, total_text_length
 from features.misc.builder.container.util.webhook import send_via_webhook
 from features.misc.builder.container.validation import contains_mass_mention, missing_send_permissions
 from features.misc.builder.container.views.base import BuilderLayoutView, add_button, info_container, show
+from features.misc.builder.discord_errors import send_problem_text
+from features.misc.builder.interactive.draft import ItemDraft
+from features.misc.builder.interactive.store import Persisted, attach, persist_items, rollback
+from features.misc.builder.interactive.ui import sendable_problem
 from features.misc.builder.validation import (
     build_allowed_mentions,
     format_missing_permissions,
@@ -28,8 +51,8 @@ class SendConfirmView(BuilderLayoutView):
         self.session = session
 
         nodes = non_empty_nodes(session.components)
-        for item in build_items(nodes):
-            self.add_item(item)
+        for item in preview_items(session, nodes):
+            self.add_preview(item)
 
         member = session.slashcmd_author
         channel = session.target_channel
@@ -71,16 +94,52 @@ class SendConfirmView(BuilderLayoutView):
                 await show(interaction, SendConfirmView(session, error=error))
                 return
 
+            placed = _placed_drafts(session, nodes)
+            if session.webhook.enabled and any(not draft.is_link for draft in placed):
+                # Buttons that run actions cannot be sent through a webhook - the editor keeps them out, so this
+                # is only a safety net.
+                error = t(language, "errors.placement_webhook")
+                await show(interaction, SendConfirmView(session, error=error))
+                return
+
+            unsendable = sendable_problem(language, placed, session.library)
+            if unsendable is not None:
+                await show(interaction, SendConfirmView(session, error=unsendable))
+                return
+
+            if total_text_length(nodes) > MAX_V2_TOTAL_TEXT_LENGTH:
+                # The editor keeps every text within the limit, so only a stored template could get here with too much.
+                error = t(language, "errors.total_text", max=MAX_V2_TOTAL_TEXT_LENGTH)
+                await show(interaction, SendConfirmView(session, error=error))
+                return
+
             allowed = build_allowed_mentions(channel, member)
-            sent: Message | WebhookMessage | None
-            if session.webhook.enabled:
-                sent, webhook_error = await send_via_webhook(interaction, channel, session, nodes, allowed)
-                if sent is None:
-                    await show(interaction, SendConfirmView(session, error=webhook_error))
-                    return
-            else:
-                assert isinstance(channel, Messageable)
-                sent = await channel.send(view=StaticLayoutView(build_items(nodes)), allowed_mentions=allowed)
+            persisted = await persist_items(
+                session.library, placed, guild_id=session.guild_id, creator_id=session.slashcmd_author_id
+            )
+            sent: Message | WebhookMessage | None = None
+            try:
+                if session.webhook.enabled:
+                    sent, webhook_error = await send_via_webhook(interaction, channel, session, nodes, allowed)
+                    if sent is None:
+                        await rollback(session.library, persisted)
+                        await show(interaction, SendConfirmView(session, error=webhook_error))
+                        return
+                else:
+                    assert isinstance(channel, Messageable)
+                    sent = await channel.send(view=StaticLayoutView(final_items(session, nodes)), allowed_mentions=allowed)
+            except HTTPException as error:
+                await rollback(session.library, persisted)
+                problem = send_problem_text(session.language, error)
+                if problem is None:
+                    raise
+                await show(interaction, SendConfirmView(session, error=problem))
+                return
+            except BaseException:
+                await rollback(session.library, persisted)
+                raise
+
+            await attach(session.library, persisted, channel_id=sent.channel.id, message_id=sent.id)
 
             self.stop()
             success_text = (
@@ -103,6 +162,12 @@ class SendConfirmView(BuilderLayoutView):
             self.add_error(error)
 
 
+def _placed_drafts(session: ContainerBuilderSession, nodes: list[ComponentNode]) -> list[ItemDraft]:
+    """The buttons that sit in `nodes`, in the order they appear in the message."""
+    drafts = (session.library.get(item_id) for item_id in placed_item_ids(nodes))
+    return [draft for draft in drafts if draft is not None]
+
+
 def _jump_link_text(language: SupportedLanguage, jump_url: str) -> str:
     """Localized text linking to the sent message."""
     return ts(language, "info.success.jump_link", jump_url=jump_url)
@@ -117,13 +182,13 @@ async def save_message_changes(interaction: Interaction, session: ContainerBuild
     channel = message.channel
     assert isinstance(channel, GuildChannel | Thread)
 
-    nodes = non_empty_nodes(session.components)
+    nodes: list[ComponentNode] = non_empty_nodes(session.components)
     if not nodes:
         error = t(session.language, "errors.nothing_to_save")
         await show(interaction, MainView(session, error=error))
         return
 
-    missing = missing_send_permissions(channel, channel.guild.me)
+    missing: list[str] = missing_send_permissions(channel, channel.guild.me)
     if missing:
         channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
         permissions = format_missing_permissions(session.language, missing)
@@ -131,18 +196,52 @@ async def save_message_changes(interaction: Interaction, session: ContainerBuild
         await show(interaction, MainView(session, error=error))
         return
 
+    placed: list[ItemDraft] = _placed_drafts(session, nodes)
+    unsendable: str | None = sendable_problem(session.language, placed, session.library)
+    if unsendable is not None:
+        await show(interaction, MainView(session, error=unsendable))
+        return
+
+    if total_text_length(nodes) > MAX_V2_TOTAL_TEXT_LENGTH:
+        error = t(session.language, "errors.total_text", max=MAX_V2_TOTAL_TEXT_LENGTH)
+        await show(interaction, MainView(session, error=error))
+        return
+
     assert isinstance(interaction.user, Member)
-    allowed = build_allowed_mentions(channel, interaction.user)
+    allowed: AllowedMentions = build_allowed_mentions(channel, interaction.user)
+    persisted: Persisted = await persist_items(
+        session.library,
+        placed,
+        guild_id=session.guild_id,
+        creator_id=session.slashcmd_author_id,
+    )
     try:
-        await message.edit(view=StaticLayoutView(build_items(nodes)), allowed_mentions=allowed)
+        await message.edit(view=StaticLayoutView(final_items(session, nodes)), allowed_mentions=allowed)
     except NotFound:
         # The message was deleted meanwhile: drop edit mode so the builder works as a fresh
         # "send a new message" session again (send button, webhook, channel), keeping all content.
+        await rollback(session.library, persisted)
+        for draft in session.library.items.values():
+            draft.db_id = None
+
+        session.library.loaded_db_ids.clear()
         session.edit_mode = False
         session.target_message = None
         error = ts(session.language, "errors.message_deleted")
         await show(interaction, MainView(session, error=error))
         return
+    except HTTPException as error:
+        await rollback(session.library, persisted)
+        problem = send_problem_text(session.language, error)
+        if problem is None:
+            raise
+        await show(interaction, MainView(session, error=problem))
+        return
+    except BaseException:
+        await rollback(session.library, persisted)
+        raise
+
+    await attach(session.library, persisted, channel_id=channel.id, message_id=message.id)
 
     view.stop()
     saved_text = f"{ts(session.language, 'info.success.saved')}\n\n{_jump_link_text(session.language, message.jump_url)}"

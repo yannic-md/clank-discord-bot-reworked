@@ -1,6 +1,6 @@
 import logging
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from logging import Logger
 
 from discord import Embed
@@ -15,7 +15,7 @@ logger: Logger = logging.getLogger("discord")
 class EmbedTemplate:
     """A saved embed-builder draft, as the builder screens consume it.
 
-    Persisted per user in the `embed_builder_templates` table; the embeds round-trip
+    Persisted per user in the `builder_embed_templates` table; the embeds round-trip
     through `Embed.to_dict()` / `Embed.from_dict()`.
     """
 
@@ -23,6 +23,8 @@ class EmbedTemplate:
     icon: str
     content: str
     embeds: list[Embed]
+    button_rows: list[list[dict[str, object]]] = field(default_factory=list)
+    """The message's button rows, each a list of inline button definitions (see `ItemDraft.to_data`)."""
     dropped_embeds: int = 0
     """How many stored embed payloads could not be rebuilt into a usable `Embed`
     (corrupted JSON structure, hand-edited row, incompatible discord.py change).
@@ -78,6 +80,7 @@ def _to_template(record: EmbedTemplateRecord) -> EmbedTemplate:
         icon=record.icon,
         content=record.content,
         embeds=embeds,
+        button_rows=record.rows_data,
         dropped_embeds=dropped,
     )
 
@@ -95,6 +98,7 @@ async def save_user_template(user_id: int, template: EmbedTemplate) -> None:
         icon=template.icon,
         content=template.content,
         embeds_data=[dict(embed.to_dict()) for embed in template.embeds],
+        rows_data=template.button_rows,
     )
 
 

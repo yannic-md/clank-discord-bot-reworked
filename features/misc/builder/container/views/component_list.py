@@ -148,9 +148,10 @@ class ComponentKindListView(BuilderLayoutView):
                 await interaction.response.send_modal(ThumbnailModal(session, node_id=text_node.id))
 
             # Creating a thumbnail turns the text into a section: it uses two more components of the budget.
-            can_create = text_node.has_accessory or remaining_budget(session) >= 2
+            # A button next to the text takes the thumbnail's place, so the two exclude each other.
+            can_create = text_node.has_thumbnail or (text_node.accessory_item_id is None and remaining_budget(session) >= 2)
             thumbnail_label = t(
-                session.language, "buttons.thumbnail_edit" if text_node.has_accessory else "buttons.thumbnail_create"
+                session.language, "buttons.thumbnail_edit" if text_node.has_thumbnail else "buttons.thumbnail_create"
             )
             add_button(
                 thumbnail_row,

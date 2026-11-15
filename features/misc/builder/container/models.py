@@ -22,6 +22,9 @@ class ComponentKind(Enum):
     CONTAINER = "container"
     MEDIA_GALLERY = "media_gallery"
     SEPARATOR = "separator"
+    ACTION_ROW = "action_row"
+    """A row of buttons. Not listed among the kinds the user creates directly: rows come and go as buttons are
+    placed in the message (see the "Buttons & Dropdowns" screen)."""
 
 
 KIND_EMOJIS: dict[ComponentKind, str] = {
@@ -29,6 +32,7 @@ KIND_EMOJIS: dict[ComponentKind, str] = {
     ComponentKind.CONTAINER: "📦",
     ComponentKind.MEDIA_GALLERY: "🖼️",
     ComponentKind.SEPARATOR: "📏",
+    ComponentKind.ACTION_ROW: "🔘",
 }
 
 
@@ -40,13 +44,10 @@ ALLOWED_CHILD_KINDS: tuple[ComponentKind, ...] = (
     ComponentKind.SEPARATOR,
 )
 
-
 MESSAGE_CONTENT_VALUE: str = "message_content"
-
-
 MESSAGE_CONTENT_EMOJI: str = "💬"
 
-
+INTERACTIVE_VALUE: str = "interactive"
 ORDER_VALUE: str = "order"
 
 
@@ -87,10 +88,18 @@ class ComponentNode:
     visible: bool = True  # separator
     spacing: SeparatorSpacing = SeparatorSpacing.small  # separator
 
+    item_ids: list[int] = field(default_factory=list)  # action_row: the buttons of the row, by library id
+    accessory_item_id: int | None = None  # text_display accessory: a button shown next to the text
+
+    @property
+    def has_thumbnail(self) -> bool:
+        """Whether this text display has a thumbnail next to it."""
+        return self.thumbnail_url is not None
+
     @property
     def has_accessory(self) -> bool:
-        """Whether this text display has a thumbnail (and is thus rendered as a section)."""
-        return self.thumbnail_url is not None
+        """Whether this text display has a thumbnail or a button next to it (and is thus rendered as a section)."""
+        return self.thumbnail_url is not None or self.accessory_item_id is not None
 
 
 @dataclass(frozen=True, slots=True)

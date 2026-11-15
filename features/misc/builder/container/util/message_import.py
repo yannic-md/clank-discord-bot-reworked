@@ -1,15 +1,25 @@
 from discord import Message
 from discord import components as api_components
 
+from core.db.repositories.interactive_builder.interactive_item_repository import (
+    InteractiveItemRecord,
+    list_items_for_message,
+)
 from core.discord_api.limits import MAX_V2_TEXT_DISPLAY_LENGTH
 from features.misc.builder.container.models import MAX_USER_COMPONENTS, ComponentKind, ComponentNode, GalleryItem
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import t
 from features.misc.builder.container.util.tree import total_cost, truncate_to_budget
+from features.misc.builder.interactive.draft import BUTTONS_PER_ROW
+from features.misc.builder.interactive.imports import forget_stored_ids, import_button, import_component
 
 
 def _convert_component(
-    session: ContainerBuilderSession, component: api_components.Component, *, nested: bool
+    session: ContainerBuilderSession,
+    component: api_components.Component,
+    *,
+    nested: bool,
+    records: dict[int, InteractiveItemRecord],
 ) -> tuple[ComponentNode | None, int]:
     """Convert one received component into a node. Returns the node (or `None` if the whole component is
     unsupported) and how many unsupported parts had to be dropped."""
@@ -20,12 +30,30 @@ def _convert_component(
         texts = [child.content for child in component.children if isinstance(child, api_components.TextDisplay)]
         node = ComponentNode(id=session.new_id(), kind=ComponentKind.TEXT_DISPLAY, content="\n".join(texts))
         accessory = component.accessory
+
         if isinstance(accessory, api_components.ThumbnailComponent):
             node.thumbnail_url = accessory.media.url
             node.thumbnail_description = accessory.description
             node.thumbnail_spoiler = accessory.spoiler
             return node, 0
-        return node, 1  # a button accessory can't be represented
+
+        if isinstance(accessory, api_components.Button):
+            draft = import_button(session.library, session.guild_id, accessory, records)
+            if draft is not None:
+                node.accessory_item_id = draft.id
+                return node, 0
+        return node, 1  # an accessory that can't be represented
+
+    if isinstance(component, api_components.ActionRow):
+        row = ComponentNode(id=session.new_id(), kind=ComponentKind.ACTION_ROW)
+        unsupported = 0
+        for candidate in component.children:
+            draft = import_component(session.library, session.guild_id, candidate, records)
+            if draft is None or len(row.item_ids) >= BUTTONS_PER_ROW:
+                unsupported += 1
+                continue
+            row.item_ids.append(draft.id)
+        return (row if row.item_ids else None), unsupported
 
     if isinstance(component, api_components.MediaGalleryComponent):
         gallery = ComponentNode(id=session.new_id(), kind=ComponentKind.MEDIA_GALLERY)
@@ -50,7 +78,7 @@ def _convert_component(
         )
         unsupported = 0
         for child in component.children:
-            child_node, child_unsupported = _convert_component(session, child, nested=True)
+            child_node, child_unsupported = _convert_component(session, child, nested=True, records=records)
             unsupported += child_unsupported
             if child_node is not None:
                 container.children.append(child_node)
@@ -59,7 +87,7 @@ def _convert_component(
     return None, 1
 
 
-def load_message_into_session(
+async def load_message_into_session(
     session: ContainerBuilderSession, message: Message, bot_user_id: int
 ) -> tuple[str | None, str | None]:
     """Load `message` into the session: the bot's own messages are edited in place, anyone else's
@@ -79,10 +107,11 @@ def load_message_into_session(
         session.components = [ComponentNode(id=session.new_id(), kind=ComponentKind.TEXT_DISPLAY, content=text)]
         return None, t(session.language, "info.load.not_v2")
 
+    records = {record.id: record for record in await list_items_for_message(message.id)} if is_own else {}
     nodes: list[ComponentNode] = []
     unsupported = 0
     for component in message.components:
-        node, dropped = _convert_component(session, component, nested=False)
+        node, dropped = _convert_component(session, component, nested=False, records=records)
         unsupported += dropped
         if node is not None:
             nodes.append(node)
@@ -118,5 +147,9 @@ def load_message_into_session(
         session.target_message = message
     elif is_own:
         notices.append(t(session.language, "info.load.copy_only"))
+
+    if not session.edit_mode:
+        # A copy gets buttons of its own once sent; it must not touch the stored ones of the original.
+        forget_stored_ids(session.library)
 
     return None, "\n".join(notices) or None

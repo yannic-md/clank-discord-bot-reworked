@@ -11,7 +11,12 @@ from core.discord_api.limits import (
 from core.i18n.translator import translate
 from features.misc.builder.embed.session import BuilderSession
 from features.misc.builder.embed.util.embed_ops import non_empty_embeds
-from features.misc.builder.embed.validation import append_error, convert_to_role_mentions
+from features.misc.builder.embed.validation import (
+    append_error,
+    convert_to_role_mentions,
+    text_limit_problem,
+    text_over_limit,
+)
 from features.misc.builder.validation import convert_to_colour, is_valid_url
 
 MAX_EMBED_DESCRIPTION_INPUT: int = min(MAX_EMBED_DESCRIPTION, MAX_MODAL_TEXTINPUT)
@@ -118,6 +123,21 @@ class EmbedTitleDescModal(Modal):
             return
 
         embed: Embed = self.session.active_embed
+        over: int = text_over_limit(
+            self.session.embeds,
+            removed=len(embed.title or "") + len(embed.description or ""),
+            added=len(name) + len(description),
+        )
+
+        if over:
+            await append_error(
+                interaction,
+                non_empty_embeds(self.session.embeds),
+                EmbedBuilderGUI(self.session),
+                text_limit_problem(self.session.language, over),
+            )
+            return
+
         embed.title = name or None
         embed.description = description or None
         embed.url = url or None
@@ -164,9 +184,22 @@ class EmbedColourModal(Modal):
             return
 
         embed: Embed = self.session.active_embed
-        embed.colour = colour
+        placeholder: str | None = None
         if not embed.title and not embed.description:
             # create placeholder embed to apply color, if no embed exists
-            embed.title = translate(self.session.language, "builder.embed.placeholders.embed_placeholder_title")
+            placeholder = translate(self.session.language, "builder.embed.placeholders.embed_placeholder_title")
+            over: int = text_over_limit(self.session.embeds, added=len(placeholder))
+            if over:
+                await append_error(
+                    interaction,
+                    non_empty_embeds(self.session.embeds),
+                    EmbedBuilderGUI(self.session),
+                    text_limit_problem(self.session.language, over),
+                )
+                return
+
+        embed.colour = colour
+        if placeholder is not None:
+            embed.title = placeholder
 
         await show(interaction, EmbedBuilderGUI(self.session))

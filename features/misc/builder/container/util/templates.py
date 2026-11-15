@@ -1,3 +1,5 @@
+from typing import Protocol
+
 from discord import Colour, SeparatorSpacing
 
 from core.db.repositories.container_builder import container_template_repository as template_repo
@@ -15,23 +17,57 @@ from features.misc.builder.container.models import (
     ContainerTemplate,
     GalleryItem,
 )
-from features.misc.builder.container.session import ContainerBuilderSession
+from features.misc.builder.container.util.placement import placed_item_ids
 from features.misc.builder.container.util.tree import total_cost, truncate_to_budget
+from features.misc.builder.interactive.draft import (
+    BUTTONS_PER_ROW,
+    InteractiveLibrary,
+    ItemDraft,
+    adopt_forms,
+    row_has_room,
+    template_data,
+)
+from features.misc.builder.session import WebhookSender
 
 
-def node_to_data(node: ComponentNode) -> dict[str, object]:
-    """Serialize a node and its children into the JSON-able dict stored in a template."""
+class TemplateContext(Protocol):
+    """What rebuilding stored nodes needs: a source of node ids, the library to put their buttons in, and the
+    sender identity (a custom sender allows link buttons only). The builder session provides all of it."""
+
+    library: InteractiveLibrary
+    webhook: WebhookSender
+
+    def new_id(self) -> int:
+        """Hand out the next unused node id."""
+        ...
+
+
+def node_to_data(node: ComponentNode, library: InteractiveLibrary) -> dict[str, object]:
+    """Serialize a node and its children into the JSON-able dict stored in a template.
+
+    The buttons of a row (or next to a text) are stored inline, as part of that node: a template carries
+    its own copy of their definitions, independent of the library of the session that saved it.
+    """
     data: dict[str, object] = {"kind": node.kind.value}
     if node.kind == ComponentKind.TEXT_DISPLAY:
         data["content"] = node.content
-        if node.has_accessory:
+        if node.has_thumbnail:
             data["thumbnail_url"] = node.thumbnail_url
             data["thumbnail_description"] = node.thumbnail_description
             data["thumbnail_spoiler"] = node.thumbnail_spoiler
+
+        elif node.accessory_item_id is not None and (draft := library.get(node.accessory_item_id)) is not None:
+            data["button"] = template_data(library, draft)
+
     elif node.kind == ComponentKind.CONTAINER:
         data["accent_colour"] = node.accent_colour.value if node.accent_colour is not None else None
         data["spoiler"] = node.spoiler
-        data["children"] = [node_to_data(child) for child in node.children]
+        data["children"] = [node_to_data(child, library) for child in node.children]
+
+    elif node.kind == ComponentKind.ACTION_ROW:
+        drafts = (library.get(item_id) for item_id in node.item_ids)
+        data["items"] = [template_data(library, draft) for draft in drafts if draft is not None]
+
     elif node.kind == ComponentKind.MEDIA_GALLERY:
         data["items"] = [
             {"media_url": item.media_url, "description": item.description, "spoiler": item.spoiler}
@@ -48,7 +84,32 @@ def _optional_text(value: object, max_length: int) -> str | None:
     return value[:max_length] if isinstance(value, str) and value else None
 
 
-def node_from_data(session: ContainerBuilderSession, data: object, *, nested: bool) -> tuple[ComponentNode | None, int]:
+def _drafts(session: TemplateContext, item_ids: list[int]) -> list[ItemDraft]:
+    """The items of the library with these ids."""
+    drafts = (session.library.get(item_id) for item_id in item_ids)
+    return [draft for draft in drafts if draft is not None]
+
+
+def _draft_from_data(session: TemplateContext, data: object) -> ItemDraft | None:
+    """Add the stored button or dropdown - and the forms it opens - to the session's library; `None` if it is
+    unusable or the library is full. `form_map` remembers the forms created while loading this template."""
+    if session.library.is_full:
+        return None
+
+    draft: ItemDraft | None = ItemDraft.from_data(0, data)
+    if draft is None:
+        return None
+
+    # Buttons that run actions cannot be sent through a webhook, so a template's are left out then.
+    if session.webhook.enabled and not draft.is_link:
+        return None
+
+    session.library.add(draft)
+    adopt_forms(session.library, draft, data.get("forms") if isinstance(data, dict) else None)
+    return draft
+
+
+def node_from_data(session: TemplateContext, data: object, *, nested: bool) -> tuple[ComponentNode | None, int]:
     """Rebuild one node from its stored payload. Returns the node (`None` if the payload is unusable)
     and how many stored components had to be dropped on the way. Never trusts the payload: the row may
     be hand-edited or written by an older version."""
@@ -71,6 +132,17 @@ def node_from_data(session: ContainerBuilderSession, data: object, *, nested: bo
             node.thumbnail_url = thumbnail_url
             node.thumbnail_description = _optional_text(data.get("thumbnail_description"), MAX_V2_THUMBNAIL_DESCRIPTION)
             node.thumbnail_spoiler = data.get("thumbnail_spoiler") is True
+            return node, 0
+
+        if "button" in data:
+            draft = _draft_from_data(session, data["button"])
+            if draft is not None and draft.is_select:  # only a button can sit next to a text
+                session.library.remove(draft.id)
+                draft = None
+            if draft is None:
+                return node, 1
+            node.accessory_item_id = draft.id
+
         return node, 0
 
     if kind == ComponentKind.CONTAINER:
@@ -90,6 +162,21 @@ def node_from_data(session: ContainerBuilderSession, data: object, *, nested: bo
             if child is not None:
                 container.children.append(child)
         return container, dropped
+
+    if kind == ComponentKind.ACTION_ROW:
+        row: ComponentNode = ComponentNode(id=session.new_id(), kind=kind)
+        stored = data.get("items")
+        dropped = 0
+        for item_data in stored if isinstance(stored, list) else []:
+            draft = _draft_from_data(session, item_data) if len(row.item_ids) < BUTTONS_PER_ROW else None
+            if draft is not None and not row_has_room(_drafts(session, row.item_ids), draft):
+                session.library.remove(draft.id)
+                draft = None
+            if draft is None:
+                dropped += 1
+                continue
+            row.item_ids.append(draft.id)
+        return row, dropped
 
     if kind == ComponentKind.MEDIA_GALLERY:
         gallery = ComponentNode(id=session.new_id(), kind=kind)
@@ -114,10 +201,11 @@ def node_from_data(session: ContainerBuilderSession, data: object, *, nested: bo
     return separator, 0
 
 
-def nodes_from_data(session: ContainerBuilderSession, data: list[dict[str, object]]) -> tuple[list[ComponentNode], int]:
+def nodes_from_data(session: TemplateContext, data: list[dict[str, object]]) -> tuple[list[ComponentNode], int]:
     """Rebuild a whole stored component tree; the second value is how many components were dropped."""
     nodes: list[ComponentNode] = []
     dropped = 0
+    known_items: set[int] = set(session.library.items)
     for node_data in data:
         node, node_dropped = node_from_data(session, node_data, nested=False)
         dropped += node_dropped
@@ -128,6 +216,13 @@ def nodes_from_data(session: ContainerBuilderSession, data: list[dict[str, objec
     # crash the screens (Discord's hard 40-component cap) - cut it down like an oversized message.
     if total_cost(nodes) > MAX_USER_COMPONENTS:
         nodes = truncate_to_budget(nodes, MAX_USER_COMPONENTS)
+
+    # Buttons of components that did not make it must not linger in the library as unplaced leftovers.
+    kept: set[int] = set(placed_item_ids(nodes))
+    kept_drafts: list[ItemDraft] = [draft for item_id in kept if (draft := session.library.get(item_id)) is not None]
+    kept |= {form.id for form in session.library.referenced_forms(kept_drafts)}
+    for item_id in set(session.library.items) - known_items - kept:
+        session.library.remove(item_id)
     return nodes, dropped
 
 

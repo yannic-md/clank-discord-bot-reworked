@@ -7,7 +7,13 @@ from core.discord_api.limits import MAX_EMBED_AUTHOR_NAME, MAX_EMBED_FOOTER_TEXT
 from core.i18n.translator import translate
 from features.misc.builder.embed.session import BuilderSession
 from features.misc.builder.embed.util.embed_ops import non_empty_embeds
-from features.misc.builder.embed.validation import append_error, convert_to_datetime, format_timestamp_for_input
+from features.misc.builder.embed.validation import (
+    append_error,
+    convert_to_datetime,
+    format_timestamp_for_input,
+    text_limit_problem,
+    text_over_limit,
+)
 from features.misc.builder.validation import is_valid_image_attachment, is_valid_url
 
 
@@ -123,6 +129,16 @@ class EmbedAuthorModal(Modal):
             )
             return
 
+        over: int = text_over_limit(self.session.embeds, removed=len(embed.author.name or ""), added=len(name))
+        if over:
+            await append_error(
+                interaction,
+                non_empty_embeds(self.session.embeds),
+                EmbedBuilderGUI(self.session),
+                text_limit_problem(self.session.language, over),
+            )
+            return
+
         embed.set_author(name=name, url=url or None, icon_url=icon.url if icon else None)
         await show(interaction, EmbedBuilderGUI(self.session))
 
@@ -177,6 +193,16 @@ class EmbedFooterModal(Modal):
                 non_empty_embeds(self.session.embeds),
                 EmbedBuilderGUI(self.session),
                 translate(self.session.language, "builder.errors.invalid_image"),
+            )
+            return
+
+        over: int = text_over_limit(self.session.embeds, removed=len(embed.footer.text or ""), added=len(text))
+        if over:
+            await append_error(
+                interaction,
+                non_empty_embeds(self.session.embeds),
+                EmbedBuilderGUI(self.session),
+                text_limit_problem(self.session.language, over),
             )
             return
 

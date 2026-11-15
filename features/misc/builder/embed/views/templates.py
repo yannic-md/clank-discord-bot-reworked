@@ -8,6 +8,7 @@ from core.discord_api.limits import MAX_SELECT_ITEMS
 from core.i18n.translator import translate
 from features.misc.builder.embed.modals import SaveTemplateModal
 from features.misc.builder.embed.session import BuilderSession
+from features.misc.builder.embed.util.placement import restore_rows
 from features.misc.builder.embed.util.templates import (
     EmbedTemplate,
     delete_user_template,
@@ -148,6 +149,7 @@ class TemplatesView(BuilderScreenView):
 
         self.session.content = template.content
         self.session.embeds = [embed.copy() for embed in template.embeds]
+        restore_rows(self.session, template.button_rows)
         self.session.active_embed_index = 0
         self.session.active_template_name = name
 

@@ -4,6 +4,7 @@ from discord.ui import ActionRow, Container, TextDisplay
 from features.misc.builder.container.modals.webhook import ChannelModal
 from features.misc.builder.container.models import (
     ALLOWED_CHILD_KINDS,
+    INTERACTIVE_VALUE,
     KIND_EMOJIS,
     MESSAGE_CONTENT_EMOJI,
     MESSAGE_CONTENT_VALUE,
@@ -12,10 +13,11 @@ from features.misc.builder.container.models import (
 )
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import kind_label, t, ts
-from features.misc.builder.container.util.render import build_items
+from features.misc.builder.container.util.render import preview_items
 from features.misc.builder.container.util.templates import load_user_templates
 from features.misc.builder.container.util.tree import content_nodes, count_by_kind, non_empty_nodes
 from features.misc.builder.container.views.base import BuilderLayoutView, add_button, add_select, info_container, show
+from features.misc.builder.interactive.models import INTERACTIVE_EMOJI
 
 
 class MainView(BuilderLayoutView):
@@ -24,6 +26,7 @@ class MainView(BuilderLayoutView):
     def __init__(self, session: ContainerBuilderSession, *, error: str | None = None, notice: str | None = None) -> None:
         """`error` and `notice` are optional status boxes shown above the controls."""
         from features.misc.builder.container.views.component_list import ComponentKindListView
+        from features.misc.builder.container.views.interactive import InteractiveHubView
         from features.misc.builder.container.views.order import ComponentOrderView
         from features.misc.builder.container.views.send import SendConfirmView, save_message_changes
         from features.misc.builder.container.views.templates import TemplatesView
@@ -32,8 +35,8 @@ class MainView(BuilderLayoutView):
         super().__init__()
         self.session = session
 
-        for item in build_items(non_empty_nodes(session.components)):
-            self.add_item(item)
+        for item in preview_items(session, non_empty_nodes(session.components)):
+            self.add_preview(item)
 
         nav_row: ActionRow = ActionRow()
 
@@ -108,6 +111,12 @@ class MainView(BuilderLayoutView):
                 emoji=MESSAGE_CONTENT_EMOJI,
             ),
             SelectOption(
+                label=f"{ts(session.language, 'select.interactive.label')} ({len(session.library.items)})",
+                description=ts(session.language, "select.interactive.description"),
+                value=INTERACTIVE_VALUE,
+                emoji=INTERACTIVE_EMOJI,
+            ),
+            SelectOption(
                 label=t(session.language, "select.order.label"),
                 description=t(session.language, "select.order.description"),
                 value=ORDER_VALUE,
@@ -116,13 +125,17 @@ class MainView(BuilderLayoutView):
         ]
 
         async def on_select(interaction: Interaction) -> None:
-            """Open the screen for the chosen entry: message content, order or containers."""
+            """Open the screen for the chosen entry: containers, message content, buttons or order."""
             value = component_select.values[0]
             if value == MESSAGE_CONTENT_VALUE:
                 await show(interaction, MessageContentView(session))
                 return
             if value == ORDER_VALUE:
                 await show(interaction, ComponentOrderView(session, parent_id=None))
+                return
+            if value == INTERACTIVE_VALUE:
+                session.active_item_id = None  # the screen opens on its overview, nothing selected
+                await show(interaction, InteractiveHubView(session))
                 return
             await show(interaction, ComponentKindListView(session, kind=ComponentKind.CONTAINER, parent_id=None))
 

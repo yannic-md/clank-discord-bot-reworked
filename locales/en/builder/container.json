@@ -9,14 +9,14 @@
     "thumbnail_edit": "Edit thumbnail",
     "component_add": "Add {kind}",
     "move": "Move",
-    "item_add": "Add item",
+    "item_add": "Add image",
     "edit": "Edit",
     "delete": "Delete"
   },
   "placeholders": {
     "snippet_container_children": {
-      "one": "{count} child element",
-      "other": "{count} child elements"
+      "one": "{count} element",
+      "other": "{count} elements"
     },
     "snippet_gallery_items": {
       "one": "{count} item",
@@ -36,7 +36,11 @@
     "item_option": "Item {number}: {description}",
     "item_no_description": "(No description)",
     "switch_item": "Select an item.. 🖱️",
-    "switch_item_empty": "No items yet.. 😢"
+    "switch_item_empty": "No items yet.. 😢",
+    "snippet_row_buttons": {
+      "one": "{count} button",
+      "other": "{count} buttons"
+    }
   },
   "info": {
     "kinds": {
@@ -57,10 +61,13 @@
       "separator": {
         "label": "Separator",
         "description": "› Separators add spacing or a visible line between elements."
+      },
+      "action_row": {
+        "label": "Button Row"
       }
     },
     "location": {
-      "main": "Main message",
+      "main": "Info",
       "child_of": "Child of Container {index}"
     },
     "content": {
@@ -68,7 +75,7 @@
     },
     "move": {
       "title": "↔️ ~ Move {kind}",
-      "description": "› Current location: **{location}**\nPick the target in the lower dropdown. The element is appended at its end."
+      "description": "`📍` › Current location: **{location}**\n› Choose the new target in the lower dropdown - the element is appended at its end."
     },
     "order": {
       "title": "🔀 ~ Component order - {location}",
@@ -100,37 +107,55 @@
       },
       "copy_only": "The message therefore cannot be edited directly."
     },
-    "preview_too_large": "› Preview unavailable here: together with the controls, this part ({amount} components) would exceed Discord's limit of 40. It is shown in full in the sent message."
+    "preview_too_large": "› Preview unavailable here: together with the controls, this part ({amount} components) would exceed Discord's limit of 40. It is shown in full in the sent message.",
+    "placement": {
+      "message_row": "In the message - row {row}",
+      "container_row": "In container {container} - row {row}",
+      "text": "Next to the text \"{text}\"",
+      "short_row": "Row {row}",
+      "short_container_row": "Container {container}, row {row}",
+      "short_text": "Next to a text",
+      "rows": "› Buttons sit in **rows** - directly in the message or inside a container - or next to a text. A dropdown, however, always needs a whole row.",
+      "outline": "Layout of the message",
+      "marked": "› The selected element is marked in **bold**.",
+      "preview_truncated": "› The preview below shows only the first {shown} of {total} rows."
+    }
   },
   "errors": {
-    "component_limit": "› `❌` - **Limit Reached:** At most {limit} components can be used. <:loveangry:784930958084276224>",
+    "component_limit": "› `❌` - **Limit Reached:** At most `{limit}` components can be used. <:loveangry:784930958084276224>",
     "nothing_to_send": "› `❌` - **Nothing To Send:** There is nothing to send yet - add a component first. <:loveangry:784930958084276224>",
     "nothing_to_save": "› `❌` - **Nothing To Save:** There is nothing to save yet - add a component first. <:loveangry:784930958084276224>",
-    "total_text": "› `❌` - **Text Too Long:** The total text of all text displays must not exceed {max} characters. <:loveangry:784930958084276224>",
+    "total_text": "› `❌` - **Text Too Long:** The total text of all text fields must not exceed `{max}` characters. <:loveangry:784930958084276224>",
     "move_target_gone": "› `❌` - **Target Not Found:** The target no longer exists. <:loveangry:784930958084276224>",
-    "gallery_max_items": "› `❌` - **Gallery Full:** A media gallery can hold at most {max} items. <:loveangry:784930958084276224>",
+    "gallery_max_items": "› `❌` - **Gallery Full:** A media gallery can hold at most `{max}` items. <:loveangry:784930958084276224>",
     "load_nothing_usable": "› `❌` - **Nothing To Take Over:** This message contains no text or components that could be taken over. <:loveangry:784930958084276224>",
     "load_no_supported": "› `❌` - **Not Supported:** This message contains no components the Container Builder supports. <:loveangry:784930958084276224>",
     "thumbnail_no_image": "› `❌` - **No Image:** No image was uploaded. <:loveangry:784930958084276224>",
     "thumbnail_needs_image": "› `❌` - **Image Missing:** Description and spoiler only apply together with an image. Upload an image - or leave both empty to remove the thumbnail. <:loveangry:784930958084276224>",
     "gallery_invalid_media": "› `❌` - **Invalid File:** Please upload only valid images or videos. <:loveangry:784930958084276224>",
-    "gallery_no_file": "› `❌` - **No File:** No file was uploaded. <:loveangry:784930958084276224>"
+    "gallery_no_file": "› `❌` - **No File:** No file was uploaded. <:loveangry:784930958084276224>",
+    "placement_full": "› `❌` - **No Room:** The message has no room left for this. <:loveangry:784930958084276224>",
+    "placement_row_full": "› `❌` - **Row Full:** A row holds at most `5` buttons. <:loveangry:784930958084276224>",
+    "placement_target_gone": "› `❌` - **Not Found:** That place no longer exists. <:loveangry:784930958084276224>",
+    "placement_webhook": "› `❌` - **Custom Sender Active:** Only link buttons can be sent through a webhook. <:loveangry:784930958084276224>",
+    "placement_select_empty": "› `❌` - **Dropdown Empty:** Add options to the dropdown first. <:loveangry:784930958084276224>",
+    "placement_form": "› `❌` - **Can't Be Placed:** A form isn't put into the message - a button opens it. <:loveangry:784930958084276224>"
   },
   "modals": {
     "spoiler": {
-      "question": "❓ ~ Should it be marked as a spoiler?"
+      "question": "🙈 ~ Should it be marked as a spoiler?"
     },
     "description": {
       "placeholder": "e.g. Our server's logo 🖼️",
-      "field": "❓ ~ Description of the image?"
+      "field": "📝 ~ Description of the image?"
     },
     "content": {
-      "field": "❓ ~ What should the text display say?",
+      "field": "💬 ~ What should the text display say?",
       "placeholder": "The text for your text display.. ✍️",
       "title": "Edit Text Display"
     },
     "container": {
-      "field": "❓ ~ What color should the container have?",
+      "field": "🎨 ~ What color should the container have?",
       "title": "Edit Container"
     },
     "separator": {
@@ -138,8 +163,8 @@
       "invisible": "No, spacing only",
       "small": "Small",
       "large": "Large",
-      "appearance": "❓ ~ Should the separator be visible?",
-      "spacing": "❓ ~ How large should the spacing be?",
+      "appearance": "👁️ ~ Should the separator be visible?",
+      "spacing": "📏 ~ How large should the spacing be?",
       "title": "Edit Separator"
     },
     "thumbnail": {
@@ -147,9 +172,9 @@
     },
     "gallery": {
       "title": "Edit Gallery Item",
-      "media_edit": "❓ ~ Which image/video should be used?",
-      "media_add": "❓ ~ Which images/videos (up to {max})?",
-      "description_all": "❓ ~ Description for all items?"
+      "media_edit": "🖼️ ~ Which image/video should be used?",
+      "media_add": "🎞️ ~ Which images/videos (up to {max})?",
+      "description_all": "📝 ~ Description for all items?"
     }
   },
   "select": {
@@ -171,7 +196,13 @@
       "description": "› Show multiple images or videos side by side."
     },
     "separator": {
-      "description": "› Add spacing or a visible line between elements."
+      "description": "› Add spacing or a visible separator."
+    },
+    "placement": {
+      "unplace": "Remove from the message",
+      "new_row_message": "New row in the message",
+      "new_row_container": "New row in container {container}",
+      "next_to_text": "Puts the button beside this text"
     }
   }
 }

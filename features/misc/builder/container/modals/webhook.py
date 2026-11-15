@@ -47,7 +47,7 @@ class WebhookModal(Modal):
     async def on_submit(self, interaction: Interaction) -> None:
         """Validate the avatar URL, store the sender identity on the session and show the webhook screen."""
         from features.misc.builder.container.views.base import show
-        from features.misc.builder.container.views.webhook import WebhookView
+        from features.misc.builder.container.views.webhook import WebhookView, apply_sender
 
         session = self.session
 
@@ -69,7 +69,7 @@ class WebhookModal(Modal):
                 await show(interaction, WebhookView(session, error=webhook_invalid_text(session.language)))
                 return
 
-            session.webhook = WebhookSender(
+            sender = WebhookSender(
                 username=username,
                 avatar_url=avatar_url or None,
                 webhook_url=webhook.url,
@@ -77,7 +77,7 @@ class WebhookModal(Modal):
                 explicit_url=True,
                 display_name=webhook.name,
             )
-            await show(interaction, WebhookView(session))
+            await apply_sender(interaction, session, sender)
             return
 
         channel = session.target_channel
@@ -92,14 +92,14 @@ class WebhookModal(Modal):
                 return
             raise
 
-        session.webhook = WebhookSender(
+        sender = WebhookSender(
             username=username,
             avatar_url=avatar_url or None,
             webhook_url=webhook.url,
             validated_channel_id=channel.id,
             display_name=webhook.name,
         )
-        await show(interaction, WebhookView(session))
+        await apply_sender(interaction, session, sender)
 
 
 class ChannelModal(Modal):

@@ -1,4 +1,4 @@
-from discord import AllowedMentions, Forbidden, HTTPException, Interaction, NotFound, Thread, WebhookMessage
+from discord import AllowedMentions, Forbidden, HTTPException, Interaction, Thread, WebhookMessage
 from discord.abc import GuildChannel
 
 from core.discord_api.limits import MAX_WEBHOOK_COUNT
@@ -6,7 +6,7 @@ from core.enums.language import SupportedLanguage
 from features.misc.builder.container.models import ComponentNode
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import ts
-from features.misc.builder.container.util.render import StaticLayoutView, build_items
+from features.misc.builder.container.util.render import StaticLayoutView, final_items
 from features.misc.builder.session import WebhookSender
 from features.misc.builder.validation import get_channel_placeholder
 from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, identity_kwargs, resolve_send_webhook
@@ -36,13 +36,16 @@ async def send_via_webhook(
 
     try:
         message = await webhook.send(
-            view=StaticLayoutView(build_items(nodes)),
+            view=StaticLayoutView(final_items(session, nodes)),
             allowed_mentions=allowed,
             wait=True,
             **identity_kwargs(session.webhook, channel),
         )
-    except NotFound:
-        # The webhook is gone - stop treating it as a configured identity going forward.
+    except HTTPException as error:
+        if error.status not in (401, 404):  # 404: the webhook is gone; 401: its token is wrong
+            raise
+
+        # The webhook cannot be used - stop treating it as a configured identity going forward.
         session.webhook = WebhookSender()
         return None, webhook_invalid_text(session.language)
     return message, None

@@ -22,7 +22,7 @@ depends_on: Union[str, Sequence[str], None] = None
 def upgrade() -> None:
     """Upgrade schema."""
     op.create_table(
-        "embed_builder_templates",
+        "builder_embed_templates",
         sa.Column("id", sa.BigInteger(), autoincrement=True, nullable=False),
         sa.Column("user_id", sa.BigInteger(), autoincrement=False, nullable=False),
         sa.Column("name", sa.String(length=100), nullable=False),
@@ -38,4 +38,4 @@ def upgrade() -> None:
 
 def downgrade() -> None:
     """Downgrade schema."""
-    op.drop_table("embed_builder_templates")
+    op.drop_table("builder_embed_templates")

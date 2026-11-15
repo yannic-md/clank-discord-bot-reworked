@@ -42,7 +42,9 @@ def describe_location(session: ContainerBuilderSession, parent_id: int | None) -
 
     parent = find_node(session, parent_id)
     assert parent is not None
-    index = session.components.index(parent) + 1
+    # Containers are numbered among each other, as everywhere else on the screens (texts in between do not count).
+    containers = [node for node in session.components if node.kind == ComponentKind.CONTAINER]
+    index = containers.index(parent) + 1
     return t(session.language, "info.location.child_of", index=index)
 
 
@@ -52,6 +54,8 @@ def node_cost(node: ComponentNode) -> int:
         return 3 if node.has_accessory else 1  # wrapped in a Section: section + text + accessory
     if node.kind == ComponentKind.CONTAINER:
         return 1 + sum(node_cost(child) for child in node.children)
+    if node.kind == ComponentKind.ACTION_ROW:
+        return 1 + len(node.item_ids)  # the row plus its buttons
     return 1
 
 
@@ -98,6 +102,8 @@ def is_empty_node(node: ComponentNode) -> bool:
         return not any(not is_empty_node(child) for child in node.children)
     if node.kind == ComponentKind.MEDIA_GALLERY:
         return not node.gallery_items
+    if node.kind == ComponentKind.ACTION_ROW:
+        return not node.item_ids
     # a TextDisplay's content is required at creation time and a Separator is always
     # meaningful on its own, so neither can end up empty here.
     return False

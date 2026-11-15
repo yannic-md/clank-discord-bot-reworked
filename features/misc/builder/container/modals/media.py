@@ -28,7 +28,7 @@ class ThumbnailModal(Modal):
 
         # Discord only treats the field as optional with `min_values=0` (just `required=False` still
         # demands one file), so an existing thumbnail can be removed by saving without an image.
-        optional = node.has_accessory
+        optional = node.has_thumbnail
         self.media_input: FileUpload = FileUpload(required=not optional, min_values=0 if optional else 1, max_values=1)
         self.description_input: TextInput = TextInput(
             label=t(session.language, "modals.description.field"),
@@ -71,7 +71,7 @@ class ThumbnailModal(Modal):
         spoiler = self.spoiler_input.value == "yes"
 
         if uploaded is None:
-            if not node.has_accessory:
+            if not node.has_thumbnail:
                 await back(t(session.language, "errors.thumbnail_no_image"))
                 return
 

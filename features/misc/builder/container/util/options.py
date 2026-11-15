@@ -38,6 +38,7 @@ def snippet_for(node: ComponentNode, language: SupportedLanguage, max_length: in
     """A short description of what `node` contains, cut off with "…" after `max_length` characters."""
     if node.kind == ComponentKind.TEXT_DISPLAY:
         text = _plain(node.content)
+
     elif node.kind == ComponentKind.CONTAINER:
         first = node.children[0] if node.children else None
         if first is not None and first.kind == ComponentKind.TEXT_DISPLAY:
@@ -45,8 +46,13 @@ def snippet_for(node: ComponentNode, language: SupportedLanguage, max_length: in
             text = _plain(first.content)
         else:
             text = t(language, "placeholders.snippet_container_children", count=len(node.children)) if node.children else ""
+
     elif node.kind == ComponentKind.MEDIA_GALLERY:
         text = t(language, "placeholders.snippet_gallery_items", count=len(node.gallery_items)) if node.gallery_items else ""
+
+    elif node.kind == ComponentKind.ACTION_ROW:
+        text = t(language, "placeholders.snippet_row_buttons", count=len(node.item_ids)) if node.item_ids else ""
+
     else:
         text = t(language, "placeholders.snippet_visible" if node.visible else "placeholders.snippet_hidden")
 
@@ -55,14 +61,16 @@ def snippet_for(node: ComponentNode, language: SupportedLanguage, max_length: in
     return text if len(text) <= max_length else f"{text[: max_length - 1]}…"
 
 
-def label_for(node: ComponentNode, number: int, language: SupportedLanguage) -> str:
-    """Dropdown label for `node`, e.g. "Text Display 2: Hello", shortened to fit the option label limit."""
+def label_for(node: ComponentNode, number: int, language: SupportedLanguage, *, snippet_length: int | None = None) -> str:
+    """Dropdown label for `node`, e.g. "Text Display 2: Hello", shortened to fit the option label limit - or, with
+    `snippet_length`, to show that many characters of what it holds at most."""
     kind = kind_label(language, node.kind)
     # The snippet may use whatever room the dropdown label (100 characters) has left after "Kind 1: ".
     room = MAX_SELECT_OPTION_LABEL - len(t(language, "placeholders.option_snippet", kind=kind, number=number, snippet=""))
-    snippet = snippet_for(node, language, max_length=room)
+    snippet: str | None = snippet_for(node, language, max_length=min(room, snippet_length or room))
     if snippet:
         return t(language, "placeholders.option_snippet", kind=kind, number=number, snippet=snippet)
+
     return t(language, "placeholders.option_label_empty", kind=kind, number=number)
 
 

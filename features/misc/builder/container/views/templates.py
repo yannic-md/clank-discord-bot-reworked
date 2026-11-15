@@ -116,6 +116,8 @@ class TemplatesView(BuilderLayoutView):
                 await show(interaction, TemplatesView(session))
                 return
 
+            session.library.clear()
+            session.active_item_id = None
             nodes, dropped = nodes_from_data(session, template.components)
             session.components = nodes
             session.active_selection.clear()

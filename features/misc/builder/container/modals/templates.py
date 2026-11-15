@@ -2,7 +2,7 @@ from discord import Interaction
 from discord.ui import Modal, TextInput
 
 from core.discord_api.limits import MAX_SELECT_ITEMS
-from features.misc.builder.container.models import ContainerTemplate
+from features.misc.builder.container.models import ComponentNode, ContainerTemplate
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import t, ts
 from features.misc.builder.container.util.templates import load_user_templates, node_to_data, save_user_template
@@ -45,34 +45,36 @@ class SaveTemplateModal(Modal):
         from features.misc.builder.container.views.base import show
         from features.misc.builder.container.views.templates import TemplatesView
 
-        session = self.session
+        session: ContainerBuilderSession = self.session
         guild = interaction.guild
         assert guild is not None
 
-        icon_text = self.icon_input.value.strip()
-        icon = DEFAULT_TEMPLATE_ICON if not icon_text else convert_to_emoji(icon_text, guild)
+        icon_text: str = self.icon_input.value.strip()
+        icon: str | None = DEFAULT_TEMPLATE_ICON if not icon_text else convert_to_emoji(icon_text, guild)
         if icon is None:
             error = ts(session.language, "errors.invalid_icon")
             await show(interaction, TemplatesView(session, error=error))
             return
 
-        nodes = non_empty_nodes(session.components)
+        nodes: list[ComponentNode] = non_empty_nodes(session.components)
         if not nodes:
             error = t(session.language, "errors.nothing_to_save")
             await show(interaction, TemplatesView(session, error=error))
             return
 
-        name = self.name_input.value.strip()
-        owner_id = session.slashcmd_author_id
-        existing = await load_user_templates(owner_id)
-        is_new = not any(template.name.casefold() == name.casefold() for template in existing)
+        name: str = self.name_input.value.strip()
+        owner_id: int = session.slashcmd_author_id
+        existing: list[ContainerTemplate] = await load_user_templates(owner_id)
+        is_new: bool = not any(template.name.casefold() == name.casefold() for template in existing)
         if is_new and len(existing) >= MAX_SELECT_ITEMS:
             session.templates = existing
             error = ts(session.language, "errors.template_limit", limit=MAX_SELECT_ITEMS)
             await show(interaction, TemplatesView(session, error=error))
             return
 
-        template = ContainerTemplate(name=name, icon=icon, components=[node_to_data(node) for node in nodes])
+        template: ContainerTemplate = ContainerTemplate(
+            name=name, icon=icon, components=[node_to_data(node, session.library) for node in nodes]
+        )
         await save_user_template(owner_id, template)
 
         session.templates = await load_user_templates(owner_id)

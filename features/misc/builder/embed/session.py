@@ -6,6 +6,7 @@ from discord.ui import View
 
 from core.enums.language import SupportedLanguage
 from features.misc.builder.embed.util.templates import EmbedTemplate
+from features.misc.builder.interactive.draft import InteractiveLibrary
 from features.misc.builder.session import WebhookSender
 
 
@@ -30,6 +31,12 @@ class BuilderSession:
     active_embed_index: int = 0
     channel: GuildChannel | Thread | None = None
     webhook: WebhookSender = field(default_factory=WebhookSender)
+    library: InteractiveLibrary = field(default_factory=InteractiveLibrary)
+    """The buttons the user defined; which of them sit where is stored in `button_rows`."""
+    button_rows: list[list[int]] = field(default_factory=list)
+    """The message's button rows (at most five, of at most five buttons), as library ids."""
+    active_item_id: int | None = None
+    """The button last selected on the "Buttons & Dropdowns" screen."""
     edit_mode: bool = False
     target_message: Message | None = None
     active_field: int | None = None

@@ -52,84 +52,95 @@
     "fields": {
       "title": "🧩 ~ Embed Fields",
       "description": "› Manage the fields of the currently selected embed. Select a field from the dropdown menu below to edit, move, or delete it."
+    },
+    "placement": {
+      "row": "Row {row}",
+      "empty": "> nothing placed yet",
+      "rows": "› A message has at most 5 **rows**. They are shown below the embed and can hold single buttons. A dropdown, however, always needs a whole row."
     }
   },
   "errors": {
     "invalid_timestamp": "› `❌` - **Invalid Timestamp:** The entered value is invalid. Use e.g. `10/04/2003 20:00` or `in 2h`. <:loveangry:784930958084276224>",
     "invalid_url": "› `❌` - **Invalid URL:** No valid URL was recognized. It should start with `https://`. <:loveangry:784930958084276224>",
-    "embed_limit": "› `❌` - **Too Many Embeds:** A message can contain a maximum of {limit} embeds. <:loveangry:784930958084276224>",
-    "field_limit": "› `❌` - **Too Many Fields:** An embed can contain a maximum of {limit} fields. <:loveangry:784930958084276224>",
-    "not_own_message": "› `❌` - **Cannot Edit:** This message cannot be edited because it was not sent by me. <:loveangry:784930958084276224>",
+    "embed_limit": "› `❌` - **Too Many Embeds:** A message can contain a maximum of `{limit}` embeds. <:loveangry:784930958084276224>",
+    "field_limit": "› `❌` - **Too Many Fields:** An embed can contain a maximum of `{limit}` fields. <:loveangry:784930958084276224>",
+    "text_limit": "› `❌` - **Too Much Text:** All embeds of a message together can contain at most `{max}` characters (title, description, fields, footer and author name count). That is **{over}** characters too many - shorten one of the texts. <:loveangry:784930958084276224>",
     "nothing_to_send": "› `❌` - **Everything is.. empty?** The message has neither content nor an embed - nice try! <:loveangry:784930958084276224>",
     "footer_icon_without_text": "› `❌` - **Missing Footer Text:** A footer icon also requires text. Add some text or remove the icon! <:loveangry:784930958084276224>",
     "author_fields_without_name": "› `❌` - **Missing Author Name:** The URL and profile picture require an author name. Either add a name or remove the other fields. <:loveangry:784930958084276224>",
-    "url_needs_title_or_description": "› `❌` - **Missing Text:** A URL also requires a title or a description. Add one of the two or remove the URL. <:loveangry:784930958084276224>"
+    "url_needs_title_or_description": "› `❌` - **Missing Text:** A URL also requires a title or a description. Add one of the two or remove the URL. <:loveangry:784930958084276224>",
+    "placement_full": "› `❌` - **No Room:** A message has at most `5` rows of buttons. <:loveangry:784930958084276224>",
+    "placement_row_full": "› `❌` - **Row Full:** A row holds at most `5` buttons. <:loveangry:784930958084276224>",
+    "placement_target_gone": "› `❌` - **Not Found:** That place no longer exists. <:loveangry:784930958084276224>",
+    "placement_webhook": "› `❌` - **Custom Sender Active:** Only link buttons can be sent through a webhook. <:loveangry:784930958084276224>",
+    "placement_select_empty": "› `❌` - **Dropdown Empty:** Add options to the dropdown first. <:loveangry:784930958084276224>",
+    "placement_form": "› `❌` - **Can't Be Placed:** A form isn't put into the message - a button opens it. <:loveangry:784930958084276224>"
   },
   "modals": {
     "content": {
       "title": "Edit Message Content",
-      "field": "❓ ~ What is the content of your message?",
+      "field": "💬 ~ What is the content of your message?",
       "placeholder": "The text above the embed.. ✍️"
     },
     "colour": {
       "title": "Edit Embed Color",
-      "field": "❓ ~ What color should the embed have?"
+      "field": "🎨 ~ What color should the embed have?"
     },
     "title": {
       "title": "Edit Embed Title",
       "name": {
-        "question": "❓ ~ What is the title of your embed?",
+        "question": "✏️ ~ What is the title of your embed?",
         "placeholder": "Super cool embed 😎"
       },
       "description": {
-        "question": "❓ ~ What is the description of your embed?",
+        "question": "📝 ~ What is the description of your embed?",
         "placeholder": "A short description of the embed.. ✍️"
       },
       "url": {
-        "question": "❓ ~ Which URL should be linked?",
+        "question": "🔗 ~ Which URL should be linked?",
         "placeholder": "e.g. https://bl4cklist.de"
       }
     },
     "images": {
       "title": "Edit Embed Images",
-      "image": "❓ ~ Which banner should be used?"
+      "image": "🌄 ~ Which banner should be used?"
     },
     "author": {
       "title": "Edit Embed Author",
       "name": {
-        "question": "❓ ~ What is the author's name?",
+        "question": "👤 ~ What is the author's name?",
         "placeholder": "e.g. Clank 🤖"
       },
       "url": {
-        "question": "❓ ~ Which URL should be linked?",
+        "question": "🔗 ~ Which URL should be linked?",
         "placeholder": "e.g. https://bl4cklist.de"
       },
-      "icon": "❓ ~ Which profile picture should be used?"
+      "icon": "📷 ~ Which profile picture should be used?"
     },
     "footer": {
       "title": "Edit Embed Footer",
       "text": {
-        "question": "❓ ~ What should be in the footer?",
+        "question": "🦶 ~ What should be in the footer?",
         "placeholder": "e.g. Created by Clank. Be sure to invite me! 🤖"
       },
-      "icon": "❓ ~ Which icon should be displayed?"
+      "icon": "🖼️ ~ Which icon should be displayed?"
     },
     "timestamp": {
       "title": "Edit Embed Timestamp",
-      "timestamp": "❓ ~ Which timestamp will be set?",
+      "timestamp": "⏰ ~ Which timestamp will be set?",
       "placeholder": "e.g. 'in 2h', 'tomorrow 18:00', or '10/04/2003 20:00'"
     },
     "field": {
       "title": "Edit Embed Field",
       "name": {
-        "question": "❓ ~ What is the name of the field?",
+        "question": "🏷️ ~ What is the name of the field?",
         "placeholder": "e.g. Server Status 🖥️"
       },
       "value": {
-        "question": "❓ ~ What should be in the field?",
+        "question": "📝 ~ What should be in the field?",
         "placeholder": "e.g. All our server systems are fully reachable. 🟢"
       },
-      "inline": "❓ ~ Should the field have \"neighbors\"?"
+      "inline": "↔️ ~ Should the field have \"neighbors\"?"
     }
   },
   "select": {
@@ -168,6 +179,10 @@
     "embed_timestamp": {
       "label": "Embed Timestamp",
       "description": "› Set a date for your embed or remove it."
+    },
+    "placement": {
+      "unplace": "Remove from the message",
+      "new_row": "New row"
     }
   }
 }

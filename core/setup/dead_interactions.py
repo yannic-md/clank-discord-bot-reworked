@@ -17,12 +17,12 @@ _PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed:",)
 
 
 def _has_live_handler(interaction: Interaction) -> bool:
-    """Check whether some registered `discord.ui.View` will actually handle `interaction`.
+    """Check whether some registered `discord.ui.View` or dynamic item will actually handle `interaction`.
 
     Mirrors the exact lookup discord.py's own dispatcher (`ViewStore.dispatch_view`) already
-    performs internally when the gateway event comes in: the view bound to this specific message
-    first, falling back to a message-independent (persistent) registration. If neither matches,
-    the interaction is guaranteed to otherwise be dropped silently.
+    performs internally when the gateway event comes in: dynamic items by `custom_id` pattern, then
+    the view bound to this specific message, falling back to a message-independent (persistent)
+    registration. If none of them match, the interaction is guaranteed to otherwise be dropped silently.
 
     Reaches into discord.py's private view store rather than re-implementing persistence, so this
     stays correct automatically as views are added anywhere in the bot, now or in the future.
@@ -35,13 +35,20 @@ def _has_live_handler(interaction: Interaction) -> bool:
 
     try:
         # noinspection PyProtectedMember
-        views_by_message = interaction.client._connection._view_store._views
+        view_store = interaction.client._connection._view_store
+        views_by_message = view_store._views
+        dynamic_items = view_store._dynamic_items
     except AttributeError:
         global _warned_about_missing_view_store
 
         if not _warned_about_missing_view_store:
             logger.error("Could not inspect discord.py's view store - skipping dead-interaction check.")
             _warned_about_missing_view_store = True
+        return True
+
+    # Dynamic items (e.g. the interactive builder's buttons) are matched by a `custom_id` pattern, not by
+    # message: they stay alive across restarts and answer for themselves when their data is gone.
+    if any(pattern.fullmatch(custom_id) for pattern in dynamic_items):
         return True
 
     message_id: int | None = interaction.message.id if interaction.message is not None else None

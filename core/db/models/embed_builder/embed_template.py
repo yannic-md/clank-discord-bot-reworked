@@ -16,9 +16,13 @@ class EmbedTemplate(Base):
     `embeds` holds the message's embeds as a JSON array of `discord.Embed.to_dict()`
     payloads, rebuilt with `Embed.from_dict`. The embed payload is always read and
     written as one whole unit and is never queried, joined or sorted on.
+
+    `components` holds the message's button rows: a JSON array of rows, each a JSON array of button
+    definitions stored inline (see the interactive builder's `ItemDraft.to_data`). It is `NULL` for
+    templates saved before buttons existed.
     """
 
-    __tablename__ = "embed_builder_templates"
+    __tablename__ = "builder_embed_templates"
     __table_args__ = (UniqueConstraint("user_id", "name", name="uq_embed_builder_template_user_name"),)
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True, autoincrement=True)
@@ -27,5 +31,6 @@ class EmbedTemplate(Base):
     icon: Mapped[str] = mapped_column(String(MAX_SELECT_OPTION_LABEL), nullable=False)
     message_content: Mapped[str] = mapped_column(String(MAX_MESSAGE_CONTENT), nullable=False, server_default="")
     embeds: Mapped[list[dict[str, object]]] = mapped_column(JSON, nullable=False)
+    components: Mapped[list[list[dict[str, object]]] | None] = mapped_column(JSON, nullable=True)
     created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, nullable=False, server_default=func.now(), onupdate=func.now())

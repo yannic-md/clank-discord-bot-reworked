@@ -7,6 +7,7 @@ from discord.ui import LayoutView
 from core.enums.language import SupportedLanguage
 from features.misc.builder.container.models import ComponentKind, ComponentNode, ContainerTemplate
 from features.misc.builder.container.translations import t
+from features.misc.builder.interactive.draft import InteractiveLibrary
 from features.misc.builder.session import WebhookSender
 
 
@@ -27,6 +28,10 @@ class ContainerBuilderSession:
     components: list[ComponentNode] = field(default_factory=list)
     next_id: int = 1
     webhook: WebhookSender = field(default_factory=WebhookSender)
+    library: InteractiveLibrary = field(default_factory=InteractiveLibrary)
+    """The buttons the user defined; which of them sit where in the message is stored in `components`."""
+    active_item_id: int | None = None
+    """The button last selected on the "Buttons & Dropdowns" screen."""
     templates: list[ContainerTemplate] = field(default_factory=list)
     """The invoking user's templates loaded from the database, refreshed by the template
     screen whenever it opens or changes the set."""

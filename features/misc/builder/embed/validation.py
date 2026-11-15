@@ -7,7 +7,7 @@ import dateparser
 from discord import Colour, Embed, Guild, Interaction, Role
 from discord.ui import View
 
-from core.discord_api.limits import MAX_EMBED_COUNT
+from core.discord_api.limits import MAX_EMBED_COUNT, MAX_EMBED_GLOBAL_TEXT
 from core.enums.language import SupportedLanguage
 from core.i18n.translator import translate
 from features.misc.builder.formatting import format_number
@@ -157,15 +157,43 @@ def describe_role_mentions(content: str, guild: Guild) -> list[Role]:
     return roles
 
 
+def embeds_text_length(embeds: Sequence[Embed]) -> int:
+    """How many characters of text Discord counts in `embeds`: the title, description, field names and values, footer
+    text and author name of all of them together - a message may hold 6000 of them."""
+    return sum(len(embed) for embed in embeds)
+
+
+def text_over_limit(embeds: Sequence[Embed], *, removed: int = 0, added: int = 0) -> int:
+    """By how many characters `embeds` exceed the text a message may hold once `removed` characters of their text are
+    replaced by `added` new ones - `0` if they still fit."""
+    return max(0, embeds_text_length(embeds) - removed + added - MAX_EMBED_GLOBAL_TEXT)
+
+
+def text_limit_problem(language: SupportedLanguage, over: int) -> str:
+    """The error for embeds that hold `over` characters of text too many."""
+    return translate(
+        language,
+        "builder.embed.errors.text_limit",
+        max=format_number(language, MAX_EMBED_GLOBAL_TEXT),
+        over=format_number(language, over),
+    )
+
+
+def has_room_for_error(base_embeds: Sequence[Embed], message: str) -> bool:
+    """Whether `message` fits into the same message as `base_embeds` as one more (error) embed: Discord takes 10 embeds
+    and 6000 characters of text in one message and refuses the whole message if either is exceeded."""
+    return len(base_embeds) < MAX_EMBED_COUNT and embeds_text_length(base_embeds) + len(message) <= MAX_EMBED_GLOBAL_TEXT
+
+
 async def append_error(interaction: Interaction, base_embeds: list[Embed], view: View, message: str) -> None:
     """Re-render the current screen with `message` appended as an extra error embed.
 
     Nothing from the failed submission is applied - the screen keeps showing
     `base_embeds` unchanged, with the error embed attached below it. If `base_embeds`
-    is already at Discord's 10-embed-per-message cap, the error is sent as a separate
-    ephemeral reply instead, since appending one more embed would itself be rejected.
+    already take Discord's 10 embeds or 6000 characters of text per message, the error is sent
+    as a separate ephemeral reply instead, since appending one more embed would itself be rejected.
     """
-    if len(base_embeds) >= MAX_EMBED_COUNT:
+    if not has_room_for_error(base_embeds, message):
         await interaction.response.send_message(message, ephemeral=True)
         return
 
