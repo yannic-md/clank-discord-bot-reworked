@@ -1,22 +1,15 @@
 from discord import (
-    Forbidden,
-    HTTPException,
     Interaction,
-    NotFound,
-    Thread,
-    Webhook,
 )
-from discord.abc import GuildChannel
 from discord.ui import ChannelSelect, Label, Modal, TextInput
 
-from core.discord_api.limits import MAX_EMBED_URL, MAX_WEBHOOK_AVATARURL, MAX_WEBHOOK_COUNT, MAX_WEBHOOK_USERNAME
+from core.discord_api.limits import MAX_EMBED_URL, MAX_WEBHOOK_AVATARURL, MAX_WEBHOOK_USERNAME
 from core.i18n.translator import translate
 from features.misc.builder.channels import TARGET_CHANNEL_TYPES, resolve_selected_channel
 from features.misc.builder.embed.session import BuilderSession
 from features.misc.builder.embed.validation import append_error
-from features.misc.builder.session import WebhookSender
-from features.misc.builder.validation import get_channel_placeholder, is_valid_image_url
-from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, find_webhook
+from features.misc.builder.validation import is_valid_image_url
+from features.misc.builder.webhook import resolve_new_sender
 
 
 class WebhookModal(Modal):
@@ -57,85 +50,33 @@ class WebhookModal(Modal):
 
     async def on_submit(self, interaction: Interaction) -> None:
         """Validate the avatar URL, store the sender identity on the session and show the webhook screen."""
-        from features.misc.builder.embed.views import WebhookView
         from features.misc.builder.embed.views.webhook import apply_sender
+
+        session = self.session
 
         avatar_url: str = self.avatar_input.value.strip()
         if avatar_url and not is_valid_image_url(avatar_url):
-            await append_error(
-                interaction,
-                [WebhookView(self.session).info_embed],
-                WebhookView(self.session),
-                translate(self.session.language, "builder.errors.invalid_image"),
-            )
+            await self._reject(interaction, translate(session.language, "builder.errors.invalid_image"))
             return
 
-        username: str | None = self.name_input.value.strip() or None
-        webhook_url: str = self.url_input.value.strip()
-
-        # An explicitly pasted webhook URL is used as-is instead of creating one for the current channel.
-        if webhook_url:
-            try:
-                webhook: Webhook = Webhook.from_url(webhook_url, client=interaction.client)
-                webhook = await webhook.fetch()
-            except ValueError, NotFound, Forbidden, HTTPException:
-                await append_error(
-                    interaction,
-                    [WebhookView(self.session).info_embed],
-                    WebhookView(self.session),
-                    translate(self.session.language, "builder.errors.webhook_invalid"),
-                )
-                return
-
-            sender = WebhookSender(
-                username=username,
-                avatar_url=avatar_url or None,
-                webhook_url=webhook.url,
-                validated_channel_id=webhook.channel_id,
-                explicit_url=True,
-                display_name=webhook.name,
-            )
-            await apply_sender(interaction, self.session, sender)
-            return
-
-        channel: GuildChannel | Thread = self.session.target_channel
-        channel_ref: str = get_channel_placeholder(self.session.language, channel, self.session.slashcmd_channel.id)
-
-        try:
-            webhook = await find_webhook(channel, username, interaction.client.user)
-        except Forbidden:
-            await append_error(
-                interaction,
-                [WebhookView(self.session).info_embed],
-                WebhookView(self.session),
-                translate(self.session.language, "builder.errors.webhook_forbidden", channel=channel_ref),
-            )
-            return
-
-        except HTTPException as error:
-            if error.code == WEBHOOK_LIMIT_ERROR_CODE:
-                await append_error(
-                    interaction,
-                    [WebhookView(self.session).info_embed],
-                    WebhookView(self.session),
-                    translate(
-                        self.session.language,
-                        "builder.errors.webhook_limit",
-                        channel=channel_ref,
-                        limit=MAX_WEBHOOK_COUNT,
-                    ),
-                )
-                return
-            raise
-
-        sender = WebhookSender(
-            username=username,
+        sender, error = await resolve_new_sender(
+            interaction.client,
+            session,
+            username=self.name_input.value.strip() or None,
             avatar_url=avatar_url or None,
-            webhook_url=webhook.url,
-            validated_channel_id=channel.id,
-            display_name=webhook.name,
+            webhook_url=self.url_input.value.strip(),
         )
-        await apply_sender(interaction, self.session, sender)
+        if sender is None:
+            await self._reject(interaction, error or "")
+            return
+        await apply_sender(interaction, session, sender)
+
+    async def _reject(self, interaction: Interaction, error: str) -> None:
+        """Show the webhook screen again with `error` below it - nothing of what was typed is applied."""
+        from features.misc.builder.embed.views import WebhookView
+
+        view = WebhookView(self.session)
+        await append_error(interaction, [view.info_embed], view, error)
 
 
 class ChannelModal(Modal):

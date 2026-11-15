@@ -1,4 +1,5 @@
 import logging
+from functools import cache
 from logging import Logger
 from typing import Any
 
@@ -10,10 +11,15 @@ from core.i18n.resolve import get_language
 from core.i18n.translator import translate
 
 logger: Logger = logging.getLogger("discord")
-_warned_about_missing_view_store: bool = False
 
 # `custom_id` prefixes for screens that want their message's content/embeds preserved.
 _PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed:",)
+
+
+@cache
+def _warn_about_missing_view_store() -> None:
+    """Say once that discord.py's view store cannot be inspected (later calls do nothing)."""
+    logger.error("Could not inspect discord.py's view store - skipping dead-interaction check.")
 
 
 def _has_live_handler(interaction: Interaction) -> bool:
@@ -39,11 +45,7 @@ def _has_live_handler(interaction: Interaction) -> bool:
         views_by_message = view_store._views
         dynamic_items = view_store._dynamic_items
     except AttributeError:
-        global _warned_about_missing_view_store
-
-        if not _warned_about_missing_view_store:
-            logger.error("Could not inspect discord.py's view store - skipping dead-interaction check.")
-            _warned_about_missing_view_store = True
+        _warn_about_missing_view_store()
         return True
 
     # Dynamic items (e.g. the interactive builder's buttons) are matched by a `custom_id` pattern, not by
@@ -84,7 +86,7 @@ async def _disable_and_notify(interaction: Interaction, message: str) -> None:
         return
 
     # A Components V2 message can only be rebuilt as a `LayoutView`
-    view_cls: type[View] | type[LayoutView] = LayoutView if _is_components_v2(interaction.message) else View
+    view_cls: type[View | LayoutView] = LayoutView if _is_components_v2(interaction.message) else View
     disabled_view: View | LayoutView = view_cls.from_message(interaction.message, timeout=None)
     for child in disabled_view.walk_children():
         if isinstance(child, (Button, Select, UserSelect, RoleSelect, MentionableSelect, ChannelSelect)):

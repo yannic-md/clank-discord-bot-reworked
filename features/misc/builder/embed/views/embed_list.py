@@ -112,7 +112,6 @@ class EmbedListView(BuilderScreenView):
     @button(label="Active embed", style=ButtonStyle.gray, row=2, disabled=True)
     async def active_label(self: EmbedListView, interaction: Interaction, _button: Button) -> None:
         """Disabled button that only labels the position controls."""
-        pass
 
     @button(label="Up", style=ButtonStyle.blurple, row=2, custom_id="embed:list:up")
     async def up_button(self: EmbedListView, interaction: Interaction, _button: Button) -> None:

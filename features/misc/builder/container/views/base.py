@@ -6,6 +6,7 @@ from typing import Any
 
 from discord import ButtonStyle, Colour, HTTPException, Interaction, Message, NotFound, SelectOption, SeparatorSpacing
 from discord.ui import ActionRow, Button, Container, Item, LayoutView, Select, Separator, TextDisplay
+from discord.ui.view import BaseView
 
 from core.discord_api.limits import MAX_V2_TOTAL_COMPONENTS, MAX_V2_TOTAL_TEXT_LENGTH
 from core.setup.errors import error_handler
@@ -25,6 +26,14 @@ def _text_displays(item: Item) -> list[TextDisplay]:
 
     walk = getattr(item, "walk_children", None)
     return [child for child in walk() if isinstance(child, TextDisplay)] if walk is not None else []
+
+
+def component_count(item: Item | BaseView) -> int:
+    """How many components `item` counts for in Discord's limit per message: everything inside it, and - for a single
+    component - itself as well. (For a whole view: all the components it holds.)"""
+    walk = getattr(item, "walk_children", None)
+    inside = sum(1 for _ in walk()) if walk is not None else 0
+    return inside if isinstance(item, BaseView) else 1 + inside
 
 
 class BuilderLayoutView(LayoutView):
@@ -89,7 +98,7 @@ class BuilderLayoutView(LayoutView):
         """Show `box` directly above the first row of buttons/dropdowns, so errors and
         status messages sit in the same place on every screen. If the screen has no room left
         for it (Discord allows 40 components per message), its text becomes a follow-up message."""
-        if self._total_children + box._total_count > MAX_V2_TOTAL_COMPONENTS:
+        if component_count(self) + component_count(box) > MAX_V2_TOTAL_COMPONENTS:
             texts = [child.content for child in box.children if isinstance(child, TextDisplay)]
             self.overflow_notes.append("\n".join(texts))
             return
@@ -112,7 +121,9 @@ class BuilderLayoutView(LayoutView):
         for child in others:
             self.remove_item(child)
 
-        if self._total_children + item._total_count + sum(child._total_count for child in others) > MAX_V2_TOTAL_COMPONENTS:
+        if component_count(self) + component_count(item) + sum(component_count(child) for child in others) > (
+            MAX_V2_TOTAL_COMPONENTS
+        ):
             item = fallback()
         else:
             self.preview_texts.extend(_text_displays(item))

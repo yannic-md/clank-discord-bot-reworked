@@ -1,4 +1,4 @@
-from discord import Attachment, Interaction, RadioGroupOption
+from discord import Attachment, Interaction
 from discord.ui import FileUpload, Label, Modal, RadioGroup, TextInput
 
 from core.discord_api.limits import (
@@ -6,6 +6,7 @@ from core.discord_api.limits import (
     MAX_V2_MEDIA_GALLERY_ITEMS,
     MAX_V2_THUMBNAIL_DESCRIPTION,
 )
+from features.misc.builder.container.modals.fields import spoiler_group, spoiler_label
 from features.misc.builder.container.models import MAX_USER_COMPONENTS, ComponentKind, GalleryItem
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import t, ts
@@ -36,17 +37,12 @@ class ThumbnailModal(Modal):
             required=False,
             max_length=MAX_V2_THUMBNAIL_DESCRIPTION,
         )
-        self.spoiler_input: RadioGroup = RadioGroup(
-            options=[
-                RadioGroupOption(label=ts(session.language, "modals.option_no"), value="no", default=True),
-                RadioGroupOption(label=ts(session.language, "modals.option_yes"), value="yes"),
-            ]
-        )
+        self.spoiler_input: RadioGroup = spoiler_group(session.language)
 
         media_label = ts(session.language, "modals.images.thumbnail")
         self.add_item(Label(text=media_label, component=self.media_input))
         self.add_item(self.description_input)
-        self.add_item(Label(text=t(session.language, "modals.spoiler.question"), component=self.spoiler_input))
+        self.add_item(spoiler_label(session.language, self.spoiler_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
         """Apply the uploaded image as thumbnail - or remove the existing one if none was uploaded - and show the list."""
@@ -131,18 +127,7 @@ class MediaGalleryItemModal(Modal):
             max_length=MAX_V2_MEDIA_GALLERY_ITEM_DESCRIPTION,
             default=existing.description if existing else None,
         )
-        self.spoiler_input: RadioGroup = RadioGroup(
-            options=[
-                RadioGroupOption(
-                    label=ts(session.language, "modals.option_no"),
-                    value="no",
-                    default=not (existing.spoiler if existing else False),
-                ),
-                RadioGroupOption(
-                    label=ts(session.language, "modals.option_yes"), value="yes", default=bool(existing and existing.spoiler)
-                ),
-            ]
-        )
+        self.spoiler_input: RadioGroup = spoiler_group(session.language, spoiler=bool(existing and existing.spoiler))
         media_label = (
             t(session.language, "modals.gallery.media_edit")
             if existing
@@ -150,7 +135,7 @@ class MediaGalleryItemModal(Modal):
         )
         self.add_item(Label(text=media_label, component=self.media_input))
         self.add_item(self.description_input)
-        self.add_item(Label(text=t(session.language, "modals.spoiler.question"), component=self.spoiler_input))
+        self.add_item(spoiler_label(session.language, self.spoiler_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
         """Validate the uploads, add or update the gallery items and show the gallery screen."""
@@ -165,9 +150,9 @@ class MediaGalleryItemModal(Modal):
         description = self.description_input.value.strip() or None
         spoiler = self.spoiler_input.value == "yes"
 
-        async def back(active_index: int | None, error: str | None = None) -> None:
-            """Show the gallery screen with `active_index` selected, optionally with the error `error`."""
-            view = MediaGalleryItemsView(session, node_id=self.node_id, active_index=active_index, error=error)
+        async def back(active_index: int | None, problem: str | None = None) -> None:
+            """Show the gallery screen with `active_index` selected, optionally with the error `problem`."""
+            view = MediaGalleryItemsView(session, node_id=self.node_id, active_index=active_index, error=problem)
             await show(interaction, view)
 
         # Validate everything up front so a single bad file doesn't leave a half-filled gallery.

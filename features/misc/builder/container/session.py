@@ -57,6 +57,20 @@ class ContainerBuilderSession:
         """The channel the message will be sent to: the explicit override, or the invocation channel."""
         return self.channel or self.slashcmd_channel
 
+    def remember_selection(self, key: tuple[int | None, ComponentKind | None], nodes: list[ComponentNode]) -> int | None:
+        """The id of the component selected for `key`: the one selected there before, as long as it is still among
+        `nodes`, otherwise the first of them. It is remembered for the next time; `None` if there is no component."""
+        active_id = self.active_selection.get(key)
+        if active_id is not None and not any(node.id == active_id for node in nodes):
+            active_id = None
+        if active_id is None and nodes:
+            active_id = nodes[0].id
+        if active_id is not None:
+            self.active_selection[key] = active_id
+        else:
+            self.active_selection.pop(key, None)
+        return active_id
+
     def new_id(self) -> int:
         """Hand out the next unused component id."""
         node_id = self.next_id

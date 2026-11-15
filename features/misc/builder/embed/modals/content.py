@@ -9,12 +9,10 @@ from core.discord_api.limits import (
     MAX_MODAL_TEXTINPUT,
 )
 from core.i18n.translator import translate
+from features.misc.builder.embed.modals.errors import reject, reject_text_limit
 from features.misc.builder.embed.session import BuilderSession
-from features.misc.builder.embed.util.embed_ops import non_empty_embeds
 from features.misc.builder.embed.validation import (
-    append_error,
     convert_to_role_mentions,
-    text_limit_problem,
     text_over_limit,
 )
 from features.misc.builder.validation import convert_to_colour, is_valid_url
@@ -103,21 +101,15 @@ class EmbedTitleDescModal(Modal):
         url: str = self.url_input.value.strip()
 
         if url and not is_valid_url(url):
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                translate(self.session.language, "builder.embed.errors.invalid_url"),
-            )
+            await reject(interaction, self.session, translate(self.session.language, "builder.embed.errors.invalid_url"))
             return
 
         # Discord rejects a `url` on an embed that has neither a title nor a description
         # to attach it to (there'd be nothing for the link to make clickable).
         if url and not name and not description:
-            await append_error(
+            await reject(
                 interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
+                self.session,
                 translate(self.session.language, "builder.embed.errors.url_needs_title_or_description"),
             )
             return
@@ -130,12 +122,7 @@ class EmbedTitleDescModal(Modal):
         )
 
         if over:
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                text_limit_problem(self.session.language, over),
-            )
+            await reject_text_limit(interaction, self.session, over)
             return
 
         embed.title = name or None
@@ -175,12 +162,7 @@ class EmbedColourModal(Modal):
         try:
             colour: Colour = convert_to_colour(value)
         except ValueError:
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                translate(self.session.language, "builder.errors.invalid_color"),
-            )
+            await reject(interaction, self.session, translate(self.session.language, "builder.errors.invalid_color"))
             return
 
         embed: Embed = self.session.active_embed
@@ -190,12 +172,7 @@ class EmbedColourModal(Modal):
             placeholder = translate(self.session.language, "builder.embed.placeholders.embed_placeholder_title")
             over: int = text_over_limit(self.session.embeds, added=len(placeholder))
             if over:
-                await append_error(
-                    interaction,
-                    non_empty_embeds(self.session.embeds),
-                    EmbedBuilderGUI(self.session),
-                    text_limit_problem(self.session.language, over),
-                )
+                await reject_text_limit(interaction, self.session, over)
                 return
 
         embed.colour = colour

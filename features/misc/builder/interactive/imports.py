@@ -40,7 +40,7 @@ def adopt_stored_forms(
         return form_draft_from_record(library, record).id
 
     for config in draft.configs():
-        ids = {db_id: resolve(db_id) for db_id in open_form_ids(config)}
+        ids = {stored_id: resolve(stored_id) for stored_id in open_form_ids(config)}
         config.actions[:] = remap_forms(config, ids).actions
 
 

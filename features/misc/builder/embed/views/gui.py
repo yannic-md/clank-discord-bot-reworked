@@ -1,3 +1,5 @@
+from typing import ClassVar
+
 from discord import ButtonStyle, Embed, Interaction, SelectOption
 from discord.ui import Button, Select, button, select
 
@@ -56,7 +58,7 @@ def _select_key(value: str, field: str) -> str:
 class EmbedBuilderGUI(BuilderScreenView):
     """Main screen of the embed builder: a live preview with the controls to edit and send it."""
 
-    _MODALS: dict[str, type] = {
+    _MODALS: ClassVar[dict[str, type]] = {
         "embed_content": MessageContentModal,
         "embed_colors": EmbedColourModal,
         "embed_title": EmbedTitleDescModal,
@@ -195,7 +197,6 @@ class EmbedBuilderGUI(BuilderScreenView):
     @button(label="Active embed", style=ButtonStyle.gray, row=2, disabled=True)
     async def active_embed_label(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:
         """Disabled button that only labels the position controls."""
-        pass
 
     @button(label="Up", style=ButtonStyle.blurple, row=2, custom_id="embed:gui:main_up")
     async def main_up_button(self: EmbedBuilderGUI, interaction: Interaction, _button: Button) -> None:

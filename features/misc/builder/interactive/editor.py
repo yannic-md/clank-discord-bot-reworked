@@ -1,6 +1,7 @@
 import re
 from collections.abc import Callable, Collection, Sequence
 from dataclasses import dataclass, replace
+from itertools import pairwise
 from typing import Any
 
 from discord import SelectOption
@@ -299,10 +300,10 @@ def draft_sections(
     # A button: who may use it follows where it sits, side by side (a role in the conditions moves them into a row of
     # their own); the list of its actions follows below.
     actions = [describe_action(language, action, library) for action in draft.config.actions]
-    listed = section(
+    action_list = section(
         "actions", numbered(actions, "editor.summary.no_actions"), spaced=True, listed=bool(actions), divided=True
     )
-    return [*sections, conditions, listed]
+    return [*sections, conditions, action_list]
 
 
 def _choice_text(language: SupportedLanguage, minimum: int, maximum: int) -> str:
@@ -325,9 +326,9 @@ def fit_lines(lines: Sequence[str], more: Callable[[int], str], budget: int = SE
     When some are left out, a last line says how many (`more` makes that text). A line that is too long alone is
     cut. Whole lines are kept so that a mention or code span is never cut in the middle."""
 
-    def cost(line: str) -> int:
+    def cost(text: str) -> int:
         """What a line takes from the budget."""
-        return len(line) + 3
+        return len(text) + 3
 
     if sum(cost(line) for line in lines) <= budget:
         return list(lines)
@@ -424,7 +425,7 @@ def section_fields(sections: Sequence[Section]) -> list[tuple[str, str, bool]]:
     fields = [list(section_field(section)) for section in sections]
     rows = _field_rows(sections)
 
-    for previous, row in zip(rows, rows[1:], strict=False):
+    for previous, row in pairwise(rows):
         if sections[row[0]].spaced:
             for position in previous:
                 fields[position][1] = f"{fields[position][1]}\n{BLANK_LINE}"[:1024]

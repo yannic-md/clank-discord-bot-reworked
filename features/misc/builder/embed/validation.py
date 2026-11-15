@@ -49,7 +49,7 @@ def convert_to_role_mentions(content: str, guild: Guild) -> str:
         return content
 
     for role in sorted(guild.roles, key=lambda r: len(r.name), reverse=True):
-        if not role.name or role.name == "@everyone" or role.name == "@here":
+        if not role.name or role.name in {"@everyone", "@here"}:
             continue
 
         pattern: re.Pattern[str] = re.compile(r"@" + re.escape(role.name), re.IGNORECASE)

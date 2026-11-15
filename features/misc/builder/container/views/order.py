@@ -40,15 +40,7 @@ class ComponentOrderView(BuilderLayoutView):
             owning_list[first_index], owning_list[second_index] = owning_list[second_index], owning_list[first_index]
 
         selection_key: tuple[int | None, ComponentKind | None] = (parent_id, None)
-        active_id = session.active_selection.get(selection_key)
-        if active_id is not None and not any(node.id == active_id for node in nodes):
-            active_id = None
-        if active_id is None and nodes:
-            active_id = nodes[0].id
-        if active_id is not None:
-            session.active_selection[selection_key] = active_id
-        else:
-            session.active_selection.pop(selection_key, None)
+        active_id = session.remember_selection(selection_key, nodes)
 
         active_index = next((index for index, node in enumerate(nodes) if node.id == active_id), None)
 

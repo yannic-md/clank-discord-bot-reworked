@@ -52,7 +52,7 @@ def _assert_readable(embed: Embed) -> None:
         embed.footer.icon_url,
         embed.image.url,
         embed.thumbnail.url,
-        [(field.name, field.value, field.inline) for field in embed.fields],
+        [(embed_field.name, embed_field.value, embed_field.inline) for embed_field in embed.fields],
     )
 
 

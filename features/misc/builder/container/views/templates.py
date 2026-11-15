@@ -68,8 +68,8 @@ class TemplatesView(BuilderLayoutView):
             """Delete the selected template, or show an error if none is selected."""
             name = session.active_template_name
             if name is None:
-                error = ts(session.language, "errors.no_template_selected")
-                await show(interaction, TemplatesView(session, error=error))
+                missing_error = ts(session.language, "errors.no_template_selected")
+                await show(interaction, TemplatesView(session, error=missing_error))
                 return
 
             await delete_user_template(session.slashcmd_author_id, name)
@@ -111,21 +111,21 @@ class TemplatesView(BuilderLayoutView):
         async def on_select(interaction: Interaction) -> None:
             """Replace the current components with the chosen template and report skipped components."""
             name = template_select.values[0]
-            template = next((existing for existing in session.templates if existing.name == name), None)
-            if template is None:
+            chosen = next((existing for existing in session.templates if existing.name == name), None)
+            if chosen is None:
                 await show(interaction, TemplatesView(session))
                 return
 
             session.library.clear()
             session.active_item_id = None
-            nodes, dropped = nodes_from_data(session, template.components)
+            nodes, dropped = nodes_from_data(session, chosen.components)
             session.components = nodes
             session.active_selection.clear()
             session.active_template_name = name
 
             count = count_nodes(nodes)
-            status = template_status_box(session.language, name, count=count, dropped=dropped, broken_links=0)
-            view = TemplatesView(session, status=status)
+            loaded_status = template_status_box(session.language, name, count=count, dropped=dropped, broken_links=0)
+            view = TemplatesView(session, status=loaded_status)
             track_active_view(view)
             await interaction.response.edit_message(view=view)
             view.message = await interaction.original_response()

@@ -11,8 +11,6 @@ class Base(DeclarativeBase):
     catalog for all ORM models in the application.
     """
 
-    pass
-
 
 engine = create_async_engine(
     url=DB_URL + DB_NAME,

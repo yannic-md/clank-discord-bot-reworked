@@ -1,10 +1,26 @@
-from typing import Any
+from typing import Any, Protocol
 
-from discord import Client, ClientUser, ForumChannel, StageChannel, TextChannel, Thread, VoiceChannel, Webhook
+from discord import (
+    Client,
+    ClientUser,
+    Forbidden,
+    ForumChannel,
+    HTTPException,
+    NotFound,
+    StageChannel,
+    TextChannel,
+    Thread,
+    VoiceChannel,
+    Webhook,
+)
 from discord.abc import GuildChannel
 from discord.utils import MISSING
 
+from core.discord_api.limits import MAX_WEBHOOK_COUNT
+from core.enums.language import SupportedLanguage
+from core.i18n.translator import translate
 from features.misc.builder.session import WebhookSender
+from features.misc.builder.validation import get_channel_placeholder
 
 WEBHOOK_LIMIT_ERROR_CODE: int = 30007  # too much webhooks (from discord docs)
 
@@ -66,3 +82,87 @@ def identity_kwargs(sender: WebhookSender, channel: GuildChannel | Thread) -> di
         "avatar_url": sender.avatar_url or MISSING,
         "thread": channel if isinstance(channel, Thread) else MISSING,
     }
+
+
+class SenderSession(Protocol):
+    """The part of a builder session the sender identity of a message is worked out from."""
+
+    @property
+    def language(self) -> SupportedLanguage:
+        """The language the builder answers in."""
+        ...
+
+    @property
+    def target_channel(self) -> GuildChannel | Thread:
+        """The channel the message will be sent to."""
+        ...
+
+    @property
+    def slashcmd_channel(self) -> GuildChannel | Thread:
+        """The channel the builder was started in."""
+        ...
+
+
+def webhook_forbidden_text(session: SenderSession, channel: GuildChannel | Thread) -> str:
+    """Error text for missing permission to manage webhooks in `channel`."""
+    channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
+    return translate(session.language, "builder.errors.webhook_forbidden", channel=channel_ref)
+
+
+def webhook_limit_text(session: SenderSession, channel: GuildChannel | Thread) -> str:
+    """Error text for `channel` having reached Discord's webhook limit."""
+    channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
+    return translate(session.language, "builder.errors.webhook_limit", channel=channel_ref, limit=MAX_WEBHOOK_COUNT)
+
+
+def webhook_invalid_text(language: SupportedLanguage) -> str:
+    """Error text for a webhook that is no longer valid."""
+    return translate(language, "builder.errors.webhook_invalid")
+
+
+async def resolve_new_sender(
+    client: Client, session: SenderSession, *, username: str | None, avatar_url: str | None, webhook_url: str
+) -> tuple[WebhookSender | None, str | None]:
+    """The sender identity for what was typed into the webhook modal - or the text of the error that prevents one.
+
+    A pasted `webhook_url` is checked and used as it is; without one, the webhook of the target channel is found or
+    created. Returns `(sender, None)` on success and `(None, error_text)` if the webhook is not valid, the bot may not
+    manage webhooks in the channel, or the channel has reached the webhook limit.
+
+    Raises:
+        HTTPException: Discord rejected the webhook for another reason.
+    """
+    if webhook_url:
+        try:
+            pasted = await Webhook.from_url(webhook_url, client=client).fetch()
+        except ValueError, NotFound, Forbidden, HTTPException:
+            return None, webhook_invalid_text(session.language)
+
+        sender = WebhookSender(
+            username=username,
+            avatar_url=avatar_url,
+            webhook_url=pasted.url,
+            validated_channel_id=pasted.channel_id,
+            explicit_url=True,
+            display_name=pasted.name,
+        )
+        return sender, None
+
+    channel = session.target_channel
+    try:
+        found = await find_webhook(channel, username, client.user)
+    except Forbidden:
+        return None, webhook_forbidden_text(session, channel)
+    except HTTPException as error:
+        if error.code == WEBHOOK_LIMIT_ERROR_CODE:
+            return None, webhook_limit_text(session, channel)
+        raise
+
+    sender = WebhookSender(
+        username=username,
+        avatar_url=avatar_url,
+        webhook_url=found.url,
+        validated_channel_id=channel.id,
+        display_name=found.name,
+    )
+    return sender, None

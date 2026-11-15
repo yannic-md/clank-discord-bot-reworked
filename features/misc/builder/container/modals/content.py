@@ -2,6 +2,7 @@ from discord import Colour, Interaction, RadioGroupOption, SeparatorSpacing, Tex
 from discord.ui import Label, Modal, RadioGroup, TextInput
 
 from core.discord_api.limits import MAX_V2_TEXT_DISPLAY_LENGTH, MAX_V2_TOTAL_TEXT_LENGTH
+from features.misc.builder.container.modals.fields import spoiler_group, spoiler_label
 from features.misc.builder.container.models import MAX_USER_COMPONENTS, ComponentKind, ComponentNode
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import t, ts
@@ -76,20 +77,9 @@ class ContainerModal(Modal):
             max_length=32,
             default=str(existing.accent_colour) if existing and existing.accent_colour else None,
         )
-        self.spoiler_input: RadioGroup = RadioGroup(
-            options=[
-                RadioGroupOption(
-                    label=ts(session.language, "modals.option_no"),
-                    value="no",
-                    default=not (existing.spoiler if existing else False),
-                ),
-                RadioGroupOption(
-                    label=ts(session.language, "modals.option_yes"), value="yes", default=bool(existing and existing.spoiler)
-                ),
-            ]
-        )
+        self.spoiler_input: RadioGroup = spoiler_group(session.language, spoiler=bool(existing and existing.spoiler))
         self.add_item(self.colour_input)
-        self.add_item(Label(text=t(session.language, "modals.spoiler.question"), component=self.spoiler_input))
+        self.add_item(spoiler_label(session.language, self.spoiler_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
         """Parse the colour, save the container and show the container list."""

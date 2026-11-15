@@ -108,12 +108,13 @@ def open_form_ids(config: ItemConfig) -> list[int]:
 def remap_forms(config: ItemConfig, form_ids: Mapping[int, int | None]) -> ItemConfig:
     """A copy of `config` whose "open form" actions point to other ids; those that map to nothing are left out."""
     actions: list[Action] = []
-    for action in config.actions:
-        if action.type is ActionType.OPEN_FORM:
-            new_id = form_ids.get(action.form_id) if action.form_id is not None else None
+    for original in config.actions:
+        action = original
+        if original.type is ActionType.OPEN_FORM:
+            new_id = form_ids.get(original.form_id) if original.form_id is not None else None
             if new_id is None:
                 continue
-            action = replace(action, form_id=new_id)
+            action = replace(original, form_id=new_id)
         actions.append(action)
 
     return ItemConfig(actions=actions, conditions=list(config.conditions))
@@ -354,7 +355,7 @@ def adopt_forms(library: InteractiveLibrary, draft: ItemDraft, stored: object) -
         return library.add(form).id
 
     for config in draft.configs():
-        ids = {old_id: resolve(old_id) for old_id in open_form_ids(config)}
+        ids = {stored_id: resolve(stored_id) for stored_id in open_form_ids(config)}
         config.actions[:] = remap_forms(config, ids).actions
 
 

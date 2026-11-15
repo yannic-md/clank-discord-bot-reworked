@@ -1,14 +1,12 @@
-from discord import Forbidden, HTTPException, Interaction, NotFound, Webhook
+from discord import Interaction
 from discord.ui import ChannelSelect, Label, Modal, TextInput
 
 from core.discord_api.limits import MAX_EMBED_URL, MAX_WEBHOOK_AVATARURL, MAX_WEBHOOK_USERNAME
 from features.misc.builder.channels import TARGET_CHANNEL_TYPES, resolve_selected_channel
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import ts
-from features.misc.builder.container.util.webhook import webhook_forbidden_text, webhook_invalid_text, webhook_limit_text
-from features.misc.builder.session import WebhookSender
 from features.misc.builder.validation import is_valid_image_url
-from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, find_webhook
+from features.misc.builder.webhook import resolve_new_sender
 
 
 class WebhookModal(Modal):
@@ -53,52 +51,19 @@ class WebhookModal(Modal):
 
         avatar_url = self.avatar_input.value.strip()
         if avatar_url and not is_valid_image_url(avatar_url):
-            error = ts(session.language, "errors.invalid_image")
+            await show(interaction, WebhookView(session, error=ts(session.language, "errors.invalid_image")))
+            return
+
+        sender, error = await resolve_new_sender(
+            interaction.client,
+            session,
+            username=self.name_input.value.strip() or None,
+            avatar_url=avatar_url or None,
+            webhook_url=self.url_input.value.strip(),
+        )
+        if sender is None:
             await show(interaction, WebhookView(session, error=error))
             return
-
-        username = self.name_input.value.strip() or None
-        webhook_url = self.url_input.value.strip()
-
-        # An explicitly pasted webhook URL is used as-is instead of creating one for the current channel.
-        if webhook_url:
-            try:
-                webhook = Webhook.from_url(webhook_url, client=interaction.client)
-                webhook = await webhook.fetch()
-            except ValueError, NotFound, Forbidden, HTTPException:
-                await show(interaction, WebhookView(session, error=webhook_invalid_text(session.language)))
-                return
-
-            sender = WebhookSender(
-                username=username,
-                avatar_url=avatar_url or None,
-                webhook_url=webhook.url,
-                validated_channel_id=webhook.channel_id,
-                explicit_url=True,
-                display_name=webhook.name,
-            )
-            await apply_sender(interaction, session, sender)
-            return
-
-        channel = session.target_channel
-        try:
-            webhook = await find_webhook(channel, username, interaction.client.user)
-        except Forbidden:
-            await show(interaction, WebhookView(session, error=webhook_forbidden_text(session, channel)))
-            return
-        except HTTPException as error:
-            if error.code == WEBHOOK_LIMIT_ERROR_CODE:
-                await show(interaction, WebhookView(session, error=webhook_limit_text(session, channel)))
-                return
-            raise
-
-        sender = WebhookSender(
-            username=username,
-            avatar_url=avatar_url or None,
-            webhook_url=webhook.url,
-            validated_channel_id=channel.id,
-            display_name=webhook.name,
-        )
         await apply_sender(interaction, session, sender)
 
 

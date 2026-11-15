@@ -56,15 +56,7 @@ class ComponentKindListView(BuilderLayoutView):
         nodes = [node for node in owning_list if node.kind == kind]
 
         selection_key = (parent_id, kind)
-        active_id = session.active_selection.get(selection_key)
-        if active_id is not None and not any(node.id == active_id for node in nodes):
-            active_id = None
-        if active_id is None and nodes:
-            active_id = nodes[0].id
-        if active_id is not None:
-            session.active_selection[selection_key] = active_id
-        else:
-            session.active_selection.pop(selection_key, None)
+        active_id = session.remember_selection(selection_key, nodes)
 
         active_node = find_node(session, active_id) if active_id is not None else None
 
@@ -99,8 +91,8 @@ class ComponentKindListView(BuilderLayoutView):
         async def on_add(interaction: Interaction) -> None:
             """Add a component of this kind, or show the limit error if the message is full."""
             if remaining_budget(session) < 1:
-                error = t(session.language, "errors.component_limit", limit=MAX_USER_COMPONENTS)
-                await show(interaction, ComponentKindListView(session, kind=kind, parent_id=parent_id, error=error))
+                limit_error = t(session.language, "errors.component_limit", limit=MAX_USER_COMPONENTS)
+                await show(interaction, ComponentKindListView(session, kind=kind, parent_id=parent_id, error=limit_error))
                 return
 
             if kind == ComponentKind.MEDIA_GALLERY:

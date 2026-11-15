@@ -163,25 +163,27 @@ def message_outline(session: ContainerBuilderSession, *, marked: int | None = No
 
     def describe(nodes: list[ComponentNode]) -> list[str]:
         """The lines of a list of nodes: the message itself or the contents of a container."""
-        lines: list[str] = []
+        described: list[str] = []
         rows = 0
         for node in nodes:
             emoji = KIND_EMOJIS[node.kind]
             if node.kind == ComponentKind.ACTION_ROW:
                 rows += 1
-                lines.append(f"{emoji} {t(language, 'info.placement.short_row', row=rows)}: {names(node.item_ids) or '—'}")
+                described.append(
+                    f"{emoji} {t(language, 'info.placement.short_row', row=rows)}: {names(node.item_ids) or '—'}"
+                )
                 continue
 
             counts[node.kind] = counts.get(node.kind, 0) + 1
-            line = f"{emoji} {label_for(node, counts[node.kind], language, snippet_length=OUTLINE_SNIPPET)}"
+            entry = f"{emoji} {label_for(node, counts[node.kind], language, snippet_length=OUTLINE_SNIPPET)}"
             if node.accessory_item_id is not None:
-                line = f"{line} ➜ {names([node.accessory_item_id])}"
-            lines.append(line)
+                entry = f"{entry} ➜ {names([node.accessory_item_id])}"
+            described.append(entry)
             inner = describe(node.children)
-            lines.extend(
+            described.extend(
                 f"{TREE_LAST if number == len(inner) else TREE_MIDDLE} {child}" for number, child in enumerate(inner, 1)
             )
-        return lines
+        return described
 
     lines = [f"> {line}" for line in describe(session.components)]
     return "\n".join(

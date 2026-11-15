@@ -318,7 +318,7 @@ AfterOption = Callable[[Interaction, str | None, str | None], Awaitable[None]]
 """Called when an option modal is done: the interaction, the key of the option to show next and an error text, if any."""
 
 
-def _template_select(language: SupportedLanguage, choices: list[TemplateChoice], selected: str | None) -> Select:
+def _template_select(choices: list[TemplateChoice], selected: str | None) -> Select:
     """A dropdown of saved templates in which none (or one) can be chosen."""
     return Select(
         required=False,
@@ -365,7 +365,7 @@ class MessageContentModal(Modal):
         self.container_input: Select | None = None
         if templates.embed:
             chosen = payload.template_name if payload is not None and payload.kind is PayloadKind.EMBED else None
-            self.embed_input = _template_select(language, templates.embed, chosen)
+            self.embed_input = _template_select(templates.embed, chosen)
             self.add_item(
                 Label(
                     text=t(language, "modals.message_action.template.question"),
@@ -375,7 +375,7 @@ class MessageContentModal(Modal):
             )
         if templates.container:
             chosen = payload.template_name if payload is not None and payload.kind is PayloadKind.CONTAINER else None
-            self.container_input = _template_select(language, templates.container, chosen)
+            self.container_input = _template_select(templates.container, chosen)
             self.add_item(
                 Label(
                     text=t(language, "modals.message_action.template.question"),

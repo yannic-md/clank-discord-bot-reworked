@@ -14,6 +14,11 @@ def t(language: SupportedLanguage, key: str, /, count: int | None = None, **vari
     return translate(language, f"{_DOMAIN}.{key}", count=count, **variables)
 
 
+def common(language: SupportedLanguage, key: str, /, count: int | None = None, **variables: object) -> str:
+    """Translate a text both builders share on all of their screens (`locales/<lang>/builder/builder.json`)."""
+    return translate(language, f"builder.{key}", count=count, **variables)
+
+
 def screen(language: SupportedLanguage, key: str, /, count: int | None = None, **variables: object) -> str:
     """Translate a text of the button and dropdown screens (`screens.*`). Both builders show these screens and say
     the same on them, so the texts live here once: only what differs between the builders (where a button may be

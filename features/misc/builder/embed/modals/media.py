@@ -5,13 +5,11 @@ from discord.ui import FileUpload, Label, Modal, TextInput
 
 from core.discord_api.limits import MAX_EMBED_AUTHOR_NAME, MAX_EMBED_FOOTER_TEXT, MAX_EMBED_URL
 from core.i18n.translator import translate
+from features.misc.builder.embed.modals.errors import reject, reject_text_limit
 from features.misc.builder.embed.session import BuilderSession
-from features.misc.builder.embed.util.embed_ops import non_empty_embeds
 from features.misc.builder.embed.validation import (
-    append_error,
     convert_to_datetime,
     format_timestamp_for_input,
-    text_limit_problem,
     text_over_limit,
 )
 from features.misc.builder.validation import is_valid_image_attachment, is_valid_url
@@ -44,12 +42,7 @@ class EmbedImagesModal(Modal):
 
         for attachment_list in (self.thumbnail_input.values, self.image_input.values):
             if attachment_list and not is_valid_image_attachment(attachment_list[0]):
-                await append_error(
-                    interaction,
-                    non_empty_embeds(self.session.embeds),
-                    EmbedBuilderGUI(self.session),
-                    translate(self.session.language, "builder.errors.invalid_image"),
-                )
+                await reject(interaction, self.session, translate(self.session.language, "builder.errors.invalid_image"))
                 return
 
         embed: Embed = self.session.active_embed
@@ -99,10 +92,9 @@ class EmbedAuthorModal(Modal):
 
         if not name:
             if url or icon:
-                await append_error(
+                await reject(
                     interaction,
-                    non_empty_embeds(self.session.embeds),
-                    EmbedBuilderGUI(self.session),
+                    self.session,
                     translate(self.session.language, "builder.embed.errors.author_fields_without_name"),
                 )
                 return
@@ -112,31 +104,16 @@ class EmbedAuthorModal(Modal):
             return
 
         if url and not is_valid_url(url):
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                translate(self.session.language, "builder.embed.errors.invalid_url"),
-            )
+            await reject(interaction, self.session, translate(self.session.language, "builder.embed.errors.invalid_url"))
             return
 
         if icon and not is_valid_image_attachment(icon):
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                translate(self.session.language, "builder.errors.invalid_image"),
-            )
+            await reject(interaction, self.session, translate(self.session.language, "builder.errors.invalid_image"))
             return
 
         over: int = text_over_limit(self.session.embeds, removed=len(embed.author.name or ""), added=len(name))
         if over:
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                text_limit_problem(self.session.language, over),
-            )
+            await reject_text_limit(interaction, self.session, over)
             return
 
         embed.set_author(name=name, url=url or None, icon_url=icon.url if icon else None)
@@ -175,10 +152,9 @@ class EmbedFooterModal(Modal):
 
         if not text:
             if icon:
-                await append_error(
+                await reject(
                     interaction,
-                    non_empty_embeds(self.session.embeds),
-                    EmbedBuilderGUI(self.session),
+                    self.session,
                     translate(self.session.language, "builder.embed.errors.footer_icon_without_text"),
                 )
                 return
@@ -188,22 +164,12 @@ class EmbedFooterModal(Modal):
             return
 
         if icon and not is_valid_image_attachment(icon):
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                translate(self.session.language, "builder.errors.invalid_image"),
-            )
+            await reject(interaction, self.session, translate(self.session.language, "builder.errors.invalid_image"))
             return
 
         over: int = text_over_limit(self.session.embeds, removed=len(embed.footer.text or ""), added=len(text))
         if over:
-            await append_error(
-                interaction,
-                non_empty_embeds(self.session.embeds),
-                EmbedBuilderGUI(self.session),
-                text_limit_problem(self.session.language, over),
-            )
+            await reject_text_limit(interaction, self.session, over)
             return
 
         embed.set_footer(text=text, icon_url=icon.url if icon else None)
@@ -243,11 +209,8 @@ class EmbedTimestampModal(Modal):
             try:
                 embed.timestamp = convert_to_datetime(text)
             except ValueError:
-                await append_error(
-                    interaction,
-                    non_empty_embeds(self.session.embeds),
-                    EmbedBuilderGUI(self.session),
-                    translate(self.session.language, "builder.embed.errors.invalid_timestamp"),
+                await reject(
+                    interaction, self.session, translate(self.session.language, "builder.embed.errors.invalid_timestamp")
                 )
                 return
 

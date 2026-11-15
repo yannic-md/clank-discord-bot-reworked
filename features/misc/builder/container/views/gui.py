@@ -43,8 +43,8 @@ class MainView(BuilderLayoutView):
         async def on_send(interaction: Interaction) -> None:
             """Ask for confirmation before sending, unless there is nothing to send."""
             if not non_empty_nodes(session.components):
-                error = t(session.language, "errors.nothing_to_send")
-                await show(interaction, MainView(session, error=error))
+                empty_error = t(session.language, "errors.nothing_to_send")
+                await show(interaction, MainView(session, error=empty_error))
                 return
             await show(interaction, SendConfirmView(session))
 

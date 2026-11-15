@@ -4,7 +4,8 @@ from discord.ui import Button, Item, Select
 from features.misc.builder.interactive.draft import ItemDraft
 from features.misc.builder.interactive.runtime import InteractiveButton, InteractiveSelect
 
-_NO_OPTIONS: str = "__none__"
+NO_OPTIONS: str = "__none__"
+"""The value of the single "—" entry a dropdown without options shows: Discord needs at least one."""
 
 
 def select_options(draft: ItemDraft) -> list[SelectOption]:
@@ -25,7 +26,7 @@ def preview_component(draft: ItemDraft) -> Item:
         minimum, maximum = draft.selection_range()
         options = select_options(draft)
         return Select(
-            options=options or [SelectOption(label="—", value=_NO_OPTIONS)],
+            options=options or [SelectOption(label="—", value=NO_OPTIONS)],
             placeholder=draft.placeholder,
             min_values=minimum if options else 1,
             max_values=maximum if options else 1,

@@ -20,7 +20,6 @@ from discord.abc import GuildChannel, Messageable
 from discord.ui import Button, button
 from discord.utils import MISSING
 
-from core.discord_api.limits import MAX_WEBHOOK_COUNT
 from core.i18n.translator import translate
 from features.misc.builder.discord_errors import send_problem_text
 from features.misc.builder.embed.session import BuilderSession
@@ -54,7 +53,14 @@ from features.misc.builder.validation import (
     format_missing_permissions,
     get_channel_placeholder,
 )
-from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, identity_kwargs, resolve_send_webhook
+from features.misc.builder.webhook import (
+    WEBHOOK_LIMIT_ERROR_CODE,
+    identity_kwargs,
+    resolve_send_webhook,
+    webhook_forbidden_text,
+    webhook_invalid_text,
+    webhook_limit_text,
+)
 
 
 class SendConfirmView(BuilderScreenView):
@@ -328,18 +334,14 @@ async def _send_via_webhook(
     try:
         webhook: Webhook = await resolve_send_webhook(interaction.client, channel, session.webhook)
     except Forbidden:
-        channel_ref: str = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
-        message: str = translate(session.language, "builder.errors.webhook_forbidden", channel=channel_ref)
-        await append_error(interaction, view.embeds, view, message)
+        await append_error(interaction, view.embeds, view, webhook_forbidden_text(session, channel))
         return None
 
     except HTTPException as error:
         if error.code != WEBHOOK_LIMIT_ERROR_CODE:
             raise
 
-        channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
-        message = translate(session.language, "builder.errors.webhook_limit", channel=channel_ref, limit=MAX_WEBHOOK_COUNT)
-        await append_error(interaction, view.embeds, view, message)
+        await append_error(interaction, view.embeds, view, webhook_limit_text(session, channel))
         return None
 
     try:
@@ -354,10 +356,10 @@ async def _send_via_webhook(
     except HTTPException as error:
         if error.status not in (401, 404):  # 404: the webhook is gone; 401: its token is wrong
             raise
+
         # The webhook cannot be used - stop treating it as a configured identity going forward.
         session.webhook = WebhookSender()
-        message = translate(session.language, "builder.errors.webhook_invalid")
-        await append_error(interaction, view.embeds, view, message)
+        await append_error(interaction, view.embeds, view, webhook_invalid_text(session.language))
         return None
 
 

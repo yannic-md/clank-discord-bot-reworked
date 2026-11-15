@@ -155,12 +155,12 @@ async def _open_form_action(
 
     async def created(modal_interaction: Interaction, form_id: int | None, error: str | None) -> None:
         """Attach the new form to the item as its action and show the form's screen."""
-        form = library.get(form_id) if form_id is not None else None
-        if error is not None or form is None:
+        created_form = library.get(form_id) if form_id is not None else None
+        if error is not None or created_form is None:
             await after(modal_interaction, error)
             return
-        config.actions.append(Action(ActionType.OPEN_FORM, form_id=form.id))
-        await open_form(modal_interaction, form)
+        config.actions.append(Action(ActionType.OPEN_FORM, form_id=created_form.id))
+        await open_form(modal_interaction, created_form)
 
     await interaction.response.send_modal(FormLookModal(language, library, None, created))
 

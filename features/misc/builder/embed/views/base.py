@@ -14,19 +14,17 @@ from features.misc.builder.session import BUILDER_VIEW_TIMEOUT
 class BuilderScreenView(View):
     """Common base for every screen of the embed builder.
 
-    `content`/`embeds` describe what the screen renders; concrete subclasses
-    always overwrite these in `__init__`, so the empty list default here is
-    never actually mutated in place.
+    `content`/`embeds` describe what the screen renders; concrete subclasses fill them in their `__init__`.
     """
 
-    content: str | None = None
-    embeds: list[Embed] = []
-    message: Message | None = None
     session: BuilderSession
 
     def __init__(self) -> None:
         """Create the view with the shared builder timeout."""
         super().__init__(timeout=BUILDER_VIEW_TIMEOUT)
+        self.content: str | None = None
+        self.embeds: list[Embed] = []
+        self.message: Message | None = None
 
     async def on_timeout(self) -> None:
         """Disable all controls of the sent message once the view expires."""

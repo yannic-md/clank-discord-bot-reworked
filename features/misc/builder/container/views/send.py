@@ -83,23 +83,23 @@ class SendConfirmView(BuilderLayoutView):
             missing = missing_send_permissions(channel, member)
             if missing:
                 permissions = format_missing_permissions(language, missing)
-                error = ts(language, "errors.user_permission_missing", channel=channel_ref, permissions=permissions)
-                await show(interaction, SendConfirmView(session, error=error))
+                user_problem = ts(language, "errors.user_permission_missing", channel=channel_ref, permissions=permissions)
+                await show(interaction, SendConfirmView(session, error=user_problem))
                 return
 
             missing = missing_send_permissions(channel, channel.guild.me)
             if missing:
                 permissions = format_missing_permissions(language, missing)
-                error = ts(language, "errors.bot_permission_missing", channel=channel_ref, permissions=permissions)
-                await show(interaction, SendConfirmView(session, error=error))
+                bot_problem = ts(language, "errors.bot_permission_missing", channel=channel_ref, permissions=permissions)
+                await show(interaction, SendConfirmView(session, error=bot_problem))
                 return
 
             placed = _placed_drafts(session, nodes)
             if session.webhook.enabled and any(not draft.is_link for draft in placed):
                 # Buttons that run actions cannot be sent through a webhook - the editor keeps them out, so this
                 # is only a safety net.
-                error = t(language, "errors.placement_webhook")
-                await show(interaction, SendConfirmView(session, error=error))
+                placement_problem = t(language, "errors.placement_webhook")
+                await show(interaction, SendConfirmView(session, error=placement_problem))
                 return
 
             unsendable = sendable_problem(language, placed, session.library)
@@ -109,8 +109,8 @@ class SendConfirmView(BuilderLayoutView):
 
             if total_text_length(nodes) > MAX_V2_TOTAL_TEXT_LENGTH:
                 # The editor keeps every text within the limit, so only a stored template could get here with too much.
-                error = t(language, "errors.total_text", max=MAX_V2_TOTAL_TEXT_LENGTH)
-                await show(interaction, SendConfirmView(session, error=error))
+                text_problem = t(language, "errors.total_text", max=MAX_V2_TOTAL_TEXT_LENGTH)
+                await show(interaction, SendConfirmView(session, error=text_problem))
                 return
 
             allowed = build_allowed_mentions(channel, member)
@@ -128,9 +128,9 @@ class SendConfirmView(BuilderLayoutView):
                 else:
                     assert isinstance(channel, Messageable)
                     sent = await channel.send(view=StaticLayoutView(final_items(session, nodes)), allowed_mentions=allowed)
-            except HTTPException as error:
+            except HTTPException as failure:
                 await rollback(session.library, persisted)
-                problem = send_problem_text(session.language, error)
+                problem = send_problem_text(session.language, failure)
                 if problem is None:
                     raise
                 await show(interaction, SendConfirmView(session, error=problem))

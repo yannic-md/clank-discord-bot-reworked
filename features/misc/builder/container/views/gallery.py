@@ -61,10 +61,10 @@ class MediaGalleryItemsView(BuilderLayoutView):
         async def on_add(interaction: Interaction) -> None:
             """Open the modal to add items, or show the limit error if the gallery is full."""
             if len(items) >= MAX_V2_MEDIA_GALLERY_ITEMS:
-                error = t(session.language, "errors.gallery_max_items", max=MAX_V2_MEDIA_GALLERY_ITEMS)
+                limit_error = t(session.language, "errors.gallery_max_items", max=MAX_V2_MEDIA_GALLERY_ITEMS)
                 await show(
                     interaction,
-                    MediaGalleryItemsView(session, node_id=node_id, active_index=active_index, error=error),
+                    MediaGalleryItemsView(session, node_id=node_id, active_index=active_index, error=limit_error),
                 )
                 return
             await interaction.response.send_modal(MediaGalleryItemModal(session, node_id=node_id, item_index=None))

@@ -1,15 +1,18 @@
 from discord import AllowedMentions, Forbidden, HTTPException, Interaction, Thread, WebhookMessage
 from discord.abc import GuildChannel
 
-from core.discord_api.limits import MAX_WEBHOOK_COUNT
-from core.enums.language import SupportedLanguage
 from features.misc.builder.container.models import ComponentNode
 from features.misc.builder.container.session import ContainerBuilderSession
-from features.misc.builder.container.translations import ts
 from features.misc.builder.container.util.render import StaticLayoutView, final_items
 from features.misc.builder.session import WebhookSender
-from features.misc.builder.validation import get_channel_placeholder
-from features.misc.builder.webhook import WEBHOOK_LIMIT_ERROR_CODE, identity_kwargs, resolve_send_webhook
+from features.misc.builder.webhook import (
+    WEBHOOK_LIMIT_ERROR_CODE,
+    identity_kwargs,
+    resolve_send_webhook,
+    webhook_forbidden_text,
+    webhook_invalid_text,
+    webhook_limit_text,
+)
 
 
 async def send_via_webhook(
@@ -49,20 +52,3 @@ async def send_via_webhook(
         session.webhook = WebhookSender()
         return None, webhook_invalid_text(session.language)
     return message, None
-
-
-def webhook_forbidden_text(session: ContainerBuilderSession, channel: GuildChannel | Thread) -> str:
-    """Error text for missing permission to manage webhooks in `channel`."""
-    channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
-    return ts(session.language, "errors.webhook_forbidden", channel=channel_ref)
-
-
-def webhook_limit_text(session: ContainerBuilderSession, channel: GuildChannel | Thread) -> str:
-    """Error text for `channel` having reached Discord's webhook limit."""
-    channel_ref = get_channel_placeholder(session.language, channel, session.slashcmd_channel.id)
-    return ts(session.language, "errors.webhook_limit", channel=channel_ref, limit=MAX_WEBHOOK_COUNT)
-
-
-def webhook_invalid_text(language: SupportedLanguage) -> str:
-    """Error text for a webhook that is no longer valid."""
-    return ts(language, "errors.webhook_invalid")
