@@ -21,7 +21,7 @@ from features.misc.builder.embed.views.base import BuilderScreenView, show
 from features.misc.builder.interactive.editor import BLANK_LINE, section_fields
 from features.misc.builder.interactive.hub import element_name, placement_text
 from features.misc.builder.interactive.messages import screen
-from features.misc.builder.interactive.models import Action
+from features.misc.builder.interactive.models import Action, PayloadKind
 from features.misc.builder.interactive.screens.action_editors import message_action_screen, role_action_screen
 from features.misc.builder.interactive.screens.actions import actions_screen
 from features.misc.builder.interactive.screens.conditions import conditions_screen
@@ -48,7 +48,7 @@ class EmbedHost(ViewHost[BuilderSession]):
 
     def __init__(self, session: BuilderSession) -> None:
         """Create the host of one session."""
-        super().__init__(session, _SCREENS)
+        super().__init__(session, _SCREENS, PayloadKind.EMBED)
 
     async def show(self, interaction: Interaction, view: BaseView) -> None:
         """Replace the screen that is shown with `view`."""

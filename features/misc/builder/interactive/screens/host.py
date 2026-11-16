@@ -5,7 +5,7 @@ from dataclasses import dataclass
 from discord import Interaction
 from discord.ui.view import BaseView
 
-from features.misc.builder.interactive.models import Action
+from features.misc.builder.interactive.models import Action, PayloadKind
 from features.misc.builder.interactive.screens.spec import EditorSession
 
 
@@ -32,15 +32,22 @@ class ViewHost[S: EditorSession](ABC):
     and replaces the current one with it. What the builder does differently - how a screen is put on the message, where
     the message places an element - is left to the subclass."""
 
-    def __init__(self, session: S, classes: ScreenClasses) -> None:
-        """Create the host of one session; `classes` are the screens to show."""
+    def __init__(self, session: S, classes: ScreenClasses, template_kind: PayloadKind) -> None:
+        """Create the host of one session; `classes` are the screens to show. `template_kind` is the kind of template
+        (`EMBED` or `CONTAINER`) the builder makes: only those a message action can send."""
         self._session = session
         self._classes = classes
+        self._template_kind = template_kind
 
     @property
     def session(self) -> S:
         """The session of the builder."""
         return self._session
+
+    @property
+    def template_kind(self) -> PayloadKind:
+        """The kind of template the builder makes - and so the only kind its message actions offer to send."""
+        return self._template_kind
 
     @abstractmethod
     async def show(self, interaction: Interaction, view: BaseView) -> None:

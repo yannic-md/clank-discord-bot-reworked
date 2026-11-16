@@ -135,8 +135,8 @@ class _MessageEditor(_ActionEditor):
         await self.again(interaction, with_payload(self.working, payload))
 
     async def on_content(self, interaction: Interaction) -> None:
-        """Open the modal to write the message."""
-        templates = await load_template_choices(interaction.user.id)
+        """Open the modal to write the message - with the templates of this builder to choose from."""
+        templates = await load_template_choices(interaction.user.id, self.host.template_kind)
         await interaction.response.send_modal(
             MessageContentModal(self.language, self.working.payload, templates, self.after_content)
         )

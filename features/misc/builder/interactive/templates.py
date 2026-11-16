@@ -3,6 +3,7 @@ from dataclasses import dataclass, field
 from core.db.repositories.container_builder import container_template_repository
 from core.db.repositories.embed_builder import embed_template_repository
 from core.discord_api.limits import MAX_SELECT_ITEMS
+from features.misc.builder.interactive.models import PayloadKind
 
 
 @dataclass(frozen=True, slots=True)
@@ -25,19 +26,27 @@ class TemplateChoices:
     container: list[TemplateChoice] = field(default_factory=list)
 
 
-async def load_template_choices(user_id: int) -> TemplateChoices:
-    """The templates of both builders that `user_id` saved - as many as fit into one dropdown each."""
-    embed_records = await embed_template_repository.list_user_templates(user_id)
-    container_records = await container_template_repository.list_user_templates(user_id)
-    return TemplateChoices(
-        embed=[
-            TemplateChoice(record.name, record.icon, record.content, record.embeds_data)
-            for record in embed_records[:MAX_SELECT_ITEMS]
-            if record.embeds_data
-        ],
-        container=[
-            TemplateChoice(record.name, record.icon, "", record.components_data)
-            for record in container_records[:MAX_SELECT_ITEMS]
-            if record.components_data
-        ],
-    )
+async def load_template_choices(user_id: int, kind: PayloadKind) -> TemplateChoices:
+    """The templates `user_id` saved in the builder that makes templates of `kind` - as many as fit into one dropdown.
+
+    A builder offers its own templates only: the embed builder those of embeds, the container builder those of
+    containers. The templates of the other builder are not loaded at all."""
+    if kind is PayloadKind.EMBED:
+        embed_records = await embed_template_repository.list_user_templates(user_id)
+        return TemplateChoices(
+            embed=[
+                TemplateChoice(record.name, record.icon, record.content, record.embeds_data)
+                for record in embed_records[:MAX_SELECT_ITEMS]
+                if record.embeds_data
+            ]
+        )
+    if kind is PayloadKind.CONTAINER:
+        container_records = await container_template_repository.list_user_templates(user_id)
+        return TemplateChoices(
+            container=[
+                TemplateChoice(record.name, record.icon, "", record.components_data)
+                for record in container_records[:MAX_SELECT_ITEMS]
+                if record.components_data
+            ]
+        )
+    return TemplateChoices()

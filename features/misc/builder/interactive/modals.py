@@ -361,7 +361,8 @@ class MessageContentModal(Modal):
             style=TextStyle.paragraph,
             required=False,
             max_length=MAX_MESSAGE_CONTENT,
-            default=payload.text if payload is not None and payload.text else None,
+            # A template brings its own text, which is not the one to edit here.
+            default=payload.text if payload is not None and payload.kind is PayloadKind.TEXT and payload.text else None,
         )
         self.add_item(Label(text=t(language, "modals.message_action.text.question"), component=self.text_input))
 
@@ -404,7 +405,10 @@ class MessageContentModal(Modal):
             choice = next((entry for entry in self.templates.embed if entry.name == embed_name), None)
             if choice is None:
                 return None, t(language, "errors.template_gone")
-            return MessagePayload(text or choice.content, PayloadKind.EMBED, choice.name, choice.data), None
+
+            # The template replaces the text, as the container template does: the text of the input is not meant for it
+            # (and it often is only the example the screen started with) - what the template says is sent.
+            return MessagePayload(choice.content, PayloadKind.EMBED, choice.name, choice.data), None
 
         if container_name:
             choice = next((entry for entry in self.templates.container if entry.name == container_name), None)

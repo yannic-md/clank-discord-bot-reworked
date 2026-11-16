@@ -27,7 +27,7 @@ from features.misc.builder.container.views.base import (
 )
 from features.misc.builder.interactive.hub import element_name
 from features.misc.builder.interactive.messages import screen
-from features.misc.builder.interactive.models import Action
+from features.misc.builder.interactive.models import Action, PayloadKind
 from features.misc.builder.interactive.screens.action_editors import message_action_screen, role_action_screen
 from features.misc.builder.interactive.screens.actions import actions_screen
 from features.misc.builder.interactive.screens.conditions import conditions_screen
@@ -50,7 +50,7 @@ class ContainerHost(ViewHost[ContainerBuilderSession]):
 
     def __init__(self, session: ContainerBuilderSession) -> None:
         """Create the host of one session."""
-        super().__init__(session, _SCREENS)
+        super().__init__(session, _SCREENS, PayloadKind.CONTAINER)
 
     async def show(self, interaction: Interaction, view: BaseView) -> None:
         """Replace the screen that is shown with `view`."""

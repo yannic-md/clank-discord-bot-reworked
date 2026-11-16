@@ -266,18 +266,17 @@ def message_lines(
     language: SupportedLanguage, payload: MessagePayload | None, preview: Callable[[str], str] | None = None
 ) -> list[str]:
     """What a message action sends, as lines: its text exactly as it was written - with the variables filled by
-    `preview`, if given - and the template it carries, if any. Too much of it is cut short."""
+    `preview`, if given. A message that carries a template is not shown by its text (that of the template is not
+    meant to be edited here): the line says which template it uses. Too much of it is cut short."""
     if payload is None or payload.is_empty:
         return [t(language, "editor.payload.empty")]
 
-    lines: list[str] = []
-    text = payload.text.strip()
-    if text:
-        lines.extend((preview(text) if preview is not None else text).strip().splitlines())
     if payload.kind is not PayloadKind.TEXT:
         name = (payload.template_name or "?").replace("`", "'")
-        lines.append(t(language, f"editor.payload.{payload.kind.value}", name=name))
+        return [t(language, f"editor.payload.{payload.kind.value}", name=name)]
 
+    text = payload.text.strip()
+    lines = (preview(text) if preview is not None else text).strip().splitlines() if text else []
     return fit_lines(lines, lambda hidden: t(language, "editor.section.more", amount=hidden))
 
 
