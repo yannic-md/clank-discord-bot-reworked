@@ -8,6 +8,7 @@ from features.misc.builder.embed.util.embed_ops import non_empty_embeds
 from features.misc.builder.embed.util.placement import rows_to_data
 from features.misc.builder.embed.util.templates import EmbedTemplate, load_user_templates, save_user_template
 from features.misc.builder.embed.validation import append_error
+from features.misc.builder.interactive.template_text import embed_template_texts, saved_status, variables_notice
 from features.misc.builder.templates import DEFAULT_TEMPLATE_ICON, MAX_TEMPLATE_ICON_LENGTH, MAX_TEMPLATE_NAME_LENGTH
 from features.misc.builder.validation import convert_to_emoji
 
@@ -48,6 +49,7 @@ class SaveTemplateModal(Modal):
     async def on_submit(self, interaction: Interaction) -> None:
         """Validate the icon, save the template (overwriting one of the same name) and show the template list."""
         from features.misc.builder.embed.views import TemplatesView, show
+        from features.misc.builder.embed.views.templates import saved_status_embed
 
         guild: Guild | None = interaction.guild
         assert guild is not None
@@ -88,4 +90,10 @@ class SaveTemplateModal(Modal):
 
         self.session.templates = await load_user_templates(owner_id)
         self.session.active_template_name = name
-        await show(interaction, TemplatesView(self.session))
+
+        confirmation: str = translate(
+            self.session.language, "builder.embed.info.templates.saved", count=len(template.embeds), name=name
+        )
+        notice = variables_notice(self.session.language, embed_template_texts(template.content, template.embeds))
+        status = saved_status(confirmation, notice)
+        await show(interaction, TemplatesView(self.session, status_embed=saved_status_embed(status)))

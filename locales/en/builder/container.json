@@ -89,6 +89,10 @@
         "one": "`✅` ~ **Template `{name}` loaded:** `1` component was applied successfully.",
         "other": "`✅` ~ **Template `{name}` loaded:** `{count}` components were applied successfully."
       },
+      "saved": {
+        "one": "`✅` ~ **Template `{name}` saved:** `1` component is now in the template.",
+        "other": "`✅` ~ **Template `{name}` saved:** `{count}` components are now in the template."
+      },
       "broken_components": {
         "one": "`⚠️` ~ **`1` component damaged:** It could not be restored from the template and was skipped - Save the template again to clean it up.",
         "other": "`⚠️` ~ **`{count}` components damaged:** They could not be restored from the template and were skipped - Save the template again to clean it up."

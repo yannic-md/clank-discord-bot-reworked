@@ -1,7 +1,9 @@
+import copy
 import logging
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from dataclasses import dataclass, field
 from logging import Logger
+from typing import Any
 
 from discord import Embed, Guild, Member
 from discord.abc import GuildChannel, Messageable
@@ -10,6 +12,7 @@ from discord.ui import LayoutView
 from core.discord_api.limits import MAX_EMBED_COUNT, MAX_MESSAGE_CONTENT
 from features.misc.builder.interactive.draft import InteractiveLibrary
 from features.misc.builder.interactive.models import MessagePayload, PayloadKind
+from features.misc.builder.interactive.template_text import fill_embeds, fill_nodes
 from features.misc.builder.interactive.variables import render_variables
 from features.misc.builder.session import WebhookSender
 
@@ -45,8 +48,9 @@ class _PayloadContext:
         return node_id
 
 
-def _container_view(data: list[dict[str, object]]) -> LayoutView | None:
-    """The Components V2 message a snapshot of a container template describes; `None` if nothing usable is left."""
+def _container_view(data: list[dict[str, object]], render: Callable[[str], str]) -> LayoutView | None:
+    """The Components V2 message a snapshot of a container template describes - its texts with the variables filled in by
+    `render`; `None` if nothing usable is left."""
     # Imported here because the container builder itself depends on this package.
     from features.misc.builder.container.util.render import StaticLayoutView, build_item
     from features.misc.builder.container.util.templates import nodes_from_data
@@ -57,16 +61,21 @@ def _container_view(data: list[dict[str, object]]) -> LayoutView | None:
     nodes = non_empty_nodes(nodes)
     if not nodes:
         return None
+
+    fill_nodes(nodes, render)
     return StaticLayoutView([build_item(node, context.library, final=True) for node in nodes])
 
 
-def _embeds(data: list[dict[str, object]]) -> list[Embed]:
-    """The embeds of a snapshot of an embed template; those that cannot be rebuilt are left out."""
+def _embeds(data: list[dict[str, object]], render: Callable[[str], str]) -> list[Embed]:
+    """The embeds of a snapshot of an embed template - their texts with the variables filled in by `render`; those that
+    cannot be rebuilt are left out."""
+    entries: list[dict[str, Any]] = [copy.deepcopy(entry) for entry in data[:MAX_EMBED_COUNT]]  # the snapshot stays as it is
+    fill_embeds(entries, render)
     embeds: list[Embed] = []
-    for entry in data[:MAX_EMBED_COUNT]:
+    for entry in entries:
         try:
             embeds.append(Embed.from_dict(entry))
-        except Exception:
+        except KeyError, TypeError, ValueError, AttributeError:  # whatever a hand-edited or old embed breaks on
             logger.warning("interactive-builder: skipping an unrebuildable embed in a message action", exc_info=True)
     return embeds
 
@@ -84,7 +93,12 @@ def build_outgoing(
     `answers` are the answers of a submitted form for its `{answers}` placeholders. A text that grows past what
     Discord accepts - answers can be long - is cut off.
     """
-    text = render_variables(payload.text, member=member, guild=guild, channel=channel, answers=answers).strip()
+
+    def render(template_text: str) -> str:
+        """`template_text` with the variables filled in for `member`."""
+        return render_variables(template_text, member=member, guild=guild, channel=channel, answers=answers)
+
+    text = render(payload.text).strip()
     if len(text) > MAX_MESSAGE_CONTENT:
         text = f"{text[: MAX_MESSAGE_CONTENT - 1]}…"
 
@@ -92,8 +106,8 @@ def build_outgoing(
         return OutgoingMessage(content=text) if text else None
 
     if payload.kind is PayloadKind.EMBED:
-        embeds = _embeds(payload.data)
+        embeds = _embeds(payload.data, render)
         return OutgoingMessage(content=text or None, embeds=embeds) if embeds or text else None
 
-    view = _container_view(payload.data)
+    view = _container_view(payload.data, render)
     return OutgoingMessage(view=view) if view is not None else None

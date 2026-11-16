@@ -43,6 +43,10 @@
       "loaded": {
         "one": "`✅` ~ **Template `{name}` loaded:** `1` embed and the message content were successfully applied.",
         "other": "`✅` ~ **Template `{name}` loaded:** `{count}` embeds and the message content were successfully applied."
+      },
+      "saved": {
+        "one": "`✅` ~ **Template `{name}` saved:** `1` embed and the message content are now in the template.",
+        "other": "`✅` ~ **Template `{name}` saved:** `{count}` embeds and the message content are now in the template."
       }
     },
     "embed_list": {

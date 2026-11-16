@@ -19,6 +19,7 @@ from features.misc.builder.container.views.base import (
     show,
     track_active_view,
 )
+from features.misc.builder.interactive.template_text import SaveStatus
 from features.misc.builder.media_links import unreachable_image_urls
 from features.misc.builder.tasks import run_in_background
 
@@ -38,6 +39,11 @@ def template_status_box(language: SupportedLanguage, name: str, *, count: int, d
 
     text = t(language, "info.templates.loaded", count=count, name=name)
     return Container(TextDisplay(text), accent_colour=Colour.green())
+
+
+def saved_status_box(status: SaveStatus) -> Container:
+    """The box shown after saving a template: green, or orange if the template uses variables that do not exist."""
+    return Container(TextDisplay(status.text), accent_colour=Colour.orange() if status.warning else Colour.green())
 
 
 class TemplatesView(BuilderLayoutView):

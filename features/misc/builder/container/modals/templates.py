@@ -6,7 +6,8 @@ from features.misc.builder.container.models import ComponentNode, ContainerTempl
 from features.misc.builder.container.session import ContainerBuilderSession
 from features.misc.builder.container.translations import t, ts
 from features.misc.builder.container.util.templates import load_user_templates, node_to_data, save_user_template
-from features.misc.builder.container.util.tree import non_empty_nodes
+from features.misc.builder.container.util.tree import count_nodes, non_empty_nodes
+from features.misc.builder.interactive.template_text import container_template_texts, saved_status, variables_notice
 from features.misc.builder.templates import DEFAULT_TEMPLATE_ICON, MAX_TEMPLATE_ICON_LENGTH, MAX_TEMPLATE_NAME_LENGTH
 from features.misc.builder.validation import convert_to_emoji
 
@@ -43,7 +44,7 @@ class SaveTemplateModal(Modal):
     async def on_submit(self, interaction: Interaction) -> None:
         """Validate the input, save the template (overwriting one of the same name) and show the template list."""
         from features.misc.builder.container.views.base import show
-        from features.misc.builder.container.views.templates import TemplatesView
+        from features.misc.builder.container.views.templates import TemplatesView, saved_status_box
 
         session: ContainerBuilderSession = self.session
         guild = interaction.guild
@@ -79,4 +80,8 @@ class SaveTemplateModal(Modal):
 
         session.templates = await load_user_templates(owner_id)
         session.active_template_name = name
-        await show(interaction, TemplatesView(session))
+
+        confirmation = t(session.language, "info.templates.saved", count=count_nodes(nodes), name=name)
+        notice = variables_notice(session.language, container_template_texts(nodes))
+        status = saved_status(confirmation, notice)
+        await show(interaction, TemplatesView(session, status=saved_status_box(status)))

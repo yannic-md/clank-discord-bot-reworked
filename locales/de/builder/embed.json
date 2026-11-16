@@ -43,6 +43,10 @@
       "loaded": {
         "one": "`✅` ~ **Vorlage `{name}` geladen:** `1` Embed und der Nachrichten-Inhalt wurden erfolgreich übernommen.",
         "other": "`✅` ~ **Vorlage `{name}` geladen:** `{count}` Embeds und der Nachrichten-Inhalt wurden erfolgreich übernommen."
+      },
+      "saved": {
+        "one": "`✅` ~ **Vorlage `{name}` gespeichert:** `1` Embed und der zugehörige Nachrichten-Inhalt sind nun in der Vorlage vorhanden.",
+        "other": "`✅` ~ **Vorlage `{name}` gespeichert:** `{count}` Embeds und der zugehörige Nachrichten-Inhalt sind jetzt in der Vorlage gespeichert."
       }
     },
     "embed_list": {

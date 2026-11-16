@@ -89,6 +89,10 @@
         "one": "`✅` ~ **Vorlage `{name}` geladen:** `1` Komponente wurde erfolgreich übernommen.",
         "other": "`✅` ~ **Vorlage `{name}` geladen:** `{count}` Komponenten wurden erfolgreich übernommen."
       },
+      "saved": {
+        "one": "`✅` ~ **Vorlage `{name}` gespeichert:** `1` Komponent ist jetzt in der Vorlage vorhanden.",
+        "other": "`✅` ~ **Vorlage `{name}` gespeichert:** `{count}` Komponenten sind jetzt in der Vorlage gespeichert."
+      },
       "broken_components": {
         "one": "`⚠️` ~ **`1` Komponente beschädigt:** Diese konnte aus der Vorlage nicht wiederhergestellt werden und wurde übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen.",
         "other": "`⚠️` ~ **`{count}` Komponenten beschädigt:** Diese konnten aus der Vorlage nicht wiederhergestellt werden und wurden übersprungen - Speichere die Vorlage erneut, um sie zu bereinigen."

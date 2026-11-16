@@ -75,6 +75,13 @@
     "delete_failed": "› `⚠️` ~ **Not deleted:** I couldn't delete the message.",
     "delete_not_allowed": "› `⚠️` ~ **Not allowed:** Deleting the message is limited to chosen people, and this isn't set up that way."
   },
+  "template_variables": {
+    "known": "› `ℹ️` - **Variables in this template:** {variables}\n> They are only replaced when the template is sent by a **message action** (Buttons & Dropdowns). When a message is sent the normal way, they stay as they are.",
+    "unknown": {
+      "one": "› `⚠️` - **Unknown variable:** {variables} doesn't exist!\n> The variable is never replaced and stays in the text as typed. You'll find all variables in a message action under \"Supported variables\".",
+      "other": "› `⚠️` - **Unknown variables:** {variables} don't exist!\n> The variables are never replaced and stay in the text as typed. You'll find all variables in a message action under \"Supported variables\"."
+    }
+  },
   "roles": {
     "everyone": "› `❌` - **Not Allowed:** {role} is the `@everyone` role and can't be handed out. <:loveangry:784930958084276224>",
     "managed": "› `❌` - **Not Allowed:** {role} is managed by an integration and can't be handed out. <:loveangry:784930958084276224>",
@@ -362,10 +369,10 @@
         "placeholder": "e.g. Welcome {{user}}! 🎉"
       },
       "embed": {
-        "help": "Choose a saved embed template instead of a text."
+        "help": "Choose a saved embed template instead of a text. Its variables are replaced."
       },
       "container": {
-        "help": "Choose a saved container template instead of a text."
+        "help": "Choose a saved container template instead of a text. Its variables are replaced."
       },
       "template": {
         "question": "📁 ~ Or which template should it be?"

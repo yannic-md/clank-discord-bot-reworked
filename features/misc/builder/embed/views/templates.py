@@ -1,7 +1,8 @@
 import logging
 from logging import Logger
 
-from discord import ButtonStyle, Colour, Embed, Interaction, SelectOption
+from aiohttp import ClientError
+from discord import ButtonStyle, Colour, Embed, HTTPException, Interaction, SelectOption
 from discord.ui import Button, Select, button, select
 
 from core.discord_api.limits import MAX_SELECT_ITEMS
@@ -17,10 +18,16 @@ from features.misc.builder.embed.util.templates import (
 )
 from features.misc.builder.embed.validation import append_error
 from features.misc.builder.embed.views.base import BuilderScreenView, show, track_active_view
+from features.misc.builder.interactive.template_text import SaveStatus
 from features.misc.builder.media_links import unreachable_image_urls
 from features.misc.builder.tasks import run_in_background
 
 logger: Logger = logging.getLogger("discord")
+
+
+def saved_status_embed(status: SaveStatus) -> Embed:
+    """The status shown after saving a template: green, or orange if the template uses variables that do not exist."""
+    return Embed(description=status.text, colour=Colour.orange() if status.warning else Colour.green())
 
 
 class TemplatesView(BuilderScreenView):
@@ -181,5 +188,5 @@ class TemplatesView(BuilderScreenView):
             track_active_view(refreshed)
             await interaction.edit_original_response(content=refreshed.content, embeds=refreshed.embeds, view=refreshed)
             refreshed.message = await interaction.original_response()
-        except Exception:
+        except HTTPException, ClientError, OSError:  # the message is gone, Discord or the network is not reachable
             logger.warning("embed-builder: background image-link check failed", exc_info=True)

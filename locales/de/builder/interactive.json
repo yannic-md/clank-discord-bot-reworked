@@ -75,6 +75,13 @@
     "delete_failed": "› `⚠️` ~ **Nicht gelöscht:** Ich konnte die Nachricht nicht löschen.",
     "delete_not_allowed": "› `⚠️` ~ **Nicht erlaubt:** Das Löschen der Nachricht ist auf bestimmte Personen beschränkt, und das ist hier nicht so eingerichtet."
   },
+  "template_variables": {
+    "known": "› `ℹ️` - **Variablen in der Vorlage:** {variables}\n> Sie werden nur ersetzt, wenn die Vorlage in einer **Nachrichten-Aktion** (Buttons & Dropdowns) gesendet wird. Beim normalen Senden einer Nachricht bleiben sie unverändert stehen.",
+    "unknown": {
+      "one": "› `⚠️` - **Unbekannte Variable:** {variables} gibt es nicht!\n> Die Variable wird nie ersetzt und bleibt so im Text stehen. Alle Variablen findest du bei einer Nachrichten-Aktion unter „Unterstützte Variablen“.",
+      "other": "› `⚠️` - **Unbekannte Variablen:** {variables} gibt es nicht!\n> Die Variablen werden nie ersetzt und bleiben so im Text stehen. Alle Variablen findest du bei einer Nachrichten-Aktion unter „Unterstützte Variablen“."
+    }
+  },
   "roles": {
     "everyone": "› `❌` - **Nicht erlaubt:** {role} ist die `@everyone`-Rolle und kann nicht vergeben werden. <:loveangry:784930958084276224>",
     "managed": "› `❌` - **Nicht erlaubt:** {role} wird von einer Integration verwaltet und kann nicht vergeben werden. <:loveangry:784930958084276224>",
@@ -362,10 +369,10 @@
         "placeholder": "z.B. Willkommen {{user}}! 🎉"
       },
       "embed": {
-        "help": "Wähle eine gespeicherte Embed-Vorlage statt eines Textes."
+        "help": "Wähle eine gespeicherte Embed-Vorlage statt eines Textes - Variablen darin werden ersetzt."
       },
       "container": {
-        "help": "Wähle eine gespeicherte Container-Vorlage statt eines Textes."
+        "help": "Wähle eine gespeicherte Container-Vorlage statt eines Textes - Variablen werden ersetzt."
       },
       "template": {
         "question": "📁 ~ Oder welche Vorlage soll es sein?"

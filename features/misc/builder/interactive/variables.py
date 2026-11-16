@@ -1,5 +1,5 @@
 import re
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Iterable, Sequence
 from datetime import UTC, datetime
 
 from discord import Guild, Member
@@ -25,10 +25,26 @@ FORM_VARIABLES: tuple[str, ...] = ("answers", "answer.1")
 and further - one per question)."""
 
 _VARIABLE: re.Pattern[str] = re.compile(
-    r"\{(" + "|".join(re.escape(name) for name in VARIABLES) + r"|answers|answer\.[1-9]\d?)\}"
+    r"\{(" + "|".join(re.escape(name) for name in VARIABLES) + r"|answers|answer\.[1-9]\d?)}"
 )
+_PLACEHOLDER_LIKE: re.Pattern[str] = re.compile(r"\{([A-Za-z][\w.]*)}")
+"""Anything that looks like a placeholder: a name in curly braces. Braces around something that is no name (`{}`,
+`{1,2}`, `{two words}`) are ordinary text."""
 NO_ANSWER: str = "—"
 """What stands in for a question that was left unanswered, and for a date that is not known."""
+
+
+def find_variables(texts: Iterable[str]) -> tuple[list[str], list[str]]:
+    """The placeholders the texts use, as the names without braces: `(known, unknown)`, each name once, in the order they
+    first appear. The known ones are replaced when a message is sent by an action (see `render_variables`); the
+    unknown ones - mostly typos - are never replaced and stay as typed."""
+    known: dict[str, None] = {}
+    unknown: dict[str, None] = {}
+    for text in texts:
+        for match in _PLACEHOLDER_LIKE.finditer(text):
+            name = match.group(1)
+            (known if _VARIABLE.fullmatch(match.group(0)) else unknown)[name] = None
+    return list(known), list(unknown)
 
 
 def render_variables(
