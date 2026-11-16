@@ -18,6 +18,7 @@ class ClankReworked(commands.AutoShardedBot):
     """
 
     def __init__(self, command_prefix: str, *, web_client: ClientSession, intents: Intents) -> None:
+        """Set up the bot with its shared HTTP client and the state tracked during startup."""
         super().__init__(command_prefix, intents=intents)
         self.web_client: ClientSession = web_client
         self.loaded_cogs_count: int = 0
@@ -63,4 +64,5 @@ class ClankReworked(commands.AutoShardedBot):
         print("────────────")
 
     async def on_command_error(self, context: commands.Context, exception: commands.CommandError, /) -> None:
+        """Hand prefix-command errors to the central command error handler."""
         await command_error_handler(context, exception)

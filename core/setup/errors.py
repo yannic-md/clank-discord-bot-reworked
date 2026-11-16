@@ -1,3 +1,4 @@
+import asyncio
 import logging
 import traceback
 import uuid
@@ -71,16 +72,23 @@ async def _notify_error_channel(client: discord.Client, command_name: str, origi
             await error_channel.send(content=content)
             return
 
-        ERROR_DUMP_DIR.mkdir(parents=True, exist_ok=True)
-        dump_path = ERROR_DUMP_DIR / f"error_{uuid.uuid4().hex}.txt"
-        dump_path.write_text(traceback_text, encoding="utf-8")
+        dump_path = await asyncio.to_thread(_save_dump, traceback_text)
 
         await error_channel.send(content=f"```py\nCOMMAND ERROR (/{command_name}):\n\nToo long, saved to {dump_path}\n```")
     except discord.HTTPException:
         logger.warning("Could not forward error notification to the error-log channel for command '%s'", command_name)
 
 
+def _save_dump(traceback_text: str) -> Path:
+    """Write a traceback that is too long for a message to a file of its own; returns the file."""
+    ERROR_DUMP_DIR.mkdir(parents=True, exist_ok=True)
+    dump_path = ERROR_DUMP_DIR / f"error_{uuid.uuid4().hex}.txt"
+    dump_path.write_text(traceback_text, encoding="utf-8")
+    return dump_path
+
+
 async def _reply_to_interaction(interaction: Interaction, message: str) -> None:
+    """Send `message` ephemerally - as a follow-up if the interaction was already answered."""
     try:
         if interaction.response.is_done():
             await interaction.followup.send(message, ephemeral=True)

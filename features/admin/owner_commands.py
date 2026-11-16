@@ -20,6 +20,7 @@ class OwnerCommands(Cog):
     """
 
     def __init__(self, client: AutoShardedBot):
+        """Store the bot client."""
         self.client = client
 
     @commands.command()
@@ -58,4 +59,5 @@ class OwnerCommands(Cog):
 
 
 async def setup(client: AutoShardedBot) -> None:
+    """Register the `OwnerCommands` cog."""
     await client.add_cog(OwnerCommands(client))

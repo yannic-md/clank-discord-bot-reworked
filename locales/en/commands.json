@@ -43,6 +43,14 @@
         "name": "message-id",
         "description": "Which message do you want to edit?"
       }
+    },
+    "container": {
+      "name": "container-builder",
+      "description": "› Create a message from containers and other UI components. 📦",
+      "parameter": {
+        "name": "message-id",
+        "description": "Which message do you want to edit?"
+      }
     }
   }
 }

@@ -1,28 +1,43 @@
 import logging
+from collections.abc import Collection
+from functools import cache
 from logging import Logger
 from typing import Any
 
-from discord import HTTPException, Interaction, InteractionType
-from discord.ui import Button, ChannelSelect, MentionableSelect, RoleSelect, Select, UserSelect, View
+from discord import Client, HTTPException, Interaction, InteractionType, Message
+from discord.ui import Button, ChannelSelect, LayoutView, MentionableSelect, RoleSelect, Select, UserSelect, View
 
 from core.enums.language import SupportedLanguage
 from core.i18n.resolve import get_language
 from core.i18n.translator import translate
 
 logger: Logger = logging.getLogger("discord")
-_warned_about_missing_view_store: bool = False
 
 # `custom_id` prefixes for screens that want their message's content/embeds preserved.
-_PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed_builder:",)
+_PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed:",)
+
+
+@cache
+def _warn_about_missing_view_store() -> None:
+    """Say once that discord.py's view store cannot be inspected (later calls do nothing)."""
+    logger.error("Could not inspect discord.py's view store - skipping dead-interaction check.")
+
+
+# noinspection PyProtectedMember
+def _view_store_contents(client: Client) -> tuple[dict[Any, Any], Collection[Any]]:
+    """What discord.py's private view store knows: the registered items by message and `(type, custom_id)`, and the
+    patterns of the dynamic items. Raises `AttributeError` if discord.py keeps them somewhere else in the future."""
+    view_store = client._connection._view_store
+    return view_store._views, view_store._dynamic_items
 
 
 def _has_live_handler(interaction: Interaction) -> bool:
-    """Check whether some registered `discord.ui.View` will actually handle `interaction`.
+    """Check whether some registered `discord.ui.View` or dynamic item will actually handle `interaction`.
 
     Mirrors the exact lookup discord.py's own dispatcher (`ViewStore.dispatch_view`) already
-    performs internally when the gateway event comes in: the view bound to this specific message
-    first, falling back to a message-independent (persistent) registration. If neither matches,
-    the interaction is guaranteed to otherwise be dropped silently.
+    performs internally when the gateway event comes in: dynamic items by `custom_id` pattern, then
+    the view bound to this specific message, falling back to a message-independent (persistent)
+    registration. If none of them match, the interaction is guaranteed to otherwise be dropped silently.
 
     Reaches into discord.py's private view store rather than re-implementing persistence, so this
     stays correct automatically as views are added anywhere in the bot, now or in the future.
@@ -34,14 +49,14 @@ def _has_live_handler(interaction: Interaction) -> bool:
         return True
 
     try:
-        # noinspection PyProtectedMember
-        views_by_message = interaction.client._connection._view_store._views
+        views_by_message, dynamic_items = _view_store_contents(interaction.client)
     except AttributeError:
-        global _warned_about_missing_view_store
+        _warn_about_missing_view_store()
+        return True
 
-        if not _warned_about_missing_view_store:
-            logger.error("Could not inspect discord.py's view store - skipping dead-interaction check.")
-            _warned_about_missing_view_store = True
+    # Dynamic items (e.g. the interactive builder's buttons) are matched by a `custom_id` pattern, not by
+    # message: they stay alive across restarts and answer for themselves when their data is gone.
+    if any(pattern.fullmatch(custom_id) for pattern in dynamic_items):
         return True
 
     message_id: int | None = interaction.message.id if interaction.message is not None else None
@@ -51,6 +66,11 @@ def _has_live_handler(interaction: Interaction) -> bool:
         return True
 
     return key in views_by_message.get(None, {})
+
+
+def _is_components_v2(message: Message) -> bool:
+    """Whether `message` uses Components V2, which cannot be replaced by plain content or embeds."""
+    return message.flags.components_v2
 
 
 async def _replace_message(interaction: Interaction, message: str) -> None:
@@ -63,16 +83,18 @@ async def _replace_message(interaction: Interaction, message: str) -> None:
 
 
 async def _disable_and_notify(interaction: Interaction, message: str) -> None:
-    """Gentle handling for `_PRESERVE_MESSAGE_PREFIXES` screens: disable the message's components
-    in place - leaving its content/embeds completely untouched - and report the error as a
-    separate ephemeral reply instead.
+    """Gentle handling for `_PRESERVE_MESSAGE_PREFIXES` screens and Components V2 messages: disable the
+    message's components in place - leaving its content/embeds completely untouched - and report the
+    error as a separate ephemeral reply instead.
     """
     if interaction.message is None:
         await _replace_message(interaction, message)
         return
 
-    disabled_view: View = View.from_message(interaction.message, timeout=None)
-    for child in disabled_view.children:
+    # A Components V2 message can only be rebuilt as a `LayoutView`
+    view_cls: type[View | LayoutView] = LayoutView if _is_components_v2(interaction.message) else View
+    disabled_view: View | LayoutView = view_cls.from_message(interaction.message, timeout=None)
+    for child in disabled_view.walk_children():
         if isinstance(child, (Button, Select, UserSelect, RoleSelect, MentionableSelect, ChannelSelect)):
             child.disabled = True
 
@@ -104,7 +126,10 @@ async def handle_dead_interaction(interaction: Interaction) -> None:
     message: str = translate(language, "errors.dead_interaction")
 
     custom_id: str = (interaction.data or {}).get("custom_id", "")  # type: ignore[assignment,call-overload]
-    if custom_id.startswith(_PRESERVE_MESSAGE_PREFIXES):
+    # Components V2 messages can't have their content/embeds set, so they can never be replaced by the error text.
+    if custom_id.startswith(_PRESERVE_MESSAGE_PREFIXES) or (
+        interaction.message is not None and _is_components_v2(interaction.message)
+    ):
         await _disable_and_notify(interaction, message)
     else:
         await _replace_message(interaction, message)

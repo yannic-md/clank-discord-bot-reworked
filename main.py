@@ -1,4 +1,5 @@
 import asyncio
+import sys
 
 import discord
 from aiohttp import ClientSession
@@ -35,4 +36,4 @@ if __name__ == "__main__":
         asyncio.run(main())
     except KeyboardInterrupt:
         print("Exiting...")
-        exit(0)
+        sys.exit(0)

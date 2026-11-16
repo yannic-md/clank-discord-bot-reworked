@@ -71,12 +71,14 @@ def run_migrations_online() -> None:
     )
 
     async def run_async_migrations() -> None:
+        """Connect with the async engine, run the migrations and dispose of the engine."""
         async with connectable.connect() as connection:
             await connection.run_sync(do_run_migrations)
 
         await connectable.dispose()
 
     def do_run_migrations(connection: Connection) -> None:
+        """Run the migrations inside a transaction on `connection`."""
         context.configure(
             connection=connection,
             target_metadata=target_metadata,

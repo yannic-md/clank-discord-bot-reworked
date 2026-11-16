@@ -1,0 +1,637 @@
+{
+  "conditions": {
+    "role_required": {
+      "any": {
+        "one": "› `❌` - **Rolle fehlt:** Du brauchst diese Rolle, um die Aktion auszuführen: {roles} <a:deny:819942197192294440>",
+        "other": "› `❌` - **Rolle fehlt:** Du brauchst mindestens eine dieser Rollen, um die Aktion auszuführen: {roles} <a:deny:819942197192294440>"
+      },
+      "all": {
+        "one": "› `❌` - **Rolle fehlt:** Du brauchst diese Rolle, um die Aktion auszuführen: {roles} <a:deny:819942197192294440>",
+        "other": "› `❌` - **Rollen fehlen:** Du brauchst alle diese Rollen, um die Aktion auszuführen: {roles} <a:deny:819942197192294440>"
+      }
+    },
+    "role_forbidden": {
+      "one": "› `❌` - **Nicht erlaubt:** Du kannst die Aktion nicht ausführen, solange du diese Rolle hast: {roles} <a:deny:819942197192294440>",
+      "other": "› `❌` - **Nicht erlaubt:** Du kannst die Aktion nicht ausführen, solange du eine dieser Rollen hast: {roles} <a:deny:819942197192294440>"
+    },
+    "permissions": "› `❌` - **Fehlende Berechtigung:** Du brauchst mindestens eine dieser Berechtigungen, um die Aktion auszuführen: {permissions} <a:deny:819942197192294440>",
+    "account_age": {
+      "one": "› `❌` - **Account zu neu:** Dein Discord-Account muss mindestens `{count}` Tag alt sein, um die Aktion auszuführen. <a:deny:819942197192294440>",
+      "other": "› `❌` - **Account zu neu:** Dein Discord-Account muss mindestens `{count}` Tage alt sein, um die Aktion auszuführen. <a:deny:819942197192294440>"
+    },
+    "member_age": {
+      "one": "› `❌` - **Noch nicht lange genug hier:** Du musst mindestens `{count}` Tag Mitglied dieses Servers sein, um die Aktion auszuführen. <a:deny:819942197192294440>",
+      "other": "› `❌` - **Noch nicht lange genug hier:** Du musst mindestens `{count}` Tage Mitglied dieses Servers sein, um die Aktion auszuführen. <a:deny:819942197192294440>"
+    },
+    "once_per_user": "› `❌` - **Bereits genutzt:** Diese Aktion kann nur einmal pro User ausgeführt werden. <a:deny:819942197192294440>",
+    "cooldown": {
+      "one": "› `❌` - **Nicht so schnell:** Bitte warte noch `{count}` Sekunde, bevor du die Aktion erneut ausführst. <a:deny:819942197192294440>",
+      "other": "› `❌` - **Nicht so schnell:** Bitte warte noch `{count}` Sekunden, bevor du die Aktion erneut ausführst. <a:deny:819942197192294440>"
+    }
+  },
+  "errors": {
+    "item_gone": "› `❌` - **Nicht mehr verfügbar:** Dieser Button ist nicht mehr eingerichtet. <a:deny:819942197192294440>",
+    "role_forbidden": "› `❌` - **Bot-Berechtigungsproblem:** Ich konnte deine Rollen nicht bearbeiten - eine davon steht eventuell über meiner eigenen Rolle. <a:deny:819942197192294440>",
+    "invalid_emoji": "› `❌` - **Ungültiges Emoji:** Nutze ein normales Emoji oder ein eigenes Emoji dieses Servers. <:loveangry:784930958084276224>",
+    "label_or_emoji": "› `❌` - **Leerer Button:** Ein Button braucht einen Text oder ein Emoji. <:loveangry:784930958084276224>",
+    "invalid_url": "› `❌` - **Ungültiger Link:** Bitte gib einen gültigen `https://`-Link an. <:loveangry:784930958084276224>",
+    "library_full": "› `❌` - **Limit erreicht:** Eine Nachricht kann höchstens `25` Buttons haben. <:loveangry:784930958084276224>",
+    "payload_one_template": "› `❌` - **Nur eine Vorlage:** Wähle entweder eine Embed- oder eine Container-Vorlage. <:loveangry:784930958084276224>",
+    "template_gone": "› `❌` - **Vorlage nicht gefunden:** Diese Vorlage gibt es nicht mehr. <:loveangry:784930958084276224>",
+    "channel_no_access": "› `❌` - **Kein Zugriff:** Du kannst {channel} nicht sehen oder dort schreiben. <:loveangry:784930958084276224>",
+    "option_label": "› `❌` - **Name fehlt:** Eine Option braucht einen Namen. <:loveangry:784930958084276224>",
+    "select_without_options": "› `❌` - **Dropdown unvollständig:** {name} hat noch keine nutzbaren Optionen. <:loveangry:784930958084276224>",
+    "option_gone": "› `❌` - **Nicht mehr verfügbar:** Diese Option ist nicht mehr eingerichtet. <a:deny:819942197192294440>",
+    "form_title": "› `❌` - **Titel fehlt:** Ein Formular braucht einen Titel. <:loveangry:784930958084276224>",
+    "form_gone": "› `❌` - **Formular nicht verfügbar:** Dieses Formular ist nicht mehr eingerichtet. <a:deny:819942197192294440>",
+    "form_incomplete": "› `❌` - **Formular unvollständig:** Das Formular {name} braucht einen Titel und 1 bis 5 gültige Fragen. <:loveangry:784930958084276224>",
+    "form_needs_single_choice": "› `❌` - **Einzeln wählen:** {name} öffnet ein Formular und darf deshalb nur eine Auswahl erlauben. <:loveangry:784930958084276224>",
+    "actions_conflict": "› `❌` - **Widersprüchliche Aktionen:** Die Aktionen von {name} widersprechen sich oder den Bedingungen - öffne sie und behebe das Problem. <:loveangry:784930958084276224>"
+  },
+  "result": {
+    "added": {
+      "one": "› `➕` ~ Dir wurde folgende Rolle **hinzugefügt:** {roles}",
+      "other": "› `➕` ~ Dir wurden folgende Rollen **hinzugefügt:** {roles}"
+    },
+    "removed": {
+      "one": "› `➖` ~ Dir wurde folgende Rolle **entfernt:** {roles}",
+      "other": "› `➖` ~ Dir wurden folgende Rollen **entfernt:** {roles}"
+    },
+    "skipped": {
+      "one": "› `⚠️` ~ **Übersprungene Rolle:** {roles} - Ich kann diese Rolle nicht verwalten (gelöscht oder über meiner eigenen Rolle).",
+      "other": "› `⚠️` ~ **Übersprungene Rollen:** {roles} - Ich kann diese Rollen nicht verwalten (gelöscht oder über meiner eigenen Rolle)."
+    },
+    "nothing_changed": "› `ℹ️` ~ **Nichts geändert:** Deine Rollen wurden bereits korrekt angepasst.",
+    "no_actions": "› `ℹ️` ~ **Nichts zu tun:** Dieser Button hat noch keine Aktionen.",
+    "nothing_selected": "› `ℹ️` ~ **Nichts ausgewählt:** Du hast keine Option gewählt, daher wurde nichts ausgeführt.",
+    "dm_sent": "› `✅` ~ **Privatnachricht gesendet:** Ich habe dir eine DM gesendet mit weiteren Informationen!",
+    "channel_sent": "› `✅` ~ **Nachricht gesendet:** Ich habe eine Nachricht in {channel} gepostet.",
+    "deleted": "› `✅` ~ **Nachricht gelöscht:** Die Nachricht, auf die du geklickt hast, wurde entfernt.",
+    "message_unavailable": "› `⚠️` ~ **Nachricht nicht verfügbar:** Die Nachricht dieser Aktion konnte nicht erstellt werden.",
+    "dm_failed": "› `⚠️` ~ **Keine Privatnachricht:** Ich konnte dir nicht schreiben - deine Direktnachrichten sind eventuell geschlossen.",
+    "channel_gone": "› `⚠️` ~ **Kanal fehlt:** Der Kanal dieser Aktion existiert nicht mehr.",
+    "channel_forbidden": "› `⚠️` ~ **Kein Zugriff:** Ich kann in {channel} nicht schreiben.",
+    "channel_failed": "› `⚠️` ~ **Nicht gesendet:** Die Nachricht an {channel} konnte nicht gesendet werden.",
+    "delete_failed": "› `⚠️` ~ **Nicht gelöscht:** Ich konnte die Nachricht nicht löschen.",
+    "delete_not_allowed": "› `⚠️` ~ **Nicht erlaubt:** Das Löschen der Nachricht ist auf bestimmte Personen beschränkt, und das ist hier nicht so eingerichtet."
+  },
+  "template_variables": {
+    "known": "› `ℹ️` - **Variablen in der Vorlage:** {variables}\n> Sie werden nur ersetzt, wenn die Vorlage in einer **Nachrichten-Aktion** (Buttons & Dropdowns) gesendet wird. Beim normalen Senden einer Nachricht bleiben sie unverändert stehen.",
+    "unknown": {
+      "one": "› `⚠️` - **Unbekannte Variable:** {variables} gibt es nicht!\n> Die Variable wird nie ersetzt und bleibt so im Text stehen. Alle Variablen findest du bei einer Nachrichten-Aktion unter „Unterstützte Variablen“.",
+      "other": "› `⚠️` - **Unbekannte Variablen:** {variables} gibt es nicht!\n> Die Variablen werden nie ersetzt und bleiben so im Text stehen. Alle Variablen findest du bei einer Nachrichten-Aktion unter „Unterstützte Variablen“."
+    }
+  },
+  "roles": {
+    "everyone": "› `❌` - **Nicht erlaubt:** {role} ist die `@everyone`-Rolle und kann nicht vergeben werden. <:loveangry:784930958084276224>",
+    "managed": "› `❌` - **Nicht erlaubt:** {role} wird von einer Integration verwaltet und kann nicht vergeben werden. <:loveangry:784930958084276224>",
+    "above_creator": "› `❌` - **Rolle zu hoch:** {role} steht nicht unter deiner höchsten Rolle, daher kannst du sie nicht vergeben. <:loveangry:784930958084276224>",
+    "above_bot": "› `❌` - **Rolle zu hoch:** {role} steht nicht unter meiner höchsten Rolle, daher kann ich sie nicht vergeben. <:loveangry:784930958084276224>",
+    "creator_missing_permission": "› `❌` - **Fehlende Berechtigung:** Du brauchst die Berechtigung `Rollen verwalten`, um Rollen zu vergeben. <:loveangry:784930958084276224>",
+    "bot_missing_permission": "› `❌` - **Bot-Berechtigungsproblem:** Ich brauche die Berechtigung `Rollen verwalten`, um Rollen zu vergeben. <:loveangry:784930958084276224>"
+  },
+  "editor": {
+    "unnamed": "Unbenannter Button",
+    "summary": {
+      "unplaced": "❌",
+      "no_actions": "Es wurde noch keine Aktion festgelegt.",
+      "no_conditions": "Alle Server-Mitglieder",
+      "mode": {
+        "strings": "Dropdown - jede erstellte Option führt eigene Aktionen aus.",
+        "roles": "Rollen-Dropdown - aufgelistete Rollen werden vom User hinzugefügt oder entfernt."
+      },
+      "choice": "{minimum} bis {maximum}",
+      "choice_exact": {
+        "one": "{count} Option",
+        "other": "{count} Optionen"
+      },
+      "no_options": "noch keine erstellt.. 😭",
+      "no_questions": "Leer.. 😥",
+      "no_form_actions": "Leer.. 😭"
+    },
+    "option": {
+      "placed": "In der Nachricht platziert.",
+      "placed_at": "{place} - in der Nachricht platziert.",
+      "unplaced": "Noch nicht platziert."
+    },
+    "action_name": {
+      "role_add": {
+        "one": "Rolle hinzufügen",
+        "other": "Rollen hinzufügen"
+      },
+      "role_remove": {
+        "one": "Rolle entfernen",
+        "other": "Rollen entfernen"
+      },
+      "role_toggle": {
+        "one": "Rolle umschalten",
+        "other": "Rollen umschalten"
+      },
+      "role_set": {
+        "one": "Rolle festlegen",
+        "other": "Rollen festlegen"
+      },
+      "reply": "Antwort auf Nachricht",
+      "dm_user": "Privatnachricht senden",
+      "send_channel": "Kanal-Nachricht senden",
+      "delete_message": "Nachricht löschen",
+      "open_form": "Formular öffnen"
+    },
+    "action_help": {
+      "role_add": {
+        "one": "› Füge dem User eine Rolle hinzu.",
+        "other": "› Füge dem User Rollen hinzu."
+      },
+      "role_remove": {
+        "one": "› Entferne eine Rolle eines Users.",
+        "other": "› Entferne Rollen eines Users."
+      },
+      "role_toggle": {
+        "one": "› Fügt die Rolle hinzu, oder entfernt diese.",
+        "other": "› Fügt Rollen hinzu, oder entfernt diese."
+      },
+      "role_set": {
+        "one": "› Legt die Rolle eines Users auf deine Auswahl fest.",
+        "other": "› Legt die Rollen eines Users auf deine Auswahl fest."
+      },
+      "reply": "› Antwortet dem User - nur er selbst kann es sehen.",
+      "dm_user": "› Schickt dem User eine private Nachricht.",
+      "send_channel": "› Sendet eine Nachricht in einen Server-Kanal.",
+      "delete_message": "› Löscht die Nachricht, an der das Element hängt.",
+      "open_form": "› Öffnet ein Formular mit deinen festgelegten Fragen."
+    },
+    "action": {
+      "role_add": {
+        "one": "Rolle hinzufügen: {roles}",
+        "other": "Rollen hinzufügen: {roles}"
+      },
+      "role_remove": {
+        "one": "Rolle entfernen: {roles}",
+        "other": "Rollen entfernen: {roles}"
+      },
+      "role_toggle": {
+        "one": "Rolle umschalten: {roles}",
+        "other": "Rollen umschalten: {roles}"
+      },
+      "role_set": {
+        "one": "Rolle festlegen: {roles}",
+        "other": "Rollen festlegen: {roles}"
+      },
+      "reply": "Nachricht-Antwort: {message}",
+      "dm_user": "Privatnachricht an User: {message}",
+      "send_channel": "Nachricht in {channel}: {message}",
+      "delete_message": "Nachricht löschen",
+      "open_form": "Formular öffnen: {form}"
+    },
+    "condition_name": {
+      "role_required": "Rolle besitzen",
+      "role_forbidden": "Rolle gesperrt",
+      "permissions": "Berechtigung notwendig",
+      "account_age": "Account-Alter",
+      "member_age": "Server-Mitgliedschaft",
+      "once_per_user": "Einmal pro Person",
+      "cooldown": "Abklingzeit"
+    },
+    "condition_help": {
+      "role_required": "› User benötigen eine bestimmte Rolle zum klicken.",
+      "role_forbidden": "› User dürfen nicht die jeweilige Rolle besitzen.",
+      "permissions": "› User benötigen eine Discord-Berechtigung.",
+      "account_age": "› Der Discord-Account muss alt genug sein.",
+      "member_age": "› Der User muss lange genug auf dem Server sein.",
+      "once_per_user": "› Jeder kann ihn ein einziges Mal nutzen.",
+      "cooldown": "› Lässt einen User zwischen zwei Nutzungen warten."
+    },
+    "condition": {
+      "role_required": {
+        "any": {
+          "one": "Braucht die Rolle: {roles}",
+          "other": "Braucht eine Rolle von: {roles}"
+        },
+        "all": {
+          "one": "Braucht die Rolle: {roles}",
+          "other": "Braucht Rollen: {roles}"
+        }
+      },
+      "role_forbidden": {
+        "one": "Gesperrte Rolle: {roles}",
+        "other": "Gesperrte Rollen: {roles}"
+      },
+      "permissions": "Eine Berechtigung aus: {permissions}",
+      "account_age": "Account-Alter: mindestens `{amount}` Tage",
+      "member_age": "Server-Mitgliedschaft: mindestens `{amount}` Tage",
+      "once_per_user": "Einmal pro Person",
+      "cooldown": "Abklingzeit pro Verwendung: `{amount}` Sekunden"
+    },
+    "problems": {
+      "too_many_actions": "› `❌` - **Zu viele Aktionen:** Ein Button kann höchstens `{max}` Aktionen haben. <:loveangry:784930958084276224>",
+      "action_without_roles": "› `❌` - **Rollen fehlen:** Wähle mindestens eine Rolle aus. <:loveangry:784930958084276224>",
+      "too_many_roles": "› `❌` - **Zu viele Rollen:** Du hast mehr Rollen gewählt als erlaubt. <:loveangry:784930958084276224>",
+      "too_many_responding_actions": "› `❌` - **Zu viele Antworten:** Ein Button kann nur einmal antworten. <:loveangry:784930958084276224>",
+      "duplicate_action": "› `❌` - **Doppelte Aktion:** Diese Aktion kann pro Button nur einmal vorkommen. <:loveangry:784930958084276224>",
+      "conflicting_role_actions": {
+        "one": "› `❌` - **Rolle doppelt:** Jede Rolle darf nur in einer Rollen-Aktion vorkommen - sonst würden sich die Aktionen widersprechen: {roles} <:loveangry:784930958084276224>",
+        "other": "› `❌` - **Rollen doppelt:** Jede Rolle darf nur in einer Rollen-Aktion vorkommen - sonst würden sich die Aktionen widersprechen: {roles} <:loveangry:784930958084276224>"
+      },
+      "set_not_alone": "› `❌` - **Rolle festlegen allein:** „Rolle festlegen“ bestimmt bereits alle Rollen des Users - daneben passt keine andere Rollen-Aktion. <:loveangry:784930958084276224>",
+      "adds_required_role": {
+        "one": "› `❌` - **Rolle schon vorhanden:** Wer dieses Element nutzen darf, hat die Rolle {roles} bereits („Rolle besitzen“) - sie hinzuzufügen würde nie etwas ändern. <:loveangry:784930958084276224>",
+        "other": "› `❌` - **Rollen schon vorhanden:** Wer dieses Element nutzen darf, hat die Rollen {roles} bereits („Rolle besitzen“) - sie hinzuzufügen würde nie etwas ändern. <:loveangry:784930958084276224>"
+      },
+      "removes_forbidden_role": {
+        "one": "› `❌` - **Rolle gesperrt:** Wer die Rolle {roles} hat, darf dieses Element gar nicht nutzen („Rolle gesperrt“) - sie zu entfernen würde nie etwas ändern. <:loveangry:784930958084276224>",
+        "other": "› `❌` - **Rollen gesperrt:** Wer eine der Rollen {roles} hat, darf dieses Element gar nicht nutzen („Rolle gesperrt“) - sie zu entfernen würde nie etwas ändern. <:loveangry:784930958084276224>"
+      },
+      "duplicate_condition": "› `❌` - **Doppelte Einschränkung:** Jede Einschränkung kann nur einmal vorkommen. <:loveangry:784930958084276224>",
+      "condition_without_roles": "› `❌` - **Rollen fehlen:** Wähle mindestens eine Rolle aus. <:loveangry:784930958084276224>",
+      "condition_without_permissions": "› `❌` - **Berechtigungen fehlen:** Wähle mindestens eine Berechtigung aus. <:loveangry:784930958084276224>",
+      "condition_invalid_amount": "› `❌` - **Ungültige Zahl:** Gib eine ganze Zahl über null ein, die nicht zu groß ist. <:loveangry:784930958084276224>",
+      "payload_empty": "› `❌` - **Nachricht fehlt:** Schreibe einen Text oder wähle eine gespeicherte Vorlage. <:loveangry:784930958084276224>",
+      "channel_missing": "› `❌` - **Kanal fehlt:** Wähle den Kanal aus, in den die Nachricht geht. <:loveangry:784930958084276224>",
+      "delete_without_restriction": "› `❌` - **Einschränkung nötig:** Was die Nachricht löscht, muss auf eine Rolle oder auf Moderatoren beschränkt sein - sonst könnte sie jeder löschen. <:loveangry:784930958084276224>",
+      "too_many_options": "› `❌` - **Zu viele Optionen:** Ein Dropdown hat höchstens `25` Optionen. <:loveangry:784930958084276224>",
+      "option_without_role": "› `❌` - **Rolle fehlt:** Jede Option eines Rollen-Dropdowns braucht eine Rolle. <:loveangry:784930958084276224>",
+      "invalid_selection_range": "› `❌` - **Ungültiger Bereich:** Gib ganze Zahlen ein - das Minimum ab 0, das Maximum von 1 bis 25, und das Minimum nicht über dem Maximum. <:loveangry:784930958084276224>",
+      "form_missing": "› `❌` - **Formular fehlt:** Wähle das Formular, das geöffnet werden soll. <:loveangry:784930958084276224>",
+      "form_not_alone": "› `❌` - **Nur das Formular:** Was ein Formular öffnet, kann nichts anderes tun - lege das im Formular selbst fest. <:loveangry:784930958084276224>",
+      "form_opener_once": "› `❌` - **Im Formular festlegen:** Ein Formular nur einmal pro Person zuzulassen stellst du am Formular ein, nicht an dem, was es öffnet. <:loveangry:784930958084276224>",
+      "nested_form": "› `❌` - **Kein Formular im Formular:** Eine Formular-Aktion kann kein weiteres Formular aufrufen. <:loveangry:784930958084276224>",
+      "no_questions": "› `❌` - **Keine Fragen:** Ein Formular braucht mindestens eine Frage. <:loveangry:784930958084276224>",
+      "too_many_questions": "› `❌` - **Zu viele Fragen:** Ein Formular kann höchstens `5` Fragen besitzen. <:loveangry:784930958084276224>",
+      "invalid_question": "› `❌` - **Ungültige Frage:** Prüfe Text und Länge - zum Beispiel `10-500`. <:loveangry:784930958084276224>",
+      "too_many_conditions": "› `❌` - **Zu viele Bedingungen:** Ein Element kann höchstens `{max_conditions}` Bedingungen haben. <:loveangry:784930958084276224>",
+      "conflicting_roles": {
+        "one": "› `❌` - **Widersprüchliche Rolle:** Eine Rolle kann nicht gleichzeitig benötigt und gesperrt sein: {roles} <:loveangry:784930958084276224>",
+        "other": "› `❌` - **Widersprüchliche Rollen:** Eine Rolle kann nicht gleichzeitig benötigt und gesperrt sein: {roles} <:loveangry:784930958084276224>"
+      }
+    },
+    "unnamed_select": {
+      "strings": "Dropdown",
+      "roles": "Rollen-Dropdown"
+    },
+    "option_line": {
+      "role": "{name} - {role}",
+      "actions": "{name} ({amount}/5 Aktionen)"
+    },
+    "payload": {
+      "empty": "Leer.. 😭",
+      "text": "\"{text}\"",
+      "embed": "Embed-Vorlage `{name}`",
+      "container": "Container-Vorlage `{name}`"
+    },
+    "unnamed_form": "Formular",
+    "question": {
+      "optional": "optional",
+      "paragraph": "lange Antwort"
+    },
+    "section": {
+      "placement": "Platziert?⠀",
+      "link": "Link",
+      "actions": "Aktionen",
+      "conditions": "Wer es nutzen kann",
+      "mode": "Art",
+      "choice": "Auswahl",
+      "options": "Optionen ({amount})",
+      "questions": "Fragen ({amount})",
+      "form_actions": "Beim Absenden",
+      "more": "… und {amount} weitere"
+    },
+    "action_group": {
+      "roles": {
+        "label": "Server-Rollen",
+        "description": "› Vergibt, entfernt oder tauscht Rollen eines Users."
+      },
+      "message": {
+        "label": "Nachrichten",
+        "description": "› Sendet eine Nachricht nach deinen Wünschen."
+      }
+    }
+  },
+  "modals": {
+    "button": {
+      "title": {
+        "link": "Link-Button bearbeiten",
+        "button": "Button bearbeiten"
+      },
+      "label": {
+        "question": "🔤 ~ Welcher Text soll auf dem Button stehen?",
+        "placeholder": "z.B. Mehr erfahren, Ticket öffnen.."
+      },
+      "emoji": {
+        "question": "😀 ~ Welches Emoji soll der Button anzeigen?",
+        "placeholder": "Standard-/ oder Server-Emoji."
+      },
+      "url": {
+        "question": "🔗 ~ Wie lautet die URL der Seite?",
+        "placeholder": "https://bl4cklist.de oder Discord-URL.."
+      },
+      "style": {
+        "question": "🎨 ~ Welche Farbe soll der Button verwenden?",
+        "primary": "Blau",
+        "secondary": "Grau",
+        "success": "Grün",
+        "danger": "Rot"
+      }
+    },
+    "condition": {
+      "title": {
+        "role_required": "Bedingung: Braucht eine Rolle",
+        "role_forbidden": "Bedingung: Für eine Rolle gesperrt",
+        "permissions": "Bedingung: Braucht Berechtigungen",
+        "account_age": "Bedingung: Mindest-Account-Alter",
+        "member_age": "Bedingung: Mindestzeit auf dem Server",
+        "cooldown": "Bedingung: Abklingzeit"
+      },
+      "roles": {
+        "role_required": "🔒 ~ Welche Rollen werden benötigt?",
+        "role_forbidden": "🚫 ~ Für welche Rollen ist es gesperrt?"
+      },
+      "match": {
+        "question": "🔢 ~ Wie viele davon werden benötigt?",
+        "any": "Mindestens eine davon",
+        "all": "Alle davon"
+      },
+      "permissions": {
+        "question": "🛡️ ~ Welche Berechtigungen sind notwendig?",
+        "help": "Wähle eine beliebige Anzahl aus dem Dropdown aus."
+      },
+      "amount": {
+        "account_age": "📅 ~ Wie alt muss der Account sein in Tagen?",
+        "account_age_placeholder": "z.B. 7 oder 30",
+        "member_age": "🕰️ ~ Mitgliedschaft in Tagen",
+        "member_age_placeholder": "z.B. 7 oder 30",
+        "cooldown": "⏳ ~ Wie lange muss man warten in Sekunden?",
+        "cooldown_placeholder": "z.B. 10 oder 60"
+      }
+    },
+    "message_action": {
+      "text": {
+        "question": "💬 ~ Was soll in der Nachricht stehen?",
+        "placeholder": "z.B. Willkommen {{user}}! 🎉"
+      },
+      "embed": {
+        "help": "Wähle eine gespeicherte Embed-Vorlage statt eines Textes - Variablen darin werden ersetzt."
+      },
+      "container": {
+        "help": "Wähle eine gespeicherte Container-Vorlage statt eines Textes - Variablen werden ersetzt."
+      },
+      "template": {
+        "question": "📁 ~ Oder welche Vorlage soll es sein?"
+      },
+      "title": "Nachricht bearbeiten"
+    },
+    "select": {
+      "title": "Dropdown bearbeiten",
+      "placeholder": {
+        "question": "💭 ~ Welcher Text soll im Dropdown stehen?",
+        "placeholder": "z.B. Wähle deine Spiele.. 🎮"
+      },
+      "min": {
+        "question": "🔻 ~ Wie viele Items mindestens auswählbar?",
+        "placeholder": "0 bis 25"
+      },
+      "max": {
+        "question": "🔺 ~ Wie viele Items sind höchstens wählbar?",
+        "placeholder": "1 bis 25"
+      }
+    },
+    "option": {
+      "title": "Dropdown-Option bearbeiten",
+      "label": {
+        "question": "🏷️ ~ Wie soll die Option heißen?",
+        "placeholder": "z.B. Minecraft ⛏️"
+      },
+      "description": {
+        "question": "📝 ~ Was soll unter dem Namen stehen?",
+        "placeholder": "Eine kurze Beschreibung.. ✍️"
+      },
+      "emoji": {
+        "question": "😀 ~ Welches Emoji soll die Option zeigen?"
+      }
+    },
+    "role_options": {
+      "title": "Rollen-Optionen hinzufügen",
+      "question": "🎭 ~ Welche Rollen sollen zur Wahl stehen?",
+      "help": "Du kannst bis zu {max} weitere Rollen auswählen."
+    },
+    "form": {
+      "title": "Formular bearbeiten",
+      "name": {
+        "question": "📋 ~ Wie lautet der Titel des Formulars?",
+        "placeholder": "z.B. Bewerbung 📝"
+      }
+    },
+    "question": {
+      "title": "Frage bearbeiten",
+      "label": {
+        "question": "🗨️ ~ Wie lautet die Frage?",
+        "placeholder": "z.B. Warum möchtest du dich bewerben?"
+      },
+      "hint": {
+        "question": "💡 ~ Welcher Hinweis soll im Feld stehen?",
+        "placeholder": "Als Graue Schrift im leeren Feld sichtbar.."
+      },
+      "format": {
+        "question": "📏 ~ Wie groß soll das Textfeld sein?",
+        "short": "Einzeilig",
+        "paragraph": "Mehrere Zeilen"
+      },
+      "required": {
+        "question": "✅ ~ Muss die Frage beantwortet werden?",
+        "yes": "Ja, die Antwort ist Pflicht!",
+        "no": "Nein, die Antwort ist freiwillig!"
+      },
+      "length": {
+        "question": "🔡 ~ Wie viele Zeichen sind erlaubt?",
+        "placeholder": "z.B. 10-500 oder 500"
+      }
+    }
+  },
+  "hub": {
+    "overview": {
+      "elements": "› **Klickbare Elemente** sind Buttons und Dropdowns, auf die Mitglieder in deiner Nachricht klicken können. Erstelle sie mit dem Button unten und wähle sie danach im Dropdown aus, um sie zu bearbeiten.",
+      "actions": "› Jedes Element führt beim Klick **Aktionen** aus - zum Beispiel Rollen vergeben, eine Nachricht senden oder ein Formular öffnen. Du legst sie fest, sobald du ein Element ausgewählt hast."
+    },
+    "elements": {
+      "placeholder": "Klickbare Elemente verwalten.. 🖱️"
+    },
+    "owned": {
+      "summary": "Besitzt {items}",
+      "buttons": {
+        "one": "{count} Button",
+        "other": "{count} Buttons"
+      },
+      "dropdowns": {
+        "one": "{count} Dropdown",
+        "other": "{count} Dropdowns"
+      },
+      "both": "{buttons} und {dropdowns}"
+    },
+    "kinds": {
+      "link": {
+        "label": "Button mit Link",
+        "description": "› Öffnet beim Klick eine Webseite oder Discord-URL."
+      },
+      "button": {
+        "label": "Button",
+        "description": "› Standard-Button, mit allen möglichen Aktionen."
+      },
+      "select_strings": {
+        "label": "Dropdown",
+        "description": "› Standard-Dropdown, mit Aktionen pro Item."
+      },
+      "select_roles": {
+        "label": "Dropdown mit Rollen",
+        "description": "› Zeigt dem User eine Rollen-Liste an."
+      }
+    },
+    "kind_view": {
+      "title": "⚡ ~ Klickbares Element erstellen",
+      "description": "› Wähle über das untere Dropdown aus, welche Art von unterstützten klickbaren Elementen du erstellen möchtest. Anschließend kannst du Aktionen festlegen, die bei einem Klick ausgeführt werden.",
+      "placeholder": "Wähle ein Element aus.. 😴"
+    },
+    "webhook_note": "`⚠️` ~ **Eigener Absender aktiv:** Solange ein eigener Absender festgelegt ist, sind nur Link-Buttons möglich.",
+    "create_button": "Element hinzufügen",
+    "item": {
+      "title": {
+        "button": "Button bearbeiten",
+        "select": "Dropdown bearbeiten"
+      },
+      "description": {
+        "button": "› Hier kannst du den Button {name} mit allen möglichen Einstellungen verwalten.",
+        "select": "› Hier kannst du das Dropdown {name} mit allen möglichen Einstellungen verwalten.",
+        "select_unnamed": "› Verwalte hier das {name} mit den Einstellungen unten."
+      },
+      "preview": "Eine Vorschau des Elements siehst du unten links neben dem \"Platzieren\" Button."
+    },
+    "delete": {
+      "button": "Button löschen",
+      "select": "Dropdown löschen"
+    },
+    "form_view": {
+      "title": "Formular bearbeiten",
+      "description": "› Verwalte hier das Formular {name} mit den Einstellungen unten."
+    }
+  },
+  "action_screen": {
+    "type_placeholder": "Art der Aktion wählen.. 🖱️",
+    "save": "Speichern",
+    "section": {
+      "type": "Art",
+      "roles": {
+        "one": "Rolle",
+        "other": "Rollen"
+      },
+      "message": "Nachrichteninhalt",
+      "channel": "Kanal"
+    },
+    "role": {
+      "title": "🎭 ~ Rollen-Aktion",
+      "description": "› Wähle im ersten unteren Dropdown eine Art aus, was mit den Rollen die du ausgewählt hast, bei dem User passieren soll. In dem Dropdown darunter kannst du dann die entsprechenden Rollen auswählen.",
+      "no_roles": "Keine Rollen festgelegt.. 😭",
+      "roles_placeholder": {
+        "role_add": "Vergib eine Rolle.. 🎭",
+        "role_remove": "Entferne eine Rolle.. 🎭",
+        "role_toggle": "Schalte eine Rolle um.. 🎭",
+        "role_set": "Lege eine Rolle fest.. 🎭"
+      },
+      "set_help": "\n\nAlle anderen Rollen des Users werden entfernt - außer denen, die ich nicht verwalten kann."
+    },
+    "message": {
+      "title": "💬 ~ Nachrichten-Aktion",
+      "description": "› Hier kannst du eine Nachricht festlegen, welche unter spezifischen Regeln versendet wird und was für einen Inhalt sie besitzt.",
+      "edit": "Nachricht bearbeiten",
+      "no_channel": "noch keiner - wähle ihn im Dropdown darunter",
+      "channel_placeholder": "Kanal wählen.. 📢",
+      "sample_answer": "Beispielantwort",
+      "default_text": "Hallo, {{user}} 👋 - Willkommen auf dem coolsten Server **{{server}}**!\nDu bist eines von {{server.members}} Mitgliedern und hast das Menü am {{date}} um {{time}} Uhr in {{channel}} aufgerufen."
+    },
+    "variables": {
+      "title": "Unterstützte Variablen",
+      "user": "erwähnt die Person",
+      "user_name": "Anzeigename der Person",
+      "user_username": "Account-Name der Person",
+      "user_id": "ID der Person",
+      "user_created": "Tag, an dem der Account erstellt wurde",
+      "user_joined": "Tag, an dem die Person dem Server beigetreten ist",
+      "server": "Name des Servers",
+      "server_members": "Anzahl der Mitglieder des Servers",
+      "channel": "Kanal, in dem es genutzt wurde",
+      "date": "heutiges Datum",
+      "time": "aktuelle Uhrzeit",
+      "answers": "alle Fragen mit den Antworten",
+      "answer": "Antwort auf Frage 1 - `answer.2` für Frage 2 usw."
+    }
+  },
+  "screens": {
+    "buttons": {
+      "actions": "Aktionen",
+      "conditions": "Bedingungen",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "form_title": "Titel",
+      "look": "Aussehen",
+      "option_add": "Option erstellen",
+      "options": "Optionen",
+      "place": "Platzieren",
+      "question_add": "Frage hinzufügen",
+      "questions": "Fragen"
+    },
+    "placeholders": {
+      "switch_action": "Wähle eine Aktion aus.. 🖱️",
+      "no_actions": "Noch keine Aktionen vorhanden.. 😢",
+      "add_action": "Aktion hinzufügen.. ➕",
+      "add_action_full": "Aktions-Limit erreicht.. 🚫",
+      "switch_condition": "Wähle eine Bedingung aus.. 🖱️",
+      "no_conditions": "Noch keine Bedingungen vorhanden.. 😢",
+      "add_condition": "Füge eine Bedingung hinzu.. ➕",
+      "add_condition_full": "Alle Bedingungen in Benutzung.. ✅",
+      "add_condition_limit": "Bedingungs-Limit erreicht. ❌",
+      "switch_option": "Wähle eine Option aus.. 🖱️",
+      "no_options": "Noch keine Optionen vorhanden.. 😢",
+      "switch_question": "Wähle eine Frage aus.. 🖱️",
+      "no_questions": "Noch keine Fragen vorhanden.. 😢",
+      "placement_target": "Wähle eine Platzierung aus.. 📍",
+      "placement_empty": "Kein Platz mehr.. 😢"
+    },
+    "actions": {
+      "title": "⚙️ ~ Aktionen",
+      "title_option": "⚙️ ~ Aktionen von {name}",
+      "description": "› Lege fest, was beim Klick auf das Element passiert. Die Aktionen laufen in dieser Reihenfolge ab, wie sie im unteren Dropdown-Menü dargestellt sind. ",
+      "description_form": "› Lege fest, was beim Absenden des Formulars passiert - in der Reihenfolge, wie sie im Dropdown gelistet ist.\n\n› Die Antworten aus dem Formular sind über die Variablen `{{answers}}` (alle) sowie `{{answer.1}}` bis `{{answer.5}}` aufrufbar.",
+      "list": "Festgelegte Aktionen"
+    },
+    "conditions": {
+      "title": "🔒 ~ Bedingungen",
+      "title_option": "🔒 ~ Bedingungen von {name}",
+      "description": "› Du kannst Bedingungen festlegen, um steuern zu können, wer dieses Element anklicken darf, um eine Aktion auszulösen. Alle anderen werden eine Fehlermeldung erhalten, mit der Information welche Bedingung erfüllt sein muss.",
+      "list": "Festgelegte Bedingungen"
+    },
+    "options": {
+      "title": "🧩 ~ Optionen",
+      "description": {
+        "strings": "› Hier kannst du die Auswahlmöglichkeiten des Dropdowns festlegen. Jede Option, die du erstellst, hat seine eigene Aktion und Bedingungen, die du festlegen kannst.",
+        "roles": "› Hier kannst du die Rollen des Dropdowns auswählen. Dies wirkt wie ein \"Umschalten\" - Rollen werden vergeben oder bei erneuter Auswahl (oder falls der User sie bereits besitzt) entfernt."
+      },
+      "list": "Hinzugefügte Optionen"
+    },
+    "questions": {
+      "title": "❓ ~ Fragen von {name}",
+      "description": "› Verwalte hier die Fragen deines supercoolen Formulars - Sie werden in der Reihenfolge gestellt, wie sie im unteren Dropdown angeordnet sind.",
+      "list": "Hinzugefügte Fragen"
+    },
+    "placement": {
+      "title": "📍 ~ Element {name} platzieren",
+      "description": "› Wähle über das untere Dropdown aus, wo das ausgewählte Element in deiner Nachricht platziert werden soll.",
+      "confirm": "› In deiner Nachricht existiert noch kein klickbares Element. Bist du dir sicher, dass du das Element in der Nachricht platzieren möchtest?",
+      "list": "Aktuell platzierte Elemente",
+      "truncated": "› Hier werden nur die ersten {shown} von {total} Reihen angezeigt."
+    },
+    "webhook_confirm": {
+      "title": "Buttons entfernen?",
+      "description": {
+        "one": "› Ein eigener Absender nutzt eine Discord-Webhook, und Webhooks können nur Link-Buttons senden.\n\n› **{count}** ungültiges Element mit Aktionen wird daher **entfernt** - bist du dir sicher?",
+        "other": "› Ein eigener Absender nutzt eine Discord-Webhook, und Webhooks können nur Link-Buttons senden.\n\n› **{count}** ungültige Elemente mit Aktionen werden daher **entfernt** - bist du dir sicher?"
+      }
+    }
+  }
+}
