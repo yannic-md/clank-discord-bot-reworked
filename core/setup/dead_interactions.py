@@ -1,9 +1,10 @@
 import logging
+from collections.abc import Collection
 from functools import cache
 from logging import Logger
 from typing import Any
 
-from discord import HTTPException, Interaction, InteractionType, Message
+from discord import Client, HTTPException, Interaction, InteractionType, Message
 from discord.ui import Button, ChannelSelect, LayoutView, MentionableSelect, RoleSelect, Select, UserSelect, View
 
 from core.enums.language import SupportedLanguage
@@ -20,6 +21,14 @@ _PRESERVE_MESSAGE_PREFIXES: tuple[str, ...] = ("embed:",)
 def _warn_about_missing_view_store() -> None:
     """Say once that discord.py's view store cannot be inspected (later calls do nothing)."""
     logger.error("Could not inspect discord.py's view store - skipping dead-interaction check.")
+
+
+# noinspection PyProtectedMember
+def _view_store_contents(client: Client) -> tuple[dict[Any, Any], Collection[Any]]:
+    """What discord.py's private view store knows: the registered items by message and `(type, custom_id)`, and the
+    patterns of the dynamic items. Raises `AttributeError` if discord.py keeps them somewhere else in the future."""
+    view_store = client._connection._view_store
+    return view_store._views, view_store._dynamic_items
 
 
 def _has_live_handler(interaction: Interaction) -> bool:
@@ -40,10 +49,7 @@ def _has_live_handler(interaction: Interaction) -> bool:
         return True
 
     try:
-        # noinspection PyProtectedMember
-        view_store = interaction.client._connection._view_store
-        views_by_message = view_store._views
-        dynamic_items = view_store._dynamic_items
+        views_by_message, dynamic_items = _view_store_contents(interaction.client)
     except AttributeError:
         _warn_about_missing_view_store()
         return True

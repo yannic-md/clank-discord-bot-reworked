@@ -100,9 +100,11 @@ class OptionDraft:
 
 def open_form_ids(config: ItemConfig) -> list[int]:
     """The ids of the forms the actions of a config open."""
-    return [
-        action.form_id for action in config.actions if action.type is ActionType.OPEN_FORM and action.form_id is not None
-    ]
+    ids: list[int] = []
+    for action in config.actions:
+        if action.type is ActionType.OPEN_FORM and action.form_id is not None:
+            ids.append(action.form_id)
+    return ids
 
 
 def remap_forms(config: ItemConfig, form_ids: Mapping[int, int | None]) -> ItemConfig:
@@ -328,11 +330,7 @@ def template_data(library: InteractiveLibrary, draft: ItemDraft) -> dict[str, ob
     """The JSON-able form of an item as a template keeps it: the item plus - inline - the forms it opens, so a
     template stays complete without the library of the session that saved it."""
     data = draft.to_data()
-    forms = {
-        str(form_id): form.to_data()
-        for form_id in draft.referenced_form_ids()
-        if (form := library.get(form_id)) is not None and form.is_form
-    }
+    forms = {str(form.id): form.to_data() for form in library.referenced_forms([draft])}
     if forms:
         data["forms"] = forms
     return data
@@ -399,6 +397,14 @@ class InteractiveLibrary:
     def get(self, item_id: int) -> ItemDraft | None:
         """The draft with this id, or `None`."""
         return self.items.get(item_id)
+
+    def require(self, item_id: int) -> ItemDraft:
+        """The draft with this id - for the screens, which are only ever opened for a draft that exists.
+
+        Raises:
+            KeyError: There is no such draft.
+        """
+        return self.items[item_id]
 
     def remove(self, item_id: int) -> None:
         """Forget a draft. The caller removes it from the layout as well. The actions that opened a form that is
@@ -479,7 +485,12 @@ class InteractiveLibrary:
         ids: dict[int, None] = {}
         for draft in drafts:
             ids.update(dict.fromkeys(draft.referenced_form_ids()))
-        return [form for form_id in ids if (form := self.items.get(form_id)) is not None and form.is_form]
+        forms: list[ItemDraft] = []
+        for form_id in ids:
+            form = self.items.get(form_id)
+            if form is not None and form.is_form:
+                forms.append(form)
+        return forms
 
     def clear(self) -> None:
         """Forget all drafts, e.g. before a template replaces the whole layout.

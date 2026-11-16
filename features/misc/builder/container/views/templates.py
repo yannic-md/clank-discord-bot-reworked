@@ -1,6 +1,7 @@
 import logging
 
-from discord import ButtonStyle, Colour, Interaction, SelectOption
+from aiohttp import ClientError
+from discord import ButtonStyle, Colour, HTTPException, Interaction, SelectOption
 from discord.ui import ActionRow, Container, TextDisplay
 
 from core.discord_api.limits import MAX_SELECT_ITEMS
@@ -163,5 +164,5 @@ async def _flag_unreachable_media(
         track_active_view(refreshed)
         await interaction.edit_original_response(view=refreshed)
         refreshed.message = await interaction.original_response()
-    except Exception:
+    except HTTPException, ClientError, OSError:  # the message is gone, Discord or the network is not reachable
         logger.warning("container-builder: background media-link check failed", exc_info=True)

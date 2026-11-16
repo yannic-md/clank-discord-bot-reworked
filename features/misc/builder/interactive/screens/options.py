@@ -27,8 +27,7 @@ def options_screen(host: Host, item_id: int, *, active_key: str | None = None, e
     session = host.session
     language = session.language
 
-    draft = session.library.get(item_id)
-    assert draft is not None
+    draft = session.library.require(item_id)
     options = draft.options
     active = draft.option(active_key) if active_key is not None else None
     if active is None and options:

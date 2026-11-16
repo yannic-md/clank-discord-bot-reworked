@@ -166,17 +166,17 @@ class EmbedColourModal(Modal):
             return
 
         embed: Embed = self.session.active_embed
-        placeholder: str | None = None
-        if not embed.title and not embed.description:
-            # create placeholder embed to apply color, if no embed exists
-            placeholder = translate(self.session.language, "builder.embed.placeholders.embed_placeholder_title")
+        placeholder: str = translate(self.session.language, "builder.embed.placeholders.embed_placeholder_title")
+        # an embed with neither title nor description gets the placeholder as its title, so that the colour is visible
+        needs_placeholder: bool = not embed.title and not embed.description
+        if needs_placeholder:
             over: int = text_over_limit(self.session.embeds, added=len(placeholder))
             if over:
                 await reject_text_limit(interaction, self.session, over)
                 return
 
         embed.colour = colour
-        if placeholder is not None:
+        if needs_placeholder:
             embed.title = placeholder
 
         await show(interaction, EmbedBuilderGUI(self.session))

@@ -1,7 +1,8 @@
+from collections.abc import Callable
 from typing import ClassVar
 
 from discord import ButtonStyle, Embed, Interaction, SelectOption
-from discord.ui import Button, Select, button, select
+from discord.ui import Button, Modal, Select, button, select
 
 from core.i18n.translator import translate
 from features.misc.builder.embed.modals import (
@@ -58,7 +59,7 @@ def _select_key(value: str, field: str) -> str:
 class EmbedBuilderGUI(BuilderScreenView):
     """Main screen of the embed builder: a live preview with the controls to edit and send it."""
 
-    _MODALS: ClassVar[dict[str, type]] = {
+    _MODALS: ClassVar[dict[str, Callable[[BuilderSession], Modal]]] = {
         "embed_content": MessageContentModal,
         "embed_colors": EmbedColourModal,
         "embed_title": EmbedTitleDescModal,

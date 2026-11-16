@@ -292,8 +292,8 @@ def form_screen(host: Host, form_id: int, *, error: str | None = None) -> Screen
     language = session.language
     library = session.library
 
-    form = library.get(form_id)
-    assert form is not None and form.is_form
+    form = library.require(form_id)
+    assert form.is_form
 
     async def on_back(interaction: Interaction) -> None:
         """Go back to the actions of the button (or option) that opens the form."""

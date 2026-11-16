@@ -63,8 +63,7 @@ class ItemScope(NamedTuple):
 
 def item_scope(session: EditorSession, item_id: int, option_key: str | None) -> ItemScope:
     """The scope of an element (or of one of its options)."""
-    draft = session.library.get(item_id)
-    assert draft is not None
+    draft = session.library.require(item_id)
     scope = scope_of(draft, option_key)
     assert scope is not None
     return ItemScope(draft, *scope)

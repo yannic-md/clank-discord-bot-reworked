@@ -153,6 +153,20 @@ async def _open_form_action(
         await after(interaction, problem_text(language, problems[0], max=MAX_ACTIONS_PER_ITEM))
         return
 
+    await _ask_for_form_title(interaction, language, config, after, library, open_form)
+
+
+async def _ask_for_form_title(
+    interaction: Interaction,
+    language: SupportedLanguage,
+    config: ItemConfig,
+    after: AfterEdit,
+    library: InteractiveLibrary,
+    open_form: AfterForm,
+) -> None:
+    """Ask for the title of the form a new "open form" action opens; once it is created, the action is added and the
+    screen of the form shown."""
+
     async def created(modal_interaction: Interaction, form_id: int | None, error: str | None) -> None:
         """Attach the new form to the item as its action and show the form's screen."""
         created_form = library.get(form_id) if form_id is not None else None

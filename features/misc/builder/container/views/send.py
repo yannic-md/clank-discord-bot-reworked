@@ -117,17 +117,20 @@ class SendConfirmView(BuilderLayoutView):
             persisted = await persist_items(
                 session.library, placed, guild_id=session.guild_id, creator_id=session.slashcmd_author_id
             )
-            sent: Message | WebhookMessage | None = None
+
+            sent: Message | WebhookMessage
             try:
                 if session.webhook.enabled:
-                    sent, webhook_error = await send_via_webhook(interaction, channel, session, nodes, allowed)
-                    if sent is None:
+                    via_webhook, webhook_error = await send_via_webhook(interaction, channel, session, nodes, allowed)
+                    if via_webhook is None:
                         await rollback(session.library, persisted)
                         await show(interaction, SendConfirmView(session, error=webhook_error))
                         return
+                    sent = via_webhook
                 else:
                     assert isinstance(channel, Messageable)
                     sent = await channel.send(view=StaticLayoutView(final_items(session, nodes)), allowed_mentions=allowed)
+
             except HTTPException as failure:
                 await rollback(session.library, persisted)
                 problem = send_problem_text(session.language, failure)
@@ -135,18 +138,20 @@ class SendConfirmView(BuilderLayoutView):
                     raise
                 await show(interaction, SendConfirmView(session, error=problem))
                 return
+
             except BaseException:
                 await rollback(session.library, persisted)
                 raise
 
-            await attach(session.library, persisted, channel_id=sent.channel.id, message_id=sent.id)
+            else:
+                await attach(session.library, persisted, channel_id=sent.channel.id, message_id=sent.id)
 
-            self.stop()
-            success_text = (
-                f"{ts(session.language, 'info.success.sent')}\n\n{_jump_link_text(session.language, sent.jump_url)}"
-            )
-            success_view = text_message_view(success_text, colour=Colour.green())
-            await interaction.response.edit_message(view=success_view)
+                self.stop()
+                success_text = (
+                    f"{ts(session.language, 'info.success.sent')}\n\n{_jump_link_text(session.language, sent.jump_url)}"
+                )
+                success_view = text_message_view(success_text, colour=Colour.green())
+                await interaction.response.edit_message(view=success_view)
 
         async def on_cancel(interaction: Interaction) -> None:
             """Go back to the main screen without sending."""

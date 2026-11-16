@@ -71,7 +71,7 @@ def _to_template(record: EmbedTemplateRecord) -> EmbedTemplate:
     for data in record.embeds_data:
         try:
             embeds.append(_rebuild_embed(data))
-        except Exception:
+        except KeyError, TypeError, ValueError, AttributeError:  # whatever a hand-edited or old embed breaks on
             dropped += 1
             logger.warning("embed-builder: skipping unrebuildable embed in template %r", record.name, exc_info=True)
 

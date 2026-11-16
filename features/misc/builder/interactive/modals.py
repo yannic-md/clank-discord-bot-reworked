@@ -117,16 +117,17 @@ class ButtonModal(Modal):
         self.url_input: TextInput | None = None
         self.style_input: RadioGroup | None = None
         if kind is DraftKind.LINK:
-            self.url_input = TextInput(
+            url_input: TextInput = TextInput(
                 label=t(language, "modals.button.url.question"),
                 placeholder=t(language, "modals.button.url.placeholder"),
                 max_length=MAX_BUTTON_URL,
                 default=draft.url if draft else None,
             )
-            self.add_item(self.url_input)
+            self.url_input = url_input
+            self.add_item(url_input)
         else:
             current = draft.style if draft else None
-            self.style_input = RadioGroup(
+            style_input: RadioGroup = RadioGroup(
                 options=[
                     RadioOption(
                         label=t(language, f"modals.button.style.{name}"),
@@ -136,7 +137,8 @@ class ButtonModal(Modal):
                     for name, style in BUTTON_STYLES.items()
                 ]
             )
-            self.add_item(Label(text=t(language, "modals.button.style.question"), component=self.style_input))
+            self.style_input = style_input
+            self.add_item(Label(text=t(language, "modals.button.style.question"), component=style_input))
 
     async def on_submit(self, interaction: Interaction) -> None:
         """Validate the input, then create or update the button and hand over to the next screen."""
@@ -217,24 +219,24 @@ class ConditionModal(Modal):
         self.amount_input: TextInput | None = None
 
         if condition_type in (ConditionType.ROLE_REQUIRED, ConditionType.ROLE_FORBIDDEN):
-            self.roles_input = _role_select(guild, existing.roles if existing else (), maximum=MAX_CONDITION_ROLES)
-            self.add_item(
-                Label(text=t(language, f"modals.condition.roles.{condition_type.value}"), component=self.roles_input)
-            )
+            roles_input = _role_select(guild, existing.roles if existing else (), maximum=MAX_CONDITION_ROLES)
+            self.roles_input = roles_input
+            self.add_item(Label(text=t(language, f"modals.condition.roles.{condition_type.value}"), component=roles_input))
 
         if condition_type is ConditionType.ROLE_REQUIRED:
             match_all = existing.match_all if existing else False
-            self.match_input = RadioGroup(
+            match_input: RadioGroup = RadioGroup(
                 options=[
                     RadioOption(label=t(language, "modals.condition.match.any"), value="any", default=not match_all),
                     RadioOption(label=t(language, "modals.condition.match.all"), value="all", default=match_all),
                 ]
             )
-            self.add_item(Label(text=t(language, "modals.condition.match.question"), component=self.match_input))
+            self.match_input = match_input
+            self.add_item(Label(text=t(language, "modals.condition.match.question"), component=match_input))
 
         if condition_type is ConditionType.PERMISSIONS:
             chosen = existing.permissions if existing else ()
-            self.permissions_input = Select(
+            permissions_input: Select = Select(
                 min_values=1,
                 max_values=len(CONDITION_PERMISSIONS),
                 options=[
@@ -244,23 +246,25 @@ class ConditionModal(Modal):
                     for name in CONDITION_PERMISSIONS
                 ],
             )
+            self.permissions_input = permissions_input
             self.add_item(
                 Label(
                     text=t(language, "modals.condition.permissions.question"),
                     description=t(language, "modals.condition.permissions.help"),
-                    component=self.permissions_input,
+                    component=permissions_input,
                 )
             )
 
         if condition_type in (ConditionType.ACCOUNT_AGE, ConditionType.MEMBER_AGE, ConditionType.COOLDOWN):
-            self.amount_input = TextInput(
+            amount_input: TextInput = TextInput(
                 label=t(language, f"modals.condition.amount.{condition_type.value}"),
                 placeholder=t(language, f"modals.condition.amount.{condition_type.value}_placeholder"),
                 min_length=1,
                 max_length=5,
                 default=str(existing.amount) if existing and existing.amount else None,
             )
-            self.add_item(self.amount_input)
+            self.amount_input = amount_input
+            self.add_item(amount_input)
 
     def _build(self) -> Condition | None:
         """The condition the inputs describe, or `None` if the amount is not a whole number."""
@@ -365,22 +369,24 @@ class MessageContentModal(Modal):
         self.container_input: Select | None = None
         if templates.embed:
             chosen = payload.template_name if payload is not None and payload.kind is PayloadKind.EMBED else None
-            self.embed_input = _template_select(templates.embed, chosen)
+            embed_input = _template_select(templates.embed, chosen)
+            self.embed_input = embed_input
             self.add_item(
                 Label(
                     text=t(language, "modals.message_action.template.question"),
                     description=t(language, "modals.message_action.embed.help"),
-                    component=self.embed_input,
+                    component=embed_input,
                 )
             )
         if templates.container:
             chosen = payload.template_name if payload is not None and payload.kind is PayloadKind.CONTAINER else None
-            self.container_input = _template_select(templates.container, chosen)
+            container_input = _template_select(templates.container, chosen)
+            self.container_input = container_input
             self.add_item(
                 Label(
                     text=t(language, "modals.message_action.template.question"),
                     description=t(language, "modals.message_action.container.help"),
-                    component=self.container_input,
+                    component=container_input,
                 )
             )
 

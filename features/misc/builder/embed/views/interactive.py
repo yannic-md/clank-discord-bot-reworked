@@ -242,8 +242,7 @@ class PlacementView(InteractiveScreenView):
         super().__init__(session)
         language = session.language
 
-        draft = session.library.get(item_id)
-        assert draft is not None
+        draft = session.library.require(item_id)
         title = screen(language, "placement.title", name=element_name(language, draft))
 
         async def on_place(interaction: Interaction, target: str) -> None:

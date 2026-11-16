@@ -452,7 +452,11 @@ def draft_name(language: SupportedLanguage, draft: ItemDraft, *, plain: bool = F
         return draft.placeholder or t(language, f"editor.unnamed_select.{draft.mode.value}")
 
     emoji = None if plain and is_custom_emoji(draft.emoji) else draft.emoji
-    parts = [part for part in (emoji, draft.label) if part]
+    parts: list[str] = []
+    if emoji:
+        parts.append(emoji)
+    if draft.label:
+        parts.append(draft.label)
     return " ".join(parts) if parts else t(language, "editor.unnamed")
 
 

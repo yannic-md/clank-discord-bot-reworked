@@ -23,8 +23,7 @@ def questions_screen(host: Host, item_id: int, *, active_index: int | None = Non
     `item_id` is the form and `active_index` the selected question."""
     language = host.session.language
 
-    draft = host.session.library.get(item_id)
-    assert draft is not None
+    draft = host.session.library.require(item_id)
     questions = draft.questions
     active = clamp(active_index, len(questions))
 
