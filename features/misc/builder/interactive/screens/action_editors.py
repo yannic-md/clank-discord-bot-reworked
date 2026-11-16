@@ -17,6 +17,7 @@ from features.misc.builder.interactive.action_screens import (
     role_select,
     save_action,
     screen_texts,
+    template_message,
     type_options,
     variables_help,
     with_channel,
@@ -24,7 +25,7 @@ from features.misc.builder.interactive.action_screens import (
     with_roles,
     with_type,
 )
-from features.misc.builder.interactive.messages import t
+from features.misc.builder.interactive.messages import common, t
 from features.misc.builder.interactive.modals import MessageContentModal
 from features.misc.builder.interactive.models import Action, ActionType, MessagePayload
 from features.misc.builder.interactive.screens.common import item_scope
@@ -35,6 +36,7 @@ from features.misc.builder.interactive.screens.controls import (
     dropdown,
     role_picker,
     save_button,
+    template_preview_button,
 )
 from features.misc.builder.interactive.screens.host import Host
 from features.misc.builder.interactive.screens.spec import Screen
@@ -141,6 +143,35 @@ class _MessageEditor(_ActionEditor):
             MessageContentModal(self.language, self.working.payload, templates, self.after_content)
         )
 
+    def questions(self) -> list[str]:
+        """The questions of the form the action belongs to - none if it is not in a form."""
+        return [question.label for question in self.draft.questions] if self.draft.is_form else []
+
+    def has_template(self) -> bool:
+        """Whether the message is a template of the kind this builder makes - the one a preview can show."""
+        payload = self.working.payload
+        return payload is not None and payload.kind is self.host.template_kind
+
+    async def on_preview(self, interaction: Interaction) -> None:
+        """Show the template of the message on a screen of its own - or say why that is not possible."""
+        payload = self.working.payload
+        if payload is None or not self.has_template():
+            await self.again(interaction, self.working)
+            return
+
+        session = self.host.session
+        message = template_message(
+            self.language, payload, session.slashcmd_author, session.slashcmd_channel, self.questions()
+        )
+        if message is None:
+            await self.again(interaction, self.working, common(self.language, "info.preview.empty"))
+            return
+        await self.host.template_preview(interaction, message, self.on_preview_back)
+
+    async def on_preview_back(self, interaction: Interaction) -> None:
+        """Leave the preview and go back to the message action - as it was left."""
+        await self.again(interaction, self.working)
+
     async def on_channel(self, interaction: Interaction, picked: list[AppCommandChannel | AppCommandThread]) -> None:
         """The channel of a channel message was picked - if this user may write there."""
         member = interaction.user
@@ -207,8 +238,7 @@ def message_action_screen(
 
     title, description = screen_texts(language, working)
     in_form = editor.draft.is_form
-    questions = [question.label for question in editor.draft.questions] if in_form else []
-    preview = message_preview(language, session.slashcmd_author, session.slashcmd_channel, questions)
+    preview = message_preview(language, session.slashcmd_author, session.slashcmd_channel, editor.questions())
     page = Screen(
         title,
         f"{description}\n\n{variables_help(language, in_form=in_form)}",
@@ -225,6 +255,8 @@ def message_action_screen(
             emoji="✏️",
         ),
     )
+    if editor.has_template():
+        page.add(0, template_preview_button(language, editor.on_preview))
     page.add(0, save_button(language, editor.on_save))
     page.add(
         1,

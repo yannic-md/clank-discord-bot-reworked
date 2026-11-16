@@ -28,9 +28,11 @@ from features.misc.builder.container.views.base import (
 from features.misc.builder.interactive.hub import element_name
 from features.misc.builder.interactive.messages import screen
 from features.misc.builder.interactive.models import Action, PayloadKind
+from features.misc.builder.interactive.payload import OutgoingMessage
 from features.misc.builder.interactive.screens.action_editors import message_action_screen, role_action_screen
 from features.misc.builder.interactive.screens.actions import actions_screen
 from features.misc.builder.interactive.screens.conditions import conditions_screen
+from features.misc.builder.interactive.screens.controls import Callback, back_button
 from features.misc.builder.interactive.screens.host import ScreenClasses, ViewHost
 from features.misc.builder.interactive.screens.hub import form_screen, hub_screen, kinds_screen
 from features.misc.builder.interactive.screens.options import options_screen
@@ -98,10 +100,14 @@ class InteractiveLayoutView(BuilderLayoutView):
         """Draw the screen described by `page`: its texts in a container, a row of controls for each of its rows, and
         its error - if there is one - in a red box."""
         self.add_item(self.text_box(page))
-        for _, controls in sorted(page.rows.items()):
-            self.add_item(ActionRow(*(control.item for control in controls)))
+        self.add_controls(page)
         if page.error:
             self.add_error(page.error)
+
+    def add_controls(self, page: Screen) -> None:
+        """Put the controls of `page` on the screen, a row of them for each of its rows."""
+        for _, controls in sorted(page.rows.items()):
+            self.add_item(ActionRow(*(control.item for control in controls)))
 
 
 class InteractiveHubView(InteractiveLayoutView):
@@ -198,6 +204,25 @@ class MessageActionView(InteractiveLayoutView):
         self.render(
             message_action_screen(self.host, item_id, option_key=option_key, index=index, action=action, error=error)
         )
+
+
+class TemplatePreviewView(InteractiveLayoutView):
+    """A template's message on a screen of its own: its components as they are sent, and below them a row with one
+    button to go back. The row takes two of the 40 components a message may have; the template never has more than
+    `MAX_USER_COMPONENTS` (33), so there is always room for them."""
+
+    def __init__(self, session: ContainerBuilderSession, message: OutgoingMessage, back: Callback) -> None:
+        """`message` is what the template makes and `back` runs when the button is pressed."""
+        super().__init__(session)
+        assert message.view is not None, "a container template makes a Components V2 message"
+        components = list(message.view.children)
+        message.view.clear_items()
+        for component in components:
+            self.add_item(component)
+
+        page = Screen("", "")
+        page.add(0, back_button(session.language, back))
+        self.add_controls(page)
 
 
 class ItemConditionsView(InteractiveLayoutView):
@@ -304,5 +329,6 @@ _SCREENS = ScreenClasses(
     message_action=MessageActionView,
     conditions=ItemConditionsView,
     questions=QuestionsView,
+    template_preview=TemplatePreviewView,
 )
 """The screens `ContainerHost` switches between."""

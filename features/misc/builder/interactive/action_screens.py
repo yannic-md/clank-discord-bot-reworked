@@ -32,6 +32,7 @@ from features.misc.builder.interactive.models import (
     condition_conflicts,
     validate_config,
 )
+from features.misc.builder.interactive.payload import OutgoingMessage, build_outgoing
 from features.misc.builder.interactive.roles import role_problem
 from features.misc.builder.interactive.variables import FORM_VARIABLES, VARIABLES, render_variables
 
@@ -238,14 +239,37 @@ def message_preview(
     stands in for the person who uses the button, the channel of the editor for the channel, and every question of a
     form has a sample answer."""
     guild = channel.guild
-    sample = t(language, "action_screen.message.sample_answer")
-    answers = [(question, f"{sample} {number}") for number, question in enumerate(questions, 1)]
+    answers = sample_answers(language, questions)
 
     def preview(text: str) -> str:
         """`text` with its variables filled with the test data."""
         return render_variables(text, member=member, guild=guild, channel=channel, answers=answers)
 
     return preview
+
+
+def sample_answers(language: SupportedLanguage, questions: Sequence[str]) -> list[tuple[str, str]]:
+    """A sample answer for every question of a form, to fill the `{answers}` of a message while it is edited."""
+    sample = t(language, "action_screen.message.sample_answer")
+    return [(question, f"{sample} {number}") for number, question in enumerate(questions, 1)]
+
+
+def template_message(
+    language: SupportedLanguage,
+    payload: MessagePayload,
+    member: Member,
+    channel: GuildChannel | Thread,
+    questions: Sequence[str] = (),
+) -> OutgoingMessage | None:
+    """The message a click sends for `payload` (a template), with its variables filled with test data - or `None` if
+    the template has nothing to show.
+
+    A screen of its own shows it with a "back" button below. That button needs room: two of the 40 components Discord
+    allows in a message (its row and itself) - which a container template always leaves, as it never has more than
+    `MAX_USER_COMPONENTS` (33) of them; an embed template has the ten embeds a message holds and the button is none."""
+    return build_outgoing(
+        payload, member=member, guild=channel.guild, channel=channel, answers=sample_answers(language, questions)
+    )
 
 
 def _variable_key(name: str) -> str:

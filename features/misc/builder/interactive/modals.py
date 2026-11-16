@@ -29,7 +29,7 @@ from features.misc.builder.interactive.draft import (
     OptionDraft,
 )
 from features.misc.builder.interactive.editor import conflict_text, problem_text
-from features.misc.builder.interactive.messages import role_problem_text, t
+from features.misc.builder.interactive.messages import common, role_problem_text, t
 from features.misc.builder.interactive.models import (
     CONDITION_PERMISSIONS,
     MAX_CONDITION_ROLES,
@@ -322,9 +322,10 @@ AfterOption = Callable[[Interaction, str | None, str | None], Awaitable[None]]
 """Called when an option modal is done: the interaction, the key of the option to show next and an error text, if any."""
 
 
-def _template_select(choices: list[TemplateChoice], selected: str | None) -> Select:
+def _template_select(language: SupportedLanguage, choices: list[TemplateChoice], selected: str | None) -> Select:
     """A dropdown of saved templates in which none (or one) can be chosen."""
     return Select(
+        placeholder=common(language, "placeholders.templates_select"),
         required=False,
         min_values=0,
         max_values=1,
@@ -370,7 +371,7 @@ class MessageContentModal(Modal):
         self.container_input: Select | None = None
         if templates.embed:
             chosen = payload.template_name if payload is not None and payload.kind is PayloadKind.EMBED else None
-            embed_input = _template_select(templates.embed, chosen)
+            embed_input = _template_select(language, templates.embed, chosen)
             self.embed_input = embed_input
             self.add_item(
                 Label(
@@ -381,7 +382,7 @@ class MessageContentModal(Modal):
             )
         if templates.container:
             chosen = payload.template_name if payload is not None and payload.kind is PayloadKind.CONTAINER else None
-            container_input = _template_select(templates.container, chosen)
+            container_input = _template_select(language, templates.container, chosen)
             self.container_input = container_input
             self.add_item(
                 Label(

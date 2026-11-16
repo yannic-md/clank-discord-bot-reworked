@@ -22,9 +22,11 @@ from features.misc.builder.interactive.editor import BLANK_LINE, section_fields
 from features.misc.builder.interactive.hub import element_name, placement_text
 from features.misc.builder.interactive.messages import screen
 from features.misc.builder.interactive.models import Action, PayloadKind
+from features.misc.builder.interactive.payload import OutgoingMessage
 from features.misc.builder.interactive.screens.action_editors import message_action_screen, role_action_screen
 from features.misc.builder.interactive.screens.actions import actions_screen
 from features.misc.builder.interactive.screens.conditions import conditions_screen
+from features.misc.builder.interactive.screens.controls import Callback, back_button
 from features.misc.builder.interactive.screens.host import ScreenClasses, ViewHost
 from features.misc.builder.interactive.screens.hub import form_screen, hub_screen, kinds_screen
 from features.misc.builder.interactive.screens.options import options_screen
@@ -93,6 +95,12 @@ class InteractiveScreenView(BuilderScreenView):
         if page.warning:
             embed.colour = Colour.orange()
 
+        self.add_controls(page)
+        if page.error:
+            self.embeds = [*self.embeds, Embed(description=page.error, colour=Colour.red())]
+
+    def add_controls(self, page: Screen) -> None:
+        """Put the controls of `page` on the screen, each in the row it belongs to."""
         for number, controls in sorted(page.rows.items()):
             for control in controls:
                 item = control.item
@@ -101,9 +109,6 @@ class InteractiveScreenView(BuilderScreenView):
                 if isinstance(item, Button | BaseSelect) and not is_link:
                     item.custom_id = f"{_PREFIX}:{type(self).__name__}:{control.name}"
                 self.add_item(item)
-
-        if page.error:
-            self.embeds = [*self.embeds, Embed(description=page.error, colour=Colour.red())]
 
 
 class InteractiveHubView(InteractiveScreenView):
@@ -202,6 +207,20 @@ class MessageActionView(InteractiveScreenView):
         )
 
 
+class TemplatePreviewView(InteractiveScreenView):
+    """A template's message on a screen of its own: its text and embeds as they are sent, and below them one button to
+    go back. The button is not an embed, so nothing of the template has to give way for it."""
+
+    def __init__(self, session: BuilderSession, message: OutgoingMessage, back: Callback) -> None:
+        """`message` is what the template makes and `back` runs when the button is pressed."""
+        super().__init__(session)
+        self.content = message.content
+        self.embeds = list(message.embeds)
+        page = Screen("", "")
+        page.add(0, back_button(session.language, back))
+        self.add_controls(page)
+
+
 class ItemConditionsView(InteractiveScreenView):
     """Lists the restrictions of one item (a dropdown option, or the dropdown as a whole)."""
 
@@ -297,5 +316,6 @@ _SCREENS = ScreenClasses(
     message_action=MessageActionView,
     conditions=ItemConditionsView,
     questions=QuestionsView,
+    template_preview=TemplatePreviewView,
 )
 """The screens `EmbedHost` switches between."""

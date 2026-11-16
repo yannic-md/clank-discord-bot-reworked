@@ -18,7 +18,8 @@
     "up": "Hoch",
     "down": "Runter",
     "left": "Links",
-    "right": "Rechts"
+    "right": "Rechts",
+    "preview": "Vorschau"
   },
   "placeholders": {
     "templates_select": "Wähle eine Vorlage aus.. 🖱️",
@@ -43,6 +44,9 @@
       "sent": "Deine wunderschöne Nachricht wurde erfolgreich abgesendet! <a:check:730387138381873184>",
       "saved": "Die Änderungen an deiner Nachricht wurden erfolgreich gespeichert! <a:check:730387138381873184>",
       "jump_link": "`🔗` ~ **Zur Nachricht springen:** [Klick hier!]({jump_url})"
+    },
+    "preview": {
+      "empty": "Diese Vorlage ist leer - es gibt nichts anzuzeigen."
     }
   },
   "errors": {

@@ -6,6 +6,8 @@ from discord import Interaction
 from discord.ui.view import BaseView
 
 from features.misc.builder.interactive.models import Action, PayloadKind
+from features.misc.builder.interactive.payload import OutgoingMessage
+from features.misc.builder.interactive.screens.controls import Callback
 from features.misc.builder.interactive.screens.spec import EditorSession
 
 
@@ -25,6 +27,8 @@ class ScreenClasses:
     message_action: Callable[..., BaseView]
     conditions: Callable[..., BaseView]
     questions: Callable[..., BaseView]
+    template_preview: Callable[..., BaseView]
+    """The message a template makes, shown on its own; called with the session, the message and the way back."""
 
 
 class ViewHost[S: EditorSession](ABC):
@@ -135,6 +139,10 @@ class ViewHost[S: EditorSession](ABC):
             self.session, item_id, option_key=option_key, index=index, action=action, error=error
         )
         await self.show(interaction, view)
+
+    async def template_preview(self, interaction: Interaction, message: OutgoingMessage, back: Callback) -> None:
+        """The `message` a template makes, on its own - with a button below it that runs `back`."""
+        await self.show(interaction, self._classes.template_preview(self.session, message, back))
 
     async def conditions(
         self,

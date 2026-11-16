@@ -143,6 +143,11 @@ def conditions_button(language: SupportedLanguage, callback: Callback) -> Contro
     return button("conditions", callback, label=screen(language, "buttons.conditions"), style=ButtonStyle.gray, emoji="🔒")
 
 
+def template_preview_button(language: SupportedLanguage, callback: Callback) -> Control:
+    """The button that shows the template of a message as it is sent."""
+    return button("template_preview", callback, label=common(language, "buttons.preview"), style=ButtonStyle.gray, emoji="👁️")
+
+
 def save_button(language: SupportedLanguage, callback: Callback) -> Control:
     """The button that stores the action being edited."""
     return button("save", callback, label=shared_t(language, "action_screen.save"), style=ButtonStyle.green, emoji="💾")
